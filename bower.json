@@ -1,0 +1,12 @@
+{
+    "name": "funrun-symfony2",
+    "authors": [
+        "Beelab <info@bee-lab.net>",
+        "David Larrimore <davidlarrimore@gmail.com>"
+    ],
+    "private": true,
+    "dependencies": {
+        "bootstrap": "3.x",
+        "jquery": "*",
+    }
+}

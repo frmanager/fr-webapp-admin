@@ -1,0 +1,13 @@
+html {
+      position: fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      background: url(/assets/img/2014_funrun.png) no-repeat center center fixed;
+      background-size: cover;
+}
+
+body {
+  background-color:transparent;
+}
