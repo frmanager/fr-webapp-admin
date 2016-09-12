@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Teacher;
-use AppBundle\Form\TeacherType;
 
 /**
  * Teacher controller.
@@ -50,7 +49,7 @@ class TeacherController extends Controller
             $em->persist($teacher);
             $em->flush();
 
-            return $this->redirectToRoute('admin_teacher_show', array('id' => $teacher->getId()));
+            return $this->redirectToRoute('admin_teacher_index', array('id' => $teacher->getId()));
         }
 
         return $this->render('teacher/new.html.twig', array(

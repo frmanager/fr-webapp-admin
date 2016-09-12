@@ -95,7 +95,7 @@ class Teacher
         return $this->teacherName;
     }
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -104,7 +104,7 @@ class Teacher
     }
 
     /**
-     * Add student
+     * Add student.
      *
      * @param \AppBundle\Entity\Student $student
      *
@@ -118,7 +118,7 @@ class Teacher
     }
 
     /**
-     * Remove student
+     * Remove student.
      *
      * @param \AppBundle\Entity\Student $student
      */
@@ -128,7 +128,7 @@ class Teacher
     }
 
     /**
-     * Get students
+     * Get students.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -138,7 +138,7 @@ class Teacher
     }
 
     /**
-     * Add causevoxteam
+     * Add causevoxteam.
      *
      * @param \AppBundle\Entity\Causevoxteam $causevoxteam
      *
@@ -152,7 +152,7 @@ class Teacher
     }
 
     /**
-     * Remove causevoxteam
+     * Remove causevoxteam.
      *
      * @param \AppBundle\Entity\Causevoxteam $causevoxteam
      */
@@ -162,7 +162,7 @@ class Teacher
     }
 
     /**
-     * Get causevoxteams
+     * Get causevoxteams.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
