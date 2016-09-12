@@ -1,13 +1,22 @@
 html {
-      position: fixed;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
-      background-size: cover;
       background: url(/assets/img/2014_funrun.png) no-repeat center center fixed;
       background-size: cover;
 }
 
 body {
   background-color:transparent;
+}
+
+
+.transparent-container {
+  background-color:white;
+  color:black;
+  opacity: 0.75;
+  filter: alpha(opacity=75); /* For IE8 and earlier */
+  -webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+border-radius: 3px;
 }

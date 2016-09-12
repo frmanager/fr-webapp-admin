@@ -6,7 +6,7 @@
     ],
     "private": true,
     "dependencies": {
-        "bootstrap": "3.x",
+        "bootstrap": "*",
         "jquery": "*",
     }
 }

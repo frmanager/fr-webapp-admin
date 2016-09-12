@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -10,7 +9,7 @@
             {% block title %}Welcome!{% endblock %}
         </title>
         <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/facebook.css') }}">
 
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 
@@ -25,8 +24,21 @@
 
     <script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
 
+    <!-- IE 10 Viewport Bug Fix -->
+    <script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
+    
     <script type="text/javascript">
-        $('video#bgvid').on('ended', function () { this.load(); this.play(); });
+      $('[data-countdown]').each(function() {
+        var $this = $(this), finalDate = $(this).data('countdown');
+        $this.countdown(finalDate, function(event) {
+          $this.html(event.strftime(''
+      + '<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;'
+      + '<span class="label label-info">%H</span> hours &nbsp;&nbsp;'
+      + '<span class="label label-info">%M</span> min &nbsp;&nbsp;'
+      + '<span class="label label-info">%S</span> sec'));
+        });
+      });
     </script>
 </html>
