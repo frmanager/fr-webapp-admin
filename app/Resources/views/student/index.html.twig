@@ -1,43 +1,43 @@
-{% extends 'base.html.twig' %}
+{% extends 'crud.html.twig' %}
 
 {% block body %}
-    <h1>Student list</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Teacher</th>
-                <th>Grade</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for student in students %}
-            <tr>
-                <td><a href="{{ path('student_show', { 'id': student.id }) }}">{{ student.id }}</a></td>
-                <td>{{ student.name }}</td>
-                <td>{{ student.teacher }}</td>
-                <td>{{ student.grade }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('student_show', { 'id': student.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('student_edit', { 'id': student.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('student_new') }}">Create a new entry</a>
-        </li>
-    </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1>Student list</h1>
+                                <br/>
+                <div style="text-align:right;">
+                    <a href="{{ path('student_new') }}" class="btn btn-warning">Add Student</a>
+                </div>
+                <br/>
+                <table class="table table-bordered table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Grade</th>
+                            <th>Teacher</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('student_show', { 'id': student.id }) }}">{{ student.id }}</a>
+                                </td>
+                                <td>{{ student.grade }}</td>
+                                <td>{{ student.teacher }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>
+                                    <a href="{{ path('student_show', { 'id': student.id }) }}" class="btn btn-sm btn-primary">show</a>
+                                    <a href="{{ path('student_edit', { 'id': student.id }) }}" class="btn btn-sm btn-primary">edit</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

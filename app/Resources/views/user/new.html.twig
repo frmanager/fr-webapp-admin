@@ -1,0 +1,22 @@
+{% extends 'crud.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1>User creation</h1>
+
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <input type="submit" value="Create"/>
+                {{ form_end(form) }}
+
+                <ul>
+                    <li>
+                        <a href="{{ path('user_index') }}">Back to the list</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

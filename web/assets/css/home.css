@@ -20,3 +20,27 @@ body {
 -moz-border-radius: 3px;
 border-radius: 3px;
 }
+
+
+/* put in the breakpoint variable and make some new ones in your variables.less file */
+
+@media (min-width:768px){
+
+  .navbar-default .navbar-nav > li:not(:last-child) {
+    border-right:1px solid #ddd;
+   }
+
+  .navbar-default .navbar-nav > li:not(:first-child) {
+    border-left:1px solid #fff;
+   }
+
+  .navbar-inverse .navbar-nav > li:not(:last-child) {
+    border-right:1px solid #000;
+   }
+
+  .navbar-inverse .navbar-nav > li:not(:first-child) {
+    border-left:1px solid #444;
+   }
+
+
+}

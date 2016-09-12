@@ -1,40 +1,43 @@
-{% extends 'base.html.twig' %}
+{% extends 'crud.html.twig' %}
 
 {% block body %}
-    <h1>Student</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1>Student</h1>
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ student.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ student.name }}</td>
-            </tr>
-            <tr>
-                <th>Teacher</th>
-                <td>{{ student.teacher }}</td>
-            </tr>
-            <tr>
-                <th>Grade</th>
-                <td>{{ student.grade }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('student_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('student_edit', { 'id': student.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th class="col-md-2">Id</th>
+                            <td>{{ student.id }}</td>
+                        </tr>
+                        <tr>
+                            <th class="col-md-2">Name</th>
+                            <td>{{ student.name }}</td>
+                        </tr>
+                        <tr>
+                            <th class="col-md-2">Teacher</th>
+                            <td>{{ student.teacher }}</td>
+                        </tr>
+                        <tr>
+                            <th class="col-md-2">Grade</th>
+                            <td>{{ student.grade }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                        {{ form_start(delete_form) }}
+                        <div class="btn-group">
+                        <a href="{{ path('student_index') }}" class="btn btn-sm btn-primary">Back to list</a>
+                        <a href="{{ path('student_edit', { 'id': student.id }) }}" class="btn btn-sm btn-warning">Edit Student</a>
+                        <input type="submit" value="Delete Student" class="btn btn-sm btn-danger">
+                      </div>
+                        {{ form_end(delete_form) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

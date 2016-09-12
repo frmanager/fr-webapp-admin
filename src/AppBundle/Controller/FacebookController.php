@@ -1,16 +1,16 @@
 <?php
 
-// src/AppBundle/Controller/FBTabController.php
+// src/AppBundle/Controller/FacebookController.php
 namespace AppBundle\Controller;
 
 // ...
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
-// src/AppBundle/Controller/LuckyController.php
+// src/AppBundle/Controller/FacebookController.php
 
 // ...
-class FBTabController extends Controller
+class FacebookController extends Controller
 {
     /**
      * @Route("/facebook-tab")
@@ -46,6 +46,6 @@ class FBTabController extends Controller
             $theView = 'prepare.phtml';
         }
 
-        return $this->render('facebook-tab/prepare.html.twig', array('data' => $data));
+        return $this->render('facebook-tab/'.$theView.'.html.twig', array('data' => $data));
     }
 }

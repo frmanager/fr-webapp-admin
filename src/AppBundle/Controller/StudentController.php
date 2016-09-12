@@ -7,12 +7,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Student;
-use AppBundle\Form\StudentType;
 
 /**
  * Student controller.
  *
- * @Route("/student")
+ * @Route("/admin/student")
  */
 class StudentController extends Controller
 {
