@@ -61,7 +61,7 @@ class Grade
         return $this->name;
     }
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -69,7 +69,7 @@ class Grade
     }
 
     /**
-     * Add teacher
+     * Add teacher.
      *
      * @param \AppBundle\Entity\Teacher $teacher
      *
@@ -83,7 +83,7 @@ class Grade
     }
 
     /**
-     * Remove teacher
+     * Remove teacher.
      *
      * @param \AppBundle\Entity\Teacher $teacher
      */
@@ -93,7 +93,7 @@ class Grade
     }
 
     /**
-     * Get teachers
+     * Get teachers.
      *
      * @return \Doctrine\Common\Collections\Collection
      */

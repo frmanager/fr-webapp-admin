@@ -10,12 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Teacher
 {
     /**
-     * @ORM\OneToMany(targetEntity="Student", mappedBy="teachers")
+     * @ORM\OneToMany(targetEntity="Student", mappedBy="teacher")
      */
     private $students;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teachers")
+     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher")
      */
     private $causevoxteams;
 

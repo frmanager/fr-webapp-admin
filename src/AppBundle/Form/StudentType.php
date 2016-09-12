@@ -5,6 +5,8 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use AppBundle\Entity\Teacher;
 
 class StudentType extends AbstractType
 {
@@ -15,8 +17,10 @@ class StudentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('grade ')
-            ->add('teacher')
+            ->add('teacher', EntityType::class, array(
+              'class' => 'AppBundle:Teacher',
+              'choice_label' => 'teachername',
+              ))
             ->add('name')
         ;
     }

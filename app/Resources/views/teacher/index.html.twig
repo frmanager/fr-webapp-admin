@@ -28,10 +28,8 @@
                                 <td>{{ teacher.grade.name }}</td>
                                 <td>{{ teacher.teacherName }}</td>
                                 <td>
-                                    <td>
-                                        <a href="{{ path('admin_teacher_show', { 'id': teacher.id }) }}" class="btn btn-sm btn-primary">show</a>
-                                        <a href="{{ path('admin_teacher_edit', { 'id': teacher.id }) }}" class="btn btn-sm btn-primary">edit</a>
-                                    </td>
+                                    <a href="{{ path('admin_teacher_show', { 'id': teacher.id }) }}" class="btn btn-sm btn-primary">show</a>
+                                    <a href="{{ path('admin_teacher_edit', { 'id': teacher.id }) }}" class="btn btn-sm btn-primary">edit</a>
                                 </td>
                             </tr>
                         {% endfor %}
