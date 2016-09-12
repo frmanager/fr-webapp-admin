@@ -6,8 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(name="students")
  */
-class Student
+class Students
 {
     /**
      * @ORM\Column(type="integer")
@@ -22,10 +23,14 @@ class Student
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="students")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\Column(type="string", length=100)
      */
     private $teacher;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $grade;
 
     /**
      * Get id.

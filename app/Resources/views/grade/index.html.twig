@@ -1,0 +1,39 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1>Grade list</h1>
+                <div style="text-align:right;">
+                    <a href="{{ path('grade_new') }}" class="btn btn-warning">Add Grade</a>
+                </div>
+                <br/>
+                <table class="table table-bordered table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grade in grades %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('grade_show', { 'id': grade.id }) }}">{{ grade.id }}</a>
+                                </td>
+                                <td>{{ grade.name }}</td>
+                                <td>
+                                    <a href="{{ path('grade_show', { 'id': grade.id }) }}" class="btn btn-sm btn-primary">show</a>
+                                    <a href="{{ path('grade_edit', { 'id': grade.id }) }}" class="btn btn-sm btn-primary">edit</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

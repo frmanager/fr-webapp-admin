@@ -1,0 +1,43 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1>Teacher</h1>
+
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Id</th>
+                            <td>{{ teacher.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Grade</th>
+                            <td>{{ teacher.grade }}</td>
+                        </tr>
+                        <tr>
+                            <th>Teachername</th>
+                            <td>{{ teacher.teacherName }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <ul>
+                    <li>
+                        <a href="{{ path('admin_teacher_index') }}">Back to the list</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('admin_teacher_edit', { 'id': teacher.id }) }}">Edit</a>
+                    </li>
+                    <li>
+                        {{ form_start(delete_form) }}
+                        <input type="submit" value="Delete">
+                        {{ form_end(delete_form) }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

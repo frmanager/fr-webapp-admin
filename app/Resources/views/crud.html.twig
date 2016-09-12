@@ -22,16 +22,33 @@
             <div class="container">
                 <a class="navbar-brand" href="/">FUN RUN</a>
                 <ul class="nav navbar-nav">
-                  <li>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="/admin/students">Manage Students</a>
-                    {% endif %}
-                  </li>
+                    <li>
+                        <a href="/manage/upload">Upload Data</a>
+                    </li>
+
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a href="/admin/student">Manage Students</a></li>
+                            <li><a href="/admin/grade">Manage Grades</a></li>
+                            <li><a href="/admin/teacher">Manage Teachers</a></li>
+                        {% endif %}
+
                 </ul>
-                <div class="nav navbar-nav navbar-right">
-                    <span class="navbar-text">Signed in as <strong>{{ app.user.username }}</strong>&nbsp;<i class="glyphicon glyphicon-user"></i></span>
-                    <a href="/logout" class="btn btn-info navbar-btn">Logout</a>
-                </div>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="glyphicon glyphicon-user"></i>&nbsp;Signed in as
+                            <strong>{{ app.user.username }}</strong>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="drop3">
+                            <li>
+                                <a href="/logout">Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
             </div>
         </nav>
         <div style="height:52px;">&nbsp;</div>
