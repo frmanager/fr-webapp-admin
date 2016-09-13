@@ -25,8 +25,6 @@
     <target name="prepare-deploy">
       <echo msg="Preparing ${environment} build directory structure" />
       <mkdir dir="./build/${environment}" />
-      <mkdir dir="./build/${environment}/config" />
-      <mkdir dir="./build/${environment}/data" />
     </target>
 
 
@@ -39,7 +37,7 @@
 
       <echo msg="Running configuration commands on local" />
       <exec command="git pull" dir="./" level="debug" />
-      <exec command="composer update" dir="./" level="debug" />
+      <!--<exec command="composer update" dir="./" level="debug" />-->
       <exec command="composer install" dir="./" level="debug" />
       <exec command="export BOWERPHP_TOKEN=${githubApiKey}; vendor/beelab/bowerphp/bin/bowerphp install" dir="./" level="debug" />
 
@@ -91,7 +89,7 @@
         username="${${environment}.username}"
         password="${${environment}.password}"
         dir="${${environment}.documentroot}/app/config/">
-        <fileset dir="./build/${environment}/app/config/parameters.yml">
+        <fileset dir="./build/${environment}/app/config/">
           <include name="parameters.yml"/>
           <exclude name=".DS_Store"/>
         </fileset>
