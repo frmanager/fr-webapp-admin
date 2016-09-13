@@ -2,17 +2,19 @@
 
 {% block body %}
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <h1>Upload Form</h1>
-
-            {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Cancel</a>
-            <input type="submit" value="Upload Form" class="btn btn-primary"/>
-            {{ form_end(form) }}
-
+  <div class="container">
+      <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+              <h1>Upload Form</h1>
+              <br/>
+              {{ form_start(form) }}
+              {{ form_widget(form) }}
+              </br>
+              <div>
+                  <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Cancel</a>
+                  <input type="submit" value="Upload Form" class="btn btn-primary"/>
+              </div>
+              {{ form_end(form) }}
         </div>
     </div>
 </div>

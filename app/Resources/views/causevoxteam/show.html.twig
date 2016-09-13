@@ -1,0 +1,39 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1>View
+                    {{ entity }}</h1>
+            </br>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ causevoxteam.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Grade</th>
+                        <td>{{ causevoxteam.teacher.grade.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Teacher's name</th>
+                        <td>{{ causevoxteam.teacher.teachername }}</td>
+                    </tr>
+                    <tr>
+                      <th>Student's Name</th>
+                      <td>{{ causevoxteam.name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {{ form_start(delete_form) }}
+            <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
+            <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxteam.id }) }}" class="btn btn-primary">Edit</a>
+            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{causevoxteam.id}}?')" class="btn btn-danger">
+            {{ form_end(delete_form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

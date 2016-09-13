@@ -195,6 +195,7 @@ class StudentController extends Controller
                     ++$counter;
                 }
                 fclose($csvFile);
+                unlink('temp/'.strtolower($entity).'.csv');
                 $logger->info(print_r($fileLabels, true));
                 if (in_array('name', $fileLabels) || in_array('grade', $fileLabels) || in_array('teachers_name', $fileLabels)) {
                     $logger->info('Making changes to database');

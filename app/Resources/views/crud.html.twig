@@ -28,7 +28,7 @@
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                Data Administration</strong>
+                                Core Data Administration</strong>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="drop3">
@@ -46,6 +46,21 @@
                 </ul>
 
             {% endif %}
+
+
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        CauseVox Data Administration</strong>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="drop4">
+                    <li>
+                        <a href="/manage/causevoxteam">Manage Causevox Teams</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
 
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
@@ -75,7 +90,7 @@
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <strong>{{ type }}!</strong>
+                            <strong>{{ type|capitalize }}!</strong>
                             {{message}}
                         </div>
                     </div>

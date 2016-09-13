@@ -29,8 +29,8 @@ class Student
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="students")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="students", cascade={"remove"})
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
     private $teacher;

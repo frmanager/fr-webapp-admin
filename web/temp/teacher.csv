@@ -1,23 +1,26 @@
-teachers_name,grade
-Ms. Lineau,Kindergarten
-Ms. K Johnson,Kindergarten
-Ms. Gonzalez,Kindergarten
-Mrs. Wright,Kindergarten
-Ms. Lovett,1st Grade
-Ms. Stivason,1st Grade
-Ms. Zimmerman,1st Grade
-Mr. Morton,2nd Grade
-Ms. Earl,2nd Grade
-Ms. L Johnson,2nd Grade
-Ms. Goff,2nd Grade
-Ms. Locke,3rd Grade
-Ms. Williams,3rd Grade
-Ms. Watson,3rd Grade
-Mr. Martin,4th Grade
-Ms. Morton,4th Grade
-Ms. Simpson,4th Grade
-Ms. Blaylock,4th Grade
-Ms. Ruhl,5th Grade
-Ms. Arboleda,5th Grade
-Ms. Northup,5th Grade
-Ms. Stearman,5th Grade
+grade,teachers_name
+Kindergarten,Ms. Wright
+Kindergarten,Ms. Lienau
+Kindergarten,Ms. Milom
+Kindergarten,Ms. Gonzalez
+1st Grade,MS. K Johnson
+1st Grade,Ms. Lovett
+1st Grade,Ms. Stivason
+1st Grade,Ms. Zimmerman
+2nd Grade,Ms. L Johnson
+2nd Grade,MS. Goff
+2nd Grade,Mr. Morton
+2nd Grade,Ms. Earl
+3rd Grade,Ms. Williams
+3rd Grade,Ms. Watson
+3rd Grade,Ms. Locke
+4th Grade,Ms. Simpson
+4th Grade,Ms. Morton
+4th Grade,Mr. Martin
+4th Grade,Ms. Blaylock
+5th Grade,Ms. Stearman
+5th Grade,Ms. Kincade
+5th Grade,Ms. Ruhl
+5th Grade,Ms. Arboleda
+ED,Ms. Exum
+ID,Ms. Sanfilippo

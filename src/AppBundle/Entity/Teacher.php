@@ -18,7 +18,7 @@ class Teacher
     private $students;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher")
+     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher", cascade={"all"})
      */
     private $causevoxteams;
 
@@ -30,8 +30,8 @@ class Teacher
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Grade",inversedBy="teachers")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Grade",inversedBy="teachers", cascade={"all"})
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
     private $grade;

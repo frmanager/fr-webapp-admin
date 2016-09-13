@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @UniqueEntity("name")
+ * @UniqueEntity("url")
  */
 class Causevoxteam
 {
@@ -27,22 +28,23 @@ class Causevoxteam
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotNull()
      */
     private $url;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="float", length=5, nullable=true)
      */
-    private $fundsRaised;
+    private $fundsRaised = null;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="float", length=5, nullable=true)
      */
-    private $fundNeeded;
+    private $fundsNeeded = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="causevoxteams")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="causevoxteams", cascade={"all"})
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      */
     private $teacher;
 
@@ -129,27 +131,27 @@ class Causevoxteam
     }
 
     /**
-     * Set fundNeeded.
+     * Set fundsNeeded.
      *
-     * @param string $fundNeeded
+     * @param string $fundsNeeded
      *
      * @return CauseVoxTeam
      */
-    public function setFundNeeded($fundNeeded)
+    public function setFundsNeeded($fundsNeeded)
     {
-        $this->fundNeeded = $fundNeeded;
+        $this->fundsNeeded = $fundsNeeded;
 
         return $this;
     }
 
     /**
-     * Get fundNeeded.
+     * Get fundsNeeded.
      *
      * @return string
      */
-    public function getFundNeeded()
+    public function getFundsNeeded()
     {
-        return $this->fundNeeded;
+        return $this->fundsNeeded;
     }
 
     /**

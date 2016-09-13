@@ -21,11 +21,18 @@ class UploadType extends AbstractType
               'Students' => 'Student',
               'Teachers' => 'Teacher',
               'Grades' => 'Grade',
-              'CauseVoxTeams' => 'CauseVoxTeam',
+              'Cause Vox Teams' => 'Causevoxteam',
             ),
             'disabled' => true,
           )
         )
-        ->add('attachment', FileType::class);
+        ->add('attachment', FileType::class)
+        ->add('truncate_table', ChoiceType::class, array(
+              'expanded' => true,
+              'multiple' => true,
+              'choices' => [
+                      ' ' => 'truncate_yes',
+                  ],
+               ));
     }
 }
