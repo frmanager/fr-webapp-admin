@@ -12,26 +12,26 @@
                 <tbody>
                     <tr>
                         <th>Id</th>
-                        <td>{{ student.id }}</td>
+                        <td>{{ causevoxteam.id }}</td>
                     </tr>
                     <tr>
                         <th>Grade</th>
-                        <td>{{ student.teacher.grade.name }}</td>
+                        <td>{{ causevoxteam.teacher.grade.name }}</td>
                     </tr>
                     <tr>
                         <th>Teacher's name</th>
-                        <td>{{ student.teacher.teachername }}</td>
+                        <td>{{ causevoxteam.teacher.teachername }}</td>
                     </tr>
                     <tr>
                       <th>Student's Name</th>
-                      <td>{{ student.name }}</td>
+                      <td>{{ causevoxteam.name }}</td>
                     </tr>
                 </tbody>
             </table>
             {{ form_start(delete_form) }}
             <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
-            <a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-primary">Edit</a>
-            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{student.id}}?')" class="btn btn-danger">
+            <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxteam.id }) }}" class="btn btn-primary">Edit</a>
+            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{causevoxteam.id}}?')" class="btn btn-danger">
             {{ form_end(delete_form) }}
         </div>
     </div>

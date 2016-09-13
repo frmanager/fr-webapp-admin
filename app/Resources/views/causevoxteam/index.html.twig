@@ -7,7 +7,8 @@
             <div class="col-md-8 col-md-offset-2">
                 <h1>{{entity|capitalize}}'s</h1>
                 <div style="text-align:right;">
-                    <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">Add {{ entity }}</a>
+                    <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">Add
+                        {{ entity }}</a>
                     <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default">Upload CSV File</a>
                 </div>
                 <br/>
@@ -16,21 +17,25 @@
                         <tr>
                             <th>Id</th>
                             <th>Grade</th>
-                            <th>Teacher's Name</th>
+                            <th>Teacher's name</th>
+                            <th>Name</th>
+                            <th>URL</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for teacher in teachers %}
+                        {% for causevoxteam in causevoxteams %}
                             <tr>
                                 <td>
-                                    <a href="{{ path(entity|lower ~ '_show', { 'id': teacher.id }) }}">{{ teacher.id }}</a>
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxteam.id }) }}">{{ causevoxteam.id }}</a>
                                 </td>
-                                <td>{{ teacher.grade.name }}</td>
-                                <td>{{ teacher.teacherName }}</td>
+                                <td>{{ causevoxteam.teacher.grade.name }}</td>
+                                <td>{{ causevoxteam.teacher.teachername }}</td>
+                                <td>{{ causevoxteam.name }}</td>
+                                <td>{{ causevoxteam.url }}</td>
                                 <td style="text-align:center;">
-                                    <a href="{{ path(entity|lower ~ '_show', { 'id': teacher.id }) }}" class="btn btn-sm btn-info">View</a>
-                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.id }) }}" class="btn btn-sm btn-warning">edit</a>
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxteam.id }) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxteam.id }) }}" class="btn btn-sm btn-warning">edit</a>
                                 </td>
                             </tr>
                         {% endfor %}

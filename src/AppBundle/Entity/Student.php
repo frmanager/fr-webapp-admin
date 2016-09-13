@@ -2,10 +2,16 @@
 
 namespace AppBundle\Entity;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @UniqueEntity(fields={"name", "teacher"},
+ *     errorPath="name",
+ *     message="This teacher already has a student by this name."
+ * )
  */
 class Student
 {
@@ -17,13 +23,15 @@ class Student
     private $id;
 
     /**
+     * @Assert\NotNull()
      * @ORM\Column(type="string", length=100)
      */
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="students")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="students", cascade={"remove"})
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
      */
     private $teacher;
 

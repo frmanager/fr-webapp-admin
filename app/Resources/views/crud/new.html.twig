@@ -5,18 +5,16 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h1>Grade creation</h1>
+                <h1>Create new {{ entity }} Form</h1>
 
                 {{ form_start(form) }}
                 {{ form_widget(form) }}
-                <input type="submit" value="Create"/>
+                <div>
+                  <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Cancel</a>
+                  <button type="reset" value="Reset" class="btn btn-primary">Reset</button>
+                  <input type="submit" value="Add New {{entity}}" class="btn btn-warning"/>
+                </div>
                 {{ form_end(form) }}
-
-                <ul>
-                    <li>
-                        <a href="{{ path('grade_index') }}">Back to the list</a>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>

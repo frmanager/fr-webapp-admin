@@ -2,11 +2,13 @@
 
 namespace AppBundle\Entity;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="grade")
+ * @UniqueEntity("name")
  */
 class Grade
 {
@@ -24,6 +26,7 @@ class Grade
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotNull()
      */
     private $name;
 

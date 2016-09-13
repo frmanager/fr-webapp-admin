@@ -23,12 +23,14 @@ class GradeController extends Controller
      */
     public function indexAction()
     {
+        $entity = 'Grade';
         $em = $this->getDoctrine()->getManager();
 
         $grades = $em->getRepository('AppBundle:Grade')->findAll();
 
-        return $this->render('grade/index.html.twig', array(
+        return $this->render($entity.'/index.html.twig', array(
             'grades' => $grades,
+            'entity' => $entity,
         ));
     }
 
@@ -40,6 +42,7 @@ class GradeController extends Controller
      */
     public function newAction(Request $request)
     {
+        $entity = 'Grade';
         $grade = new Grade();
         $form = $this->createForm('AppBundle\Form\GradeType', $grade);
         $form->handleRequest($request);
@@ -52,36 +55,40 @@ class GradeController extends Controller
             return $this->redirectToRoute('grade_index', array('id' => $grade->getId()));
         }
 
-        return $this->render('grade/new.html.twig', array(
+        return $this->render('crud/new.html.twig', array(
             'grade' => $grade,
             'form' => $form->createView(),
+            'entity' => $entity,
         ));
     }
 
     /**
      * Finds and displays a Grade entity.
      *
-     * @Route("/{id}", name="grade_show")
+     * @Route("/show/{id}", name="grade_show")
      * @Method("GET")
      */
     public function showAction(Grade $grade)
     {
+        $entity = 'Grade';
         $deleteForm = $this->createDeleteForm($grade);
 
-        return $this->render('grade/show.html.twig', array(
+        return $this->render($entity.'/show.html.twig', array(
             'grade' => $grade,
             'delete_form' => $deleteForm->createView(),
+            'entity' => $entity,
         ));
     }
 
     /**
      * Displays a form to edit an existing Grade entity.
      *
-     * @Route("/{id}/edit", name="grade_edit")
+     * @Route("/edit/{id}", name="grade_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, Grade $grade)
     {
+        $entity = 'Grade';
         $deleteForm = $this->createDeleteForm($grade);
         $editForm = $this->createForm('AppBundle\Form\GradeType', $grade);
         $editForm->handleRequest($request);
@@ -94,21 +101,23 @@ class GradeController extends Controller
             return $this->redirectToRoute('grade_edit', array('id' => $grade->getId()));
         }
 
-        return $this->render('grade/edit.html.twig', array(
+        return $this->render('crud/edit.html.twig', array(
             'grade' => $grade,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'entity' => $entity,
         ));
     }
 
     /**
      * Deletes a Grade entity.
      *
-     * @Route("/{id}", name="grade_delete")
+     * @Route("/delete/{id}", name="grade_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, Grade $grade)
     {
+        $entity = 'Grade';
         $form = $this->createDeleteForm($grade);
         $form->handleRequest($request);
 
@@ -130,10 +139,19 @@ class GradeController extends Controller
      */
     private function createDeleteForm(Grade $grade)
     {
+        $entity = 'Grade';
+
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('grade_delete', array('id' => $grade->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    private function clean($string)
+    {
+        $string = str_replace(' ', '_', $string); // Replaces all spaces with underscores.
+   $string = preg_replace('/[^A-Za-z0-9\_]/', '', $string); // Removes special chars.
+   return strtolower($string);
     }
 }

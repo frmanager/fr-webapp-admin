@@ -2,10 +2,13 @@
 
 namespace AppBundle\Entity;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @UniqueEntity("teacherName")
  */
 class Teacher
 {
@@ -15,7 +18,7 @@ class Teacher
     private $students;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher")
+     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher", cascade={"all"})
      */
     private $causevoxteams;
 
@@ -27,13 +30,15 @@ class Teacher
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Grade",inversedBy="teachers")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Grade",inversedBy="teachers", cascade={"all"})
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
      */
     private $grade;
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotNull()
      */
     private $teacherName;
 

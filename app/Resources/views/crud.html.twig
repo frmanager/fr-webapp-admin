@@ -18,58 +18,105 @@
         <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->
     </head>
     <body>
+
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="/">FUN RUN</a>
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="/manage/upload">Upload Data</a>
-                    </li>
 
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <li><a href="/admin/student">Manage Students</a></li>
-                            <li><a href="/admin/grade">Manage Grades</a></li>
-                            <li><a href="/admin/teacher">Manage Teachers</a></li>
-                        {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
 
-                </ul>
-
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="glyphicon glyphicon-user"></i>&nbsp;Signed in as
-                            <strong>{{ app.user.username }}</strong>
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                Core Data Administration</strong>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="drop3">
                             <li>
-                                <a href="/logout">Logout</a>
+                                <a href="/admin/student">Manage Students</a>
+                            </li>
+                            <li>
+                                <a href="/admin/grade">Manage Grades</a>
+                            </li>
+                            <li>
+                                <a href="/admin/teacher">Manage Teachers</a>
                             </li>
                         </ul>
                     </li>
                 </ul>
 
+            {% endif %}
+
+
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        CauseVox Data Administration</strong>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="drop4">
+                    <li>
+                        <a href="/manage/causevoxteam">Manage Causevox Teams</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="glyphicon glyphicon-user"></i>&nbsp;Signed in as
+                        <strong>{{ app.user.username }}</strong>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="drop3">
+                        <li>
+                            <a href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+    <div style="height:64px;">&nbsp;</div>
+
+    {% for type, messages in app.session.flashBag.all() %}
+        {% for message in messages %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <div class="alert alert-{{type}} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <strong>{{ type|capitalize }}!</strong>
+                            {{message}}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </nav>
-        <div style="height:52px;">&nbsp;</div>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+        {% endfor %}
+    {% endfor %}
 
-    <script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
+    {% block body %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+</body>
 
-    <!-- IE 10 Viewport Bug Fix -->
-    <script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
+<script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
 
-    <script type="text/javascript">
-        $('[data-countdown]').each(function() {
-            var $this = $(this),
-                finalDate = $(this).data('countdown');
-            $this.countdown(finalDate, function(event) {
-                $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
-            });
+<!-- IE 10 Viewport Bug Fix -->
+<script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
+
+<script type="text/javascript">
+    $('[data-countdown]').each(function() {
+        var $this = $(this),
+            finalDate = $(this).data('countdown');
+        $this.countdown(finalDate, function(event) {
+            $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
         });
-    </script>
+    });
+</script>
 </html>

@@ -39,11 +39,11 @@ class FacebookController extends Controller
 
         //TODO: Make sure that only data necessary is going to the particular views....I.E. File Data
         if ($todaysDate > $campaignEndDate) {
-            $theView = 'closeout.phtml';
+            $theView = 'closeout';
         } elseif ($todaysDate > $campaignStartDate) {
-            $theView = 'track.phtml';
+            $theView = 'track';
         } else {
-            $theView = 'prepare.phtml';
+            $theView = 'prepare';
         }
 
         return $this->render('facebook-tab/'.$theView.'.html.twig', array('data' => $data));
