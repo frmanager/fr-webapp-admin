@@ -23,12 +23,12 @@ class GradeController extends Controller
      */
     public function indexAction()
     {
-        $entity = 'Grade';
+        $entity = 'Teacher';tity = 'Grade';
         $em = $this->getDoctrine()->getManager();
 
         $grades = $em->getRepository('AppBundle:Grade')->findAll();
 
-        return $this->render($entity.'/index.html.twig', array(
+        return $this->render(strtolower($entity).'/index.html.twig', array(
             'grades' => $grades,
             'entity' => $entity,
         ));
@@ -73,7 +73,7 @@ class GradeController extends Controller
         $entity = 'Grade';
         $deleteForm = $this->createDeleteForm($grade);
 
-        return $this->render($entity.'/show.html.twig', array(
+        return $this->render(strtolower($entity).'/show.html.twig', array(
             'grade' => $grade,
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
