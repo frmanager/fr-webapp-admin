@@ -23,7 +23,7 @@ class GradeController extends Controller
      */
     public function indexAction()
     {
-        $entity = 'Teacher';tity = 'Grade';
+        $entity = 'Grade';
         $em = $this->getDoctrine()->getManager();
 
         $grades = $em->getRepository('AppBundle:Grade')->findAll();
