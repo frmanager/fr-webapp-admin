@@ -1,3 +1,5 @@
+{% use 'bootstrap_3_horizontal_layout.html.twig' %}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -21,12 +23,13 @@
     <body>
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
+
+        <script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+        <script type="text/javascript">
+            $('video#bgvid').on('ended', function () { this.load(); this.play(); });
+        </script>
     </body>
 
-    <script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-
-    <script type="text/javascript">
-        $('video#bgvid').on('ended', function () { this.load(); this.play(); });
-    </script>
 </html>

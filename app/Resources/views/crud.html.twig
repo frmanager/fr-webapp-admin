@@ -118,5 +118,9 @@
             $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
         });
     });
+
+    $(".alert-success").fadeTo(2000, 500).slideUp(1000, function(){
+      $(".alert-success").slideUp(1000);
+    });
 </script>
 </html>

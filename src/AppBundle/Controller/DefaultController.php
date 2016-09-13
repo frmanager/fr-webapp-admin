@@ -18,4 +18,22 @@ class DefaultController extends Controller
             'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..'),
         ]);
     }
+
+    /**
+     * @Route("/login_check", name="login_check")
+     */
+    public function loginCheckAction(Request $request)
+    {
+        $securityContext = $this->container->get('security.authorization_checker');
+        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $this->addFlash(
+                'success',
+                'Already logged in'
+            );
+
+            return $this->redirectToRoute('manage_homepage');
+        } else {
+            return $this->redirectToRoute('fos_user_security_login');
+        }
+    }
 }
