@@ -5,29 +5,29 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h1>Grade list</h1>
+                <h1>{{entity|capitalize}}'s</h1>
                 <div style="text-align:right;">
-                    <a href="{{ path('grade_new') }}" class="btn btn-warning">Add Grade</a>
+                    <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">Add {{ entity }}</a>
                 </div>
                 <br/>
                 <table class="table table-bordered table-striped table-condensed">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Actions</th>
+                          <th>Id</th>
+                          <th>Name</th>
+                          <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for grade in grades %}
                             <tr>
                                 <td>
-                                    <a href="{{ path('grade_show', { 'id': grade.id }) }}">{{ grade.id }}</a>
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': grade.id }) }}">{{ grade.id }}</a>
                                 </td>
                                 <td>{{ grade.name }}</td>
-                                <td>
-                                    <a href="{{ path('grade_show', { 'id': grade.id }) }}" class="btn btn-sm btn-primary">show</a>
-                                    <a href="{{ path('grade_edit', { 'id': grade.id }) }}" class="btn btn-sm btn-primary">edit</a>
+                                <td style="text-align:center;">
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': grade.id }) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': grade.id }) }}" class="btn btn-sm btn-warning">edit</a>
                                 </td>
                             </tr>
                         {% endfor %}
