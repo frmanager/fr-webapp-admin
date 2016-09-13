@@ -36,6 +36,11 @@ class Student
     private $teacher;
 
     /**
+     * @ORM\OneToMany(targetEntity="Causevoxfundraiser", mappedBy="student", cascade={"all"})
+     */
+    private $causevoxfundraiser;
+
+    /**
      * Get id.
      *
      * @return int
