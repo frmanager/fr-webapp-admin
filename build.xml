@@ -7,8 +7,27 @@
     <!-- ============================================  -->
     <target name="prepare">
 
+        <echo msg="Deleting old build directory" />
+        <delete dir="./build" includeemptydirs="true" verbose="true" failonerror="false" />
+
+
+        <echo msg="Preparing ./build" />
+        <mkdir dir="./build" />
+        <!-- Deploy to environments -->
+        <foreach list="${environments}" param="environment" target="prepare-deploy" delimiter="," />
     </target>
 
+
+
+    <!-- ============================================  -->
+    <!--  Target: PREPARE-DEPLOY (FOREACH)             -->
+    <!-- ============================================  -->
+    <target name="prepare-deploy">
+      <echo msg="Preparing ${environment} build directory structure" />
+      <mkdir dir="./build/${environment}" />
+      <mkdir dir="./build/${environment}/config" />
+      <mkdir dir="./build/${environment}/data" />
+    </target>
 
 
 
@@ -35,7 +54,10 @@
     <!--  Target: BUILD-DEPLOY  (FOREACH)              -->
     <!-- ============================================  -->
     <target name="build-deploy">
-      
+
+      <echo msg="Copying ${environment} config files to appropriate directory..." />
+      <copy file="./config/${environment}-parameters.yml" tofile="./build/${environment}/app/config/parameters.yml" />
+
     </target>
 
 
@@ -68,10 +90,9 @@
         port="${${environment}.ftpport}"
         username="${${environment}.username}"
         password="${${environment}.password}"
-        dir="${${environment}.documentroot}/config/"
-        clearfirst="true">
-        <fileset dir="./build/${environment}/config/">
-          <include name="*.*"/>
+        dir="${${environment}.documentroot}/app/config/">
+        <fileset dir="./build/${environment}/app/config/parameters.yml">
+          <include name="parameters.yml"/>
           <exclude name=".DS_Store"/>
         </fileset>
       </ftpdeploy>

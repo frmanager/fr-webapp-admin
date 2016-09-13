@@ -49,7 +49,7 @@ The Phing configuration is dynamic and will support any amount of environments. 
 1. clone branch to remote location that you want to deploy to. For example, I cloned "test" to my testfunrunfbapp directory but it is test....yeah yeah.....). So I just ran some shell magic to initialize the environment.
 
 
-    git clone https://github.com/davidlarrimore/lresptofunrun.git ./
+    git clone https://github.com/lrespto/funrun-symfony2.git ./
     git checkout dev  # <-- name of the branch I wanted
     composer update # <-- for some reason, phing couldn't run this the first time.
     composer install # <-- for some reason, phing couldn't run this the first time.
