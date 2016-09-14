@@ -1,0 +1,49 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1>{{entity|capitalize}}s</h1>
+                <div style="text-align:right;">
+                    <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">Add
+                        {{ entity }}</a>
+                    <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default">Upload CSV File</a>
+                </div>
+                <br/>
+                <table class="table table-bordered table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Grade</th>
+                            <th>Teacher</th>
+                            <th>Student</th>
+                            <th>email</th>
+                            <th>URL</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for causevoxfundraiser in causevoxfundraisers %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}">{{ causevoxfundraiser.id }}</a>
+                                </td>
+                                <td>{{ causevoxfundraiser.student.teacher.grade.name }}</td>
+                                <td>{{ causevoxfundraiser.student.teacher.teachername }}</td>
+                                <td>{{ causevoxfundraiser.student.name }}</td>
+                                <td>{{ causevoxfundraiser.email }}</td>
+                                <td>{{ causevoxfundraiser.url }}</td>
+                                <td style="text-align:center;">
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-warning">edit</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

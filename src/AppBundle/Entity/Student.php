@@ -131,4 +131,45 @@ class Student
     {
         return $this->grade;
     }
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->causevoxfundraiser = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add causevoxfundraiser.
+     *
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     *
+     * @return Student
+     */
+    public function addCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    {
+        $this->causevoxfundraiser[] = $causevoxfundraiser;
+
+        return $this;
+    }
+
+    /**
+     * Remove causevoxfundraiser.
+     *
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     */
+    public function removeCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    {
+        $this->causevoxfundraiser->removeElement($causevoxfundraiser);
+    }
+
+    /**
+     * Get causevoxfundraiser.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCausevoxfundraiser()
+    {
+        return $this->causevoxfundraiser;
+    }
 }

@@ -60,5 +60,134 @@ class Causevoxfundraiser
     private $student;
 
 
-}
 
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set fundsRaised
+     *
+     * @param float $fundsRaised
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setFundsRaised($fundsRaised)
+    {
+        $this->fundsRaised = $fundsRaised;
+
+        return $this;
+    }
+
+    /**
+     * Get fundsRaised
+     *
+     * @return float
+     */
+    public function getFundsRaised()
+    {
+        return $this->fundsRaised;
+    }
+
+    /**
+     * Set fundsNeeded
+     *
+     * @param float $fundsNeeded
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setFundsNeeded($fundsNeeded)
+    {
+        $this->fundsNeeded = $fundsNeeded;
+
+        return $this;
+    }
+
+    /**
+     * Get fundsNeeded
+     *
+     * @return float
+     */
+    public function getFundsNeeded()
+    {
+        return $this->fundsNeeded;
+    }
+
+    /**
+     * Set student
+     *
+     * @param \AppBundle\Entity\Student $student
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setStudent(\AppBundle\Entity\Student $student = null)
+    {
+        $this->student = $student;
+
+        return $this;
+    }
+
+    /**
+     * Get student
+     *
+     * @return \AppBundle\Entity\Student
+     */
+    public function getStudent()
+    {
+        return $this->student;
+    }
+}

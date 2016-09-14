@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Causevoxteam;
+use AppBundle\Entity\Grade;
+use AppBundle\Utils\CSVHelper;
 
 /**
  * Causevoxteam controller.
@@ -174,46 +176,16 @@ class CausevoxteamController extends Controller
 
             if (strpos($uploadFile->getClientOriginalName(), '.csv') !== false) {
                 $logger->info('File was a .csv, attempting to load');
-
                 $uploadFile->move('temp/', strtolower($entity).'.csv');
-                $csvFile = fopen('temp/'.strtolower($entity).'.csv', 'r');
+                $csvHelper = new csvHelper();
+                $csvHelper->processFile('temp/', strtolower($entity).'.csv');
+                $csvHelper->cleanTeacherNames();
 
-                $counter = 0;
-                $fileData = [];
-                $thisRow;
-                $fileLabels;
+                $logger->info(print_r($csvHelper->getData(), true));
 
-                while (!feof($csvFile)) {
-                    $thisRow = fgetcsv($csvFile);
-                    //$logger->info(print_r($thisRow, true));
-                  //Skip Empty Rows
-                  if (!empty($thisRow)) {
-                      $thisRowAsObjects = [];
-                      if ($counter == 0) {
-                          foreach ($thisRow as $key => $value) {
-                              $fileLabels[$key] = $this->clean($value);
-                          }
-                          //$logger->info(print_r($fileLabels, true));
-                      } else {
-                          foreach ($thisRow as $key => $value) {
-                              if (strcmp($fileLabels[$key], 'teachers_name') == 0) {
-                                  $teacherNameString = substr(trim($value), strpos(trim($value), ' - ') + 3, strlen(trim($value)));
-                                  //$logger->info('Teachers Name Old: "'.$value.'" vs new: "'.$teacherNameString.'"');
-                                  $thisRowAsObjects[$fileLabels[$key]] = $teacherNameString;
-                              } else {
-                                  //$logger->info('Key: "'.$key.'" Value: "'.$value.'"');
-                                  $thisRowAsObjects[$fileLabels[$key]] = trim($value);
-                              }
-                          }
-                          array_push($fileData, $thisRowAsObjects);
-                      }
-                  }
-                    ++$counter;
-                }
-                fclose($csvFile);
-                unlink('temp/'.strtolower($entity).'.csv');
-                $logger->info(print_r($fileLabels, true));
-                if (in_array('name', $fileLabels) && in_array('grade', $fileLabels) && in_array('url', $fileLabels) && in_array('funds_needed', $fileLabels) && in_array('funds_raised', $fileLabels) && in_array('teachers_name', $fileLabels)) {
+                $templateFields = array('name', 'grade', 'url', 'funds_needed', 'funds_raised', 'teachers_name', 'members', 'admins');
+
+                if ($csvHelper->validateHeaders($templateFields)) {
                     $logger->info('Making changes to database');
                     $em = $this->getDoctrine()->getManager();
 
@@ -238,8 +210,8 @@ class CausevoxteamController extends Controller
                     $logger->info('Uploading Data');
                     $em = $this->getDoctrine()->getManager();
                     $batchSize = 20;
-
-                    foreach ($fileData as $i => $item) {
+                    //$logger->info(print_r($csvFile->getData(), true));
+                    foreach ($csvHelper->getData() as $i => $item) {
                         $causevoxteam = new Causevoxteam();
                         $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
 
@@ -310,14 +282,5 @@ class CausevoxteamController extends Controller
             'form' => $form->createView(),
             'entity' => $entity,
         ));
-    }
-
-    private function clean($string)
-    {
-        $string = str_replace(' ', '_', $string); // Replaces all spaces with underscores.
-        $string = preg_replace('/[^A-Za-z0-9\_]/', '', $string); // Removes special chars.
-        $string = trim($string);
-
-        return strtolower($string);
     }
 }
