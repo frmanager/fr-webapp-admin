@@ -44,7 +44,7 @@ class Causevoxteam
 
     /**
      * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="causevoxteams", cascade={"all"})
-     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="teacher_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $teacher;
 

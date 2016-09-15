@@ -5,7 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Causevoxfundraiser
+ * Causevoxfundraiser.
  *
  * @ORM\Table(name="causevoxfundraiser", indexes={@ORM\Index(name="IDX_A8B6A1ADCB944F1A", columns={"student_id"})})
  * @ORM\Entity
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Causevoxfundraiser
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
@@ -52,19 +52,17 @@ class Causevoxfundraiser
     /**
      * @var \Student
      *
-     * @ORM\ManyToOne(targetEntity="Student")
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="causevoxfundraisers")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="student_id", referencedColumnName="id")
      * })
      */
     private $student;
 
-
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -72,7 +70,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Set email
+     * Set email.
      *
      * @param string $email
      *
@@ -86,7 +84,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Get email
+     * Get email.
      *
      * @return string
      */
@@ -96,7 +94,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
      *
@@ -110,7 +108,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string
      */
@@ -120,7 +118,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Set fundsRaised
+     * Set fundsRaised.
      *
      * @param float $fundsRaised
      *
@@ -134,7 +132,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Get fundsRaised
+     * Get fundsRaised.
      *
      * @return float
      */
@@ -144,7 +142,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Set fundsNeeded
+     * Set fundsNeeded.
      *
      * @param float $fundsNeeded
      *
@@ -158,7 +156,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Get fundsNeeded
+     * Get fundsNeeded.
      *
      * @return float
      */
@@ -168,7 +166,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Set student
+     * Set student.
      *
      * @param \AppBundle\Entity\Student $student
      *
@@ -182,7 +180,7 @@ class Causevoxfundraiser
     }
 
     /**
-     * Get student
+     * Get student.
      *
      * @return \AppBundle\Entity\Student
      */

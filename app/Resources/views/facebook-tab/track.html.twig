@@ -1,0 +1,88 @@
+{% extends 'facebook.html.twig' %}
+
+{% block body %}
+      <div style="height:16px;">&nbsp;</div>
+      <div class="container">
+         <div class="row">
+            <div class="col-xs-8 col-sm-9">
+               <div class="row">
+                  <div class="col-xs-12" style="text-align:center;">
+                     <h2 class="superhero">Calling all Superheroes!</h2>
+                   <p>The 3rd annual LRES PTO Superhero Fun Run fundraiser has officially begun. want to know how to participate? keep reading.</p>
+                  </div>
+               </div>
+               <div style="height:32px;">&nbsp;</div>
+               <div class="row">
+                  <div class="col-sm-5 col-xs-6" style="text-align:center;">
+                      <a href="{{ data.campaign_url }}/signup" class="btn btn-primary">Create a Fundraiser Page!</a><br/>
+                      <span style="font-size:80%;">Already have an account? <a href="{{ data.campaign_url }}/login">Log in</a></span>
+                  </div>
+                  <div class="col-sm-2 hidden-xs" style="line-height: 34px;text-align:center;">OR</div>
+                  <div class="col-sm-5 col-xs-6" style="text-align:center;">
+                     <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select your Teacher <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                          {% for causevoxteam in data.causevoxteams %}
+                           <li role="menuitem">
+                              <a href="{{data.campaign_url}}/team/{{causevoxteam.url}}">{{causevoxteam.teacher.grade.name}} - {{causevoxteam.teacher.teachername}}</a>
+                           </li>
+                          {% endfor %}
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="col-xs-4 col-sm-3" style="text-align:center;">
+               <div class="panel panel-info">
+                  <div class="panel-heading">Progress Tracker</div>
+                  <div class="panel-body" ng-cloak>
+                       <div class="progress">
+                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ data.total_donations / data.campaign_funding_goal * 100}}" aria-valuemin="0" aria-valuemax="100" style="width:{{ data.total_donations / data.campaign_funding_goal * 100}}%">
+                        <span>{{ data.total_donations / data.campaign_funding_goal * 100}}% Complete</span>
+                        </div>
+                        </div>
+                     <hr/>
+                     <div id="track" data-countdown="{{ data.campaign_end_date_countdown }}" class="panel-body"></div>
+                  </div>
+               </div>
+            </div>
+         </div>
+        <div style="height:18px;">&nbsp;</div>
+         <div class="row" ng-cloak>
+           <div class="col-md-6">
+             <div class="panel panel-success">
+                <div class="panel-heading" style="text-align:center;">How to win <strong>BIG</strong> for your class!</div>
+                <div class="panel-body" style="font-size:90%;">
+                  <p style="text-align:center;"><span><em>Beat the competition by creating your own fundraising page!</em></span></p>
+                  <p>
+                    <hr/>
+                  <ol class="normal">
+                    <li>Create a fundraiser page for your child by going to <a href="{{data.campaign_url}}/signup">{{data.campaign_url}}/signup</a>.</li>
+                    <li>Login to your campaign <a href="{{data.campaign_url}}/login">{{data.campaign_url}}/login</a> to customize your donation page, join your classes’ team, and create blog posts.</li>
+                    <li>Share your page with your family, friends, Facebook friends, and twitter followers!</li>
+                  </ol>
+                </p>
+                </div>
+             </div>
+           </div>
+           <div class="col-md-6">
+             <div class="panel panel-success">
+                <div class="panel-heading" style="text-align:center;">Making donation <strong>EASY</strong></div>
+                <div class="panel-body" style="font-size:90%;">
+                  <p style="text-align:center;"><span><em>Sometimes change is hard, we do our best to make it easy!</em></span></p>
+                  <p>
+                    <hr/>
+                  <ol class="normal">
+                    <li>To make a donation, go to <a href="{{data.campaign_url}}">{{data.campaign_url}}</a> and click “make a donation”.</li>
+                    <li>Make sure to select the teacher and put in the students name to give them credit!</li>
+                    <li>All donations are made securely thanks to <a target="_blank" href="https://www.causevox.com/">CauseVox</a></li>
+                  </ol>
+                </p>
+                </div>
+             </div>
+           </div>
+         </div>
+      </div>
+{% endblock %}

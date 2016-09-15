@@ -30,7 +30,7 @@ class Student
 
     /**
      * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="students", cascade={"remove"})
-     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="teacher_id", referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
     private $teacher;
@@ -38,12 +38,12 @@ class Student
     /**
      * @ORM\OneToMany(targetEntity="Causevoxfundraiser", mappedBy="student", cascade={"all"})
      */
-    private $causevoxfundraiser;
+    private $causevoxfundraisers;
 
     /**
      * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="student", cascade={"all"})
      */
-    private $causevoxdonation;
+    private $causevoxdonations;
 
     /**
      * Get id.
@@ -179,7 +179,7 @@ class Student
     }
 
     /**
-     * Add causevoxdonation
+     * Add causevoxdonation.
      *
      * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
      *
@@ -193,7 +193,7 @@ class Student
     }
 
     /**
-     * Remove causevoxdonation
+     * Remove causevoxdonation.
      *
      * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
      */
@@ -203,7 +203,7 @@ class Student
     }
 
     /**
-     * Get causevoxdonation
+     * Get causevoxdonation.
      *
      * @return \Doctrine\Common\Collections\Collection
      */

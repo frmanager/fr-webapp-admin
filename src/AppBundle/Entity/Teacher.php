@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Teacher
 {
     /**
-     * @ORM\OneToMany(targetEntity="Student", mappedBy="teacher")
+     * @ORM\OneToMany(targetEntity="Student", mappedBy="teacher", cascade={"all"})
      */
     private $students;
 
@@ -23,9 +23,9 @@ class Teacher
     private $causevoxteams;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="student", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="teacher", cascade={"all"})
      */
-    private $causevoxdonation;
+    private $causevoxdonations;
 
     /**
      * @ORM\Column(type="integer")
@@ -36,7 +36,7 @@ class Teacher
 
     /**
      * @ORM\ManyToOne(targetEntity="Grade",inversedBy="teachers", cascade={"all"})
-     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="grade_id", referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
     private $grade;
@@ -182,7 +182,7 @@ class Teacher
     }
 
     /**
-     * Add causevoxdonation
+     * Add causevoxdonation.
      *
      * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
      *
@@ -196,7 +196,7 @@ class Teacher
     }
 
     /**
-     * Remove causevoxdonation
+     * Remove causevoxdonation.
      *
      * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
      */
@@ -206,7 +206,7 @@ class Teacher
     }
 
     /**
-     * Get causevoxdonation
+     * Get causevoxdonation.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
