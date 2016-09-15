@@ -4,7 +4,7 @@ export BOWERPHP_TOKEN="$1"
 
 export PATH=/usr/local/php56/bin:$PATH
 
-export PATH=$(pwd)/.php/composer:$PATH
+export PATH=/home/$USER/.php/composer:$PATH
 
 export SYMFONY_ENV=prod
 
