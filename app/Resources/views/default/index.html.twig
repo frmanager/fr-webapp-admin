@@ -4,18 +4,21 @@
     <div class="container" style="text-align:center;color: white;">
         <div class="row" style="height:80px">&nbsp;</div>
         <div class="row">
-            <div class="col-md-6 col-md-offset-3  transparent-container">
-              <div>
-                <h1>LRES PTO FUN RUN</h1>
-                <p class="lead">SUPPORT PORTAL</p>
-                <p>
-                    <a href="/login" class="btn btn-primary">LOGIN</a>
-               </p>
-               <p>
-                    <button class="btn btn-primary">FACEBOOK APP (TAB)</button>
-                    <button class="btn btn-primary">FACEBOOK APP (CANVAS)</button>
-                </p>
-              </div>
+            <div class="col-md-6 col-md-offset-3 transparent-container">
+                <div>
+                    <h1>LRES PTO FUN RUN</h1>
+                    <br/>
+
+                    <p>
+                        <a href="{{ path('login_check') }}" class="btn btn-primary btn-lg">Management Portal Login</a>
+                    </p>
+                    <hr/>
+                    <p class="lead">Public Pages</p>
+                    <p>
+                        <a href="{{ path('facebook-tab') }}" class="btn btn-info">FACEBOOK APP (TAB)</a>
+                        <a href="#" class="btn btn-info disabled">FACEBOOK APP (CANVAS)</a>
+                    </p>
+                </div>
             </div>
         </div>
 

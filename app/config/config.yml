@@ -78,6 +78,10 @@ fos_user:
     firewall_name: main
     user_class: AppBundle\Entity\User
     registration:
+        form:
+            type: AppBundle\Form\RegistrationFormType
+            # Or for Symfony < 2.8
+            # type: app_user_registration
         confirmation:
             template:   FOSUserBundle:Registration:email.txt.twig
             enabled: true

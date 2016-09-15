@@ -9,11 +9,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 // src/AppBundle/Controller/FacebookController.php
 
-// ...
+/**
+ * Facebook controller.
+ *
+ * @Route("/facebook")
+ */
 class FacebookController extends Controller
 {
     /**
-     * @Route("/facebook-tab")
+     * @Route("/tab", name="facebook-tab")
      */
     public function facebookTab()
     {

@@ -28,7 +28,28 @@ class GradeController extends Controller
 
         $grades = $em->getRepository('AppBundle:Grade')->findAll();
 
-        return $this->render($entity.'/index.html.twig', array(
+        if (empty($grades)) {
+            $defaultGrades = ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade', 'ID', 'ED'];
+            foreach ($defaultGrades as $defaultGrade) {
+                $em = $this->getDoctrine()->getManager();
+
+                $grade = new Grade();
+                $grade->setName($defaultGrade);
+
+                $em->persist($grade);
+                $em->flush();
+            }
+            $em->clear();
+
+            $grades = $em->getRepository('AppBundle:Grade')->findAll();
+
+            $this->addFlash(
+              'info',
+              'Default Grades Added'
+            );
+        }
+
+        return $this->render(strtolower($entity).'/index.html.twig', array(
             'grades' => $grades,
             'entity' => $entity,
         ));
@@ -73,7 +94,7 @@ class GradeController extends Controller
         $entity = 'Grade';
         $deleteForm = $this->createDeleteForm($grade);
 
-        return $this->render($entity.'/show.html.twig', array(
+        return $this->render(strtolower($entity).'/show.html.twig', array(
             'grade' => $grade,
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,

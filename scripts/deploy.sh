@@ -6,14 +6,18 @@ export PATH=/usr/local/php56/bin:$PATH
 
 export PATH=$(pwd)/.php/composer:$PATH
 
-#git pull
+export SYMFONY_ENV=prod
 
+
+#git pull
 
 composer self-update
 
-composer update
+composer install --no-dev --optimize-autoloader
 
-composer install
+php bin/console cache:clear --env=prod --no-debug
+
+php bin/console doctrine:schema:update --force
 
 vendor/bin/bowerphp install
 

@@ -6,105 +6,106 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use AppBundle\Entity\Causevoxteam;
+use AppBundle\Entity\Causevoxfundraiser;
 use AppBundle\Entity\Grade;
+use AppBundle\Entity\Student;
 use AppBundle\Utils\CSVHelper;
 
 /**
- * Causevoxteam controller.
+ * Causevoxfundraiser controller.
  *
- * @Route("/manage/causevoxteam")
+ * @Route("/manage/causevoxfundraiser")
  */
-class CausevoxteamController extends Controller
+class CausevoxfundraiserController extends Controller
 {
     /**
-     * Lists all Causevoxteam entities.
+     * Lists all Causevoxfundraiser entities.
      *
-     * @Route("/", name="causevoxteam_index")
+     * @Route("/", name="causevoxfundraiser_index")
      * @Method("GET")
      */
     public function indexAction()
     {
-        $entity = 'Causevoxteam';
+        $entity = 'Causevoxfundraiser';
         $em = $this->getDoctrine()->getManager();
 
-        $causevoxteams = $em->getRepository('AppBundle:Causevoxteam')->findAll();
+        $causevoxfundraisers = $em->getRepository('AppBundle:Causevoxfundraiser')->findAll();
 
         return $this->render(strtolower($entity).'/index.html.twig', array(
-            'causevoxteams' => $causevoxteams,
+            'causevoxfundraisers' => $causevoxfundraisers,
             'entity' => $entity,
         ));
     }
 
     /**
-     * Creates a new Causevoxteam entity.
+     * Creates a new Causevoxfundraiser entity.
      *
-     * @Route("/new", name="causevoxteam_new")
+     * @Route("/new", name="causevoxfundraiser_new")
      * @Method({"GET", "POST"})
      */
     public function newAction(Request $request)
     {
-        $entity = 'Causevoxteam';
-        $causevoxteam = new Causevoxteam();
-        $form = $this->createForm('AppBundle\Form\CausevoxteamType', $causevoxteam);
+        $entity = 'Causevoxfundraiser';
+        $causevoxfundraiser = new Causevoxfundraiser();
+        $form = $this->createForm('AppBundle\Form\CausevoxfundraiserType', $causevoxfundraiser);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($causevoxteam);
+            $em->persist($causevoxfundraiser);
             $em->flush();
 
-            return $this->redirectToRoute(strtolower($entity).'_show', array('id' => $causevoxteam->getId()));
+            return $this->redirectToRoute(strtolower($entity).'_show', array('id' => $causevoxfundraiser->getId()));
         }
 
         return $this->render('crud/new.html.twig', array(
-            'causevoxteam' => $causevoxteam,
+            'causevoxfundraiser' => $causevoxfundraiser,
             'form' => $form->createView(),
             'entity' => $entity,
         ));
     }
 
     /**
-     * Finds and displays a Causevoxteam entity.
+     * Finds and displays a Causevoxfundraiser entity.
      *
-     * @Route("/show/{id}", name="causevoxteam_show")
+     * @Route("/show/{id}", name="causevoxfundraiser_show")
      * @Method("GET")
      */
-    public function showAction(Causevoxteam $causevoxteam)
+    public function showAction(Causevoxfundraiser $causevoxfundraiser)
     {
-        $entity = 'Causevoxteam';
-        $deleteForm = $this->createDeleteForm($causevoxteam);
+        $entity = 'Causevoxfundraiser';
+        $deleteForm = $this->createDeleteForm($causevoxfundraiser);
 
         return $this->render(strtolower($entity).'/show.html.twig', array(
-            'causevoxteam' => $causevoxteam,
+            'causevoxfundraiser' => $causevoxfundraiser,
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
         ));
     }
 
     /**
-     * Displays a form to edit an existing Causevoxteam entity.
+     * Displays a form to edit an existing Causevoxfundraiser entity.
      *
-     * @Route("/edit/{id}", name="causevoxteam_edit")
+     * @Route("/edit/{id}", name="causevoxfundraiser_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Causevoxteam $causevoxteam)
+    public function editAction(Request $request, Causevoxfundraiser $causevoxfundraiser)
     {
-        $entity = 'Causevoxteam';
-        $deleteForm = $this->createDeleteForm($causevoxteam);
-        $editForm = $this->createForm('AppBundle\Form\CausevoxteamType', $causevoxteam);
+        $entity = 'Causevoxfundraiser';
+        $deleteForm = $this->createDeleteForm($causevoxfundraiser);
+        $editForm = $this->createForm('AppBundle\Form\CausevoxfundraiserType', $causevoxfundraiser);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($causevoxteam);
+            $em->persist($causevoxfundraiser);
             $em->flush();
 
-            return $this->redirectToRoute(strtolower($entity).'_edit', array('id' => $causevoxteam->getId()));
+            return $this->redirectToRoute(strtolower($entity).'_edit', array('id' => $causevoxfundraiser->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(
-            'causevoxteam' => $causevoxteam,
+            'causevoxfundraiser' => $causevoxfundraiser,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
@@ -112,20 +113,20 @@ class CausevoxteamController extends Controller
     }
 
     /**
-     * Deletes a Causevoxteam entity.
+     * Deletes a Causevoxfundraiser entity.
      *
-     * @Route("/delete/{id}", name="causevoxteam_delete")
+     * @Route("/delete/{id}", name="causevoxfundraiser_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, Causevoxteam $causevoxteam)
+    public function deleteAction(Request $request, Causevoxfundraiser $causevoxfundraiser)
     {
-        $entity = 'Causevoxteam';
-        $form = $this->createDeleteForm($causevoxteam);
+        $entity = 'Causevoxfundraiser';
+        $form = $this->createDeleteForm($causevoxfundraiser);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->remove($causevoxteam);
+            $em->remove($causevoxfundraiser);
             $em->flush();
         }
 
@@ -133,33 +134,33 @@ class CausevoxteamController extends Controller
     }
 
     /**
-     * Creates a form to delete a Causevoxteam entity.
+     * Creates a form to delete a Causevoxfundraiser entity.
      *
-     * @param Causevoxteam $causevoxteam The Causevoxteam entity
+     * @param Causevoxfundraiser $causevoxfundraiser The Causevoxfundraiser entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Causevoxteam $causevoxteam)
+    private function createDeleteForm(Causevoxfundraiser $causevoxfundraiser)
     {
-        $entity = 'Causevoxteam';
+        $entity = 'Causevoxfundraiser';
 
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl(strtolower($entity).'_delete', array('id' => $causevoxteam->getId())))
+            ->setAction($this->generateUrl(strtolower($entity).'_delete', array('id' => $causevoxfundraiser->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
     }
 
     /**
-     * Upload multiple Causevoxteams via CSV File.
+     * Upload multiple Causevoxfundraiser via CSV File.
      *
-     * @Route("/upload", name="causevoxteam_upload")
+     * @Route("/upload", name="causevoxfundraiser_upload")
      * @Method({"GET", "POST"})
      */
     public function uploadForm(Request $request)
     {
         $logger = $this->get('logger');
-        $entity = 'Causevoxteam';
+        $entity = 'Causevoxfundraiser';
         $truncateFlag = false;
         $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity));
         $form->handleRequest($request);
@@ -183,7 +184,7 @@ class CausevoxteamController extends Controller
 
                 $logger->info(print_r($csvHelper->getData(), true));
 
-                $templateFields = array('name', 'grade', 'url', 'funds_needed', 'funds_raised', 'teachers_name', 'members', 'admins');
+                $templateFields = array('stub', 'first_name', 'last_name', 'email', 'funds_raised', 'funds_needed', 'numbe_rof_donations', 'teams', 'joined', 'grade', 'teachers_name', 'student_name');
 
                 if ($csvHelper->validateHeaders($templateFields)) {
                     $logger->info('Making changes to database');
@@ -193,7 +194,7 @@ class CausevoxteamController extends Controller
                         $logger->info('Clearing Table.');
 
                         $qb = $em->createQueryBuilder();
-                        $qb->delete('AppBundle:Causevoxteam', 's');
+                        $qb->delete('AppBundle:Causevoxfundraiser', 's');
                         $query = $qb->getQuery();
 
                         if ($query->getResult() == 0) {
@@ -203,22 +204,21 @@ class CausevoxteamController extends Controller
 
                         $this->addFlash(
                             'info',
-                            'Causevoxteam table truncated'
+                            'Causevoxfundraiser table truncated'
                         );
                     }
 
                     $logger->info('Uploading Data');
                     $em = $this->getDoctrine()->getManager();
                     $batchSize = 20;
-                    //$logger->info(print_r($csvFile->getData(), true));
-                    foreach ($csvHelper->getData() as $i => $item) {
-                        $causevoxteam = new Causevoxteam();
-                        $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
 
+                    foreach ($csvHelper->getData() as $i => $item) {
+                        $causevoxfundraiser = new Causevoxfundraiser();
+                        $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
                         if (empty($grade)) {
                             $this->addFlash(
                                 'danger',
-                                "Could not add Causevoxteam '".$item['name']."'. Grade '".$item['grade']."' not found"
+                                "Could not add Causevoxfundraiser '".$item['name']."'. Grade '".$item['grade']."' not found"
                             );
                         } else {
                             $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneBy(
@@ -227,21 +227,32 @@ class CausevoxteamController extends Controller
                             if (empty($teacher)) {
                                 $this->addFlash(
                                     'danger',
-                                      "Could not add Causevoxteam '".$item['name']."'. Teacher '".$item['teachers_name']."' not found"
+                                      "Could not add Causevoxfundraiser '".$item['name']."'. Teacher '".$item['teachers_name']."' not found"
                                 );
                             } else {
-                                $causevoxteam->setName($item['name']);
-                                $causevoxteam->setFundsNeeded($item['funds_needed']);
-                                $causevoxteam->setUrl($item['url']);
-                                $causevoxteam->setFundsRaised($item['funds_raised']);
-                                $causevoxteam->setTeacher($teacher);
-                                $em->persist($causevoxteam);
+                                $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
+                                  array('teacher' => $teacher->getId(), 'name' => $item['students_name'])
+                                );
+                                if (empty($student)) {
+                                    $this->addFlash(
+                                      'danger',
+                                        "Could not add Causevoxfundraiser '".$item['first_name'].' '.$item['last_name']."'. Student '".$item['students_name']."' not found"
+                                  );
+                                } else {
+                                    $causevoxfundraiser->setEmail($item['email']);
+                                    $causevoxfundraiser->setFundsNeeded($item['funds_needed']);
+                                    $causevoxfundraiser->setUrl($item['stub']);
+                                    $causevoxfundraiser->setFundsRaised($item['funds_raised']);
+                                    $causevoxfundraiser->setStudent($student);
 
-                             // flush everything to the database every 20 inserts
-                             if (($i % $batchSize) == 0) {
-                                 $em->flush();
-                                 $em->clear();
-                             }
+                                    $em->persist($causevoxfundraiser);
+
+                                     // flush everything to the database every 20 inserts
+                                     if (($i % $batchSize) == 0) {
+                                         $em->flush();
+                                         $em->clear();
+                                     }
+                                }
                             }
                         }
                     }
