@@ -23,6 +23,7 @@ class UploadType extends AbstractType
               'Grades' => 'Grade',
               'Cause Vox Teams' => 'Causevoxteam',
               'Cause Vox Fundraisers' => 'Causevoxfundraiser',
+              'Cause Vox Donations' => 'Causevoxdonation',
             ),
             'disabled' => true,
           )

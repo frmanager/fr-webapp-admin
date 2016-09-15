@@ -41,6 +41,11 @@ class Student
     private $causevoxfundraiser;
 
     /**
+     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="student", cascade={"all"})
+     */
+    private $causevoxdonation;
+
+    /**
      * Get id.
      *
      * @return int
@@ -171,5 +176,39 @@ class Student
     public function getCausevoxfundraiser()
     {
         return $this->causevoxfundraiser;
+    }
+
+    /**
+     * Add causevoxdonation
+     *
+     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
+     *
+     * @return Student
+     */
+    public function addCausevoxdonation(\AppBundle\Entity\Causevoxdonation $causevoxdonation)
+    {
+        $this->causevoxdonation[] = $causevoxdonation;
+
+        return $this;
+    }
+
+    /**
+     * Remove causevoxdonation
+     *
+     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
+     */
+    public function removeCausevoxdonation(\AppBundle\Entity\Causevoxdonation $causevoxdonation)
+    {
+        $this->causevoxdonation->removeElement($causevoxdonation);
+    }
+
+    /**
+     * Get causevoxdonation
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCausevoxdonation()
+    {
+        return $this->causevoxdonation;
     }
 }

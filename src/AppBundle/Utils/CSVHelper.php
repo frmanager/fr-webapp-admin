@@ -225,4 +225,22 @@ class CSVHelper
 
         $this->setData($thisData);
     }
+
+    /**
+     * This is really only applicable to "CauseVox" donation files.
+     */
+    public function getGradefromTeacherName()
+    {
+        $thisData = $this->getData();
+        foreach ($thisData as $rowIndex => $rowData) {
+            foreach ($rowData as $key => $value) {
+                if (strcmp($key, 'teachers_name') == 0) {
+                    $gradeString = substr(trim($value), 0, strpos(trim($value), ' - '));
+                    $thisData[$rowIndex]['grade'] = $gradeString;
+                }
+            }
+        }
+
+        $this->setData($thisData);
+    }
 }
