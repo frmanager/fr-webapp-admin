@@ -12,7 +12,7 @@ use AppBundle\Entity\Grade;
 /**
  * Teacher controller.
  *
- * @Route("/admin/teacher")
+ * @Route("/manage/teacher")
  */
 class TeacherController extends Controller
 {
