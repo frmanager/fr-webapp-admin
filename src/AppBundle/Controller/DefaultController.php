@@ -31,7 +31,7 @@ class DefaultController extends Controller
                 'Already logged in'
             );
 
-            return $this->redirectToRoute('manage_homepage');
+            return $this->redirectToRoute('manage_index');
         } else {
             return $this->redirectToRoute('fos_user_security_login');
         }
