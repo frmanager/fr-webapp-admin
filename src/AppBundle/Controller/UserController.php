@@ -7,12 +7,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\User;
-use AppBundle\Form\UserType;
 
 /**
  * User controller.
  *
- * @Route("/user")
+ * @Route("/manage/user")
  */
 class UserController extends Controller
 {
