@@ -11,7 +11,7 @@ use AppBundle\Entity\Student;
 /**
  * Student controller.
  *
- * @Route("/admin/student")
+ * @Route("/manage/student")
  */
 class StudentController extends Controller
 {

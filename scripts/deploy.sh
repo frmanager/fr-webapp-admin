@@ -9,7 +9,7 @@ export PATH=$(pwd)/.php/composer:$PATH
 export SYMFONY_ENV=prod
 
 
-#git pull
+git pull
 
 composer self-update
 

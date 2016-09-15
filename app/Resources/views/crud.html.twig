@@ -33,20 +33,20 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="drop3">
                             <li>
-                                <a href="/admin/student">Manage Students</a>
+                                <a href="{{ path('grade_index') }}">Manage Grades</a>
                             </li>
                             <li>
-                                <a href="/admin/grade">Manage Grades</a>
+                                <a href="{{ path('teacher_index') }}">Manage Teachers</a>
                             </li>
                             <li>
-                                <a href="/admin/teacher">Manage Teachers</a>
+                                <a href="{{ path('student_index') }}">Manage Students</a>
                             </li>
+
                         </ul>
                     </li>
                 </ul>
 
             {% endif %}
-
 
             <ul class="nav navbar-nav">
                 <li class="dropdown">
@@ -56,57 +56,57 @@
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="drop4">
                     <li>
-                        <a href="/manage/causevoxteam">Manage Causevox Teams</a>
+                        <a href="{{ path('causevoxteam_index') }}">Manage Causevox Teams</a>
                     </li>
                     <li>
-                        <a href="/manage/causevoxfundraiser">Manage Causevox Fundraisers</a>
+                        <a href="{{ path('causevoxfundraiser_index') }}">Manage Causevox Fundraisers</a>
                     </li>
                     <li>
-                        <a href="/manage/causevoxdonation">Manage Causevox Donations</a>
+                        <a href="{{ path('causevoxdonation_index') }}">Manage Causevox Donations</a>
                     </li>
                 </ul>
             </li>
         </ul>
 
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="glyphicon glyphicon-user"></i>&nbsp;Signed in as
-                        <strong>{{ app.user.username }}</strong>
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="drop3">
-                        <li>
-                            <a href="/logout">Logout</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="glyphicon glyphicon-user"></i>&nbsp;Signed in as
+                    <strong>{{ app.user.username }}</strong>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="drop3">
+                    <li>
+                        <a href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
 
-        </div>
-    </nav>
-    <div style="height:64px;">&nbsp;</div>
+    </div>
+</nav>
+<div style="height:64px;">&nbsp;</div>
 
-    {% for type, messages in app.session.flashBag.all() %}
-        {% for message in messages %}
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
-                        <div class="alert alert-{{type}} alert-dismissible" role="alert">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            <strong>{{ type|capitalize }}!</strong>
-                            {{message}}
-                        </div>
+{% for type, messages in app.session.flashBag.all() %}
+    {% for message in messages %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="alert alert-{{type}} alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>{{ type|capitalize }}!</strong>
+                        {{message}}
                     </div>
                 </div>
             </div>
-        {% endfor %}
+        </div>
     {% endfor %}
+{% endfor %}
 
-    {% block body %}{% endblock %}
-    {% block javascripts %}{% endblock %}
+{% block body %}{% endblock %}
+{% block javascripts %}{% endblock %}
 </body>
 
 <script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
@@ -117,16 +117,16 @@
 <script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
 
 <script type="text/javascript">
-    $('[data-countdown]').each(function() {
-        var $this = $(this),
-            finalDate = $(this).data('countdown');
-        $this.countdown(finalDate, function(event) {
-            $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
-        });
+$('[data-countdown]').each(function() {
+    var $this = $(this),
+        finalDate = $(this).data('countdown');
+    $this.countdown(finalDate, function(event) {
+        $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
     });
+});
 
-    $(".alert-success").fadeTo(2000, 500).slideUp(1000, function(){
-      $(".alert-success").slideUp(1000);
-    });
+$(".alert-success").fadeTo(2000, 500).slideUp(1000, function() {
+    $(".alert-success").slideUp(1000);
+});
 </script>
 </html>

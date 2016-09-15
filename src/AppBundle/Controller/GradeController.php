@@ -11,7 +11,7 @@ use AppBundle\Entity\Grade;
 /**
  * Grade controller.
  *
- * @Route("/admin/grade")
+ * @Route("/manage/grade")
  */
 class GradeController extends Controller
 {
