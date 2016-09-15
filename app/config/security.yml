@@ -17,7 +17,7 @@ security:
             form_login:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
-                default_target_path: manage_homepage
+                default_target_path: manage_index
                 # if you are using Symfony < 2.8, use the following config instead:
                 # csrf_provider: form.csrf_provider
 
@@ -34,4 +34,4 @@ security:
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/manage, role: ROLE_USER }
-        - { path: ^/manage/user, role: ROLE_ADMIN }          
+        - { path: ^/manage/user, role: ROLE_ADMIN }
