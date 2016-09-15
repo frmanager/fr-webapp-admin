@@ -6,10 +6,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
-class DefaultManageController extends Controller
+/**
+ * Grade controller.
+ *
+ * @Route("/manage")
+ */
+class ManageController extends Controller
 {
     /**
-     * @Route("/manage", name="manage_homepage")
+     * @Route("/", name="manage_index")
      */
     public function indexAction(Request $request)
     {

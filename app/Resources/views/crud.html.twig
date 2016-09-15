@@ -20,15 +20,24 @@
     <body>
 
         <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
-                <a class="navbar-brand" href="/">FUN RUN</a>
+            <div class="container-fluid">
+              <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-x-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{ path('manage_index') }}">FUN RUN</a>
+    </div>
+
 
                 {% if is_granted('ROLE_ADMIN') %}
-
+                <div class="collapse navbar-collapse navbar-x-collapse">
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                Core Data Administration</strong>
+                                Core Data<span class="hidden-xs hidden-sm"> Administration</span></strong>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="drop3">
@@ -45,13 +54,11 @@
                         </ul>
                     </li>
                 </ul>
-
             {% endif %}
-
             <ul class="nav navbar-nav">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        CauseVox Data Administration</strong>
+                        CauseVox Data<span class="hidden-xs hidden-sm"> Administration</span></strong>
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="drop4">
@@ -67,11 +74,10 @@
                 </ul>
             </li>
         </ul>
-
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <i class="glyphicon glyphicon-user"></i>&nbsp;Signed in as
+                    <i class="glyphicon glyphicon-user"></i><span class="hidden-xs hidden-sm"> Signed in as</span>
                     <strong>{{ app.user.username }}</strong>
                     <span class="caret"></span>
                 </a>
@@ -82,7 +88,7 @@
                 </ul>
             </li>
         </ul>
-
+</div>
     </div>
 </nav>
 <div style="height:64px;">&nbsp;</div>

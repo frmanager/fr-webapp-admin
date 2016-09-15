@@ -5,11 +5,10 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h1>{{entity|capitalize}}s</h1>
+                <h1>CauseVox Fundraisers</h1>
                 <div style="text-align:right;">
-                    <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">Add
-                        {{ entity }}</a>
-                    <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default">Upload CSV File</a>
+                    <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> Add New</a>
+                    <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default"><i class="glyphicon glyphicon-upload"></i> Upload CSV</a>
                 </div>
                 <br/>
                 <table class="table table-bordered table-striped table-condensed">
@@ -36,8 +35,8 @@
                                 <td>{{ causevoxfundraiser.email }}</td>
                                 <td>{{ causevoxfundraiser.url }}</td>
                                 <td style="text-align:center;">
-                                    <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-info">View</a>
-                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-warning">edit</a>
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-eye-open"></i><span class="hidden-xs hidden-sm"> View</span></a>
+                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i><span class="hidden-xs hidden-sm"> Edit</span></a>
                                 </td>
                             </tr>
                         {% endfor %}
