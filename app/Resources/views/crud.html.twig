@@ -32,7 +32,7 @@
     </div>
 
 
-                {% if is_granted('ROLE_ADMIN') %}
+                {% if is_granted('ROLE_USER') %}
                 <div class="collapse navbar-collapse navbar-x-collapse">
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
@@ -78,7 +78,7 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="glyphicon glyphicon-user"></i><span class="hidden-xs hidden-sm"> Signed in as</span>
-                    <strong>{{ app.user.username }}</strong>
+                    {{ app.user.username }}
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="drop3">

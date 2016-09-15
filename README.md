@@ -72,6 +72,17 @@ The Phing configuration is dynamic and will support any amount of environments. 
 
 
 
+### .bash_profile on dreamhost
+
+
+  umask 002
+  PS1='[\h]$ '
+  export PATH=/usr/local/php56/bin:$PATH
+  export PATH=/home/<USERNAME>/.php/composer:$PATH
+  export SYMFONY_ENV=prod
+  export BOWERPHP_TOKEN=<GITHUB_API_KEY>
+
+
 This project started as a fork from another project designed around a single page PHP Slim application to be put on shared hosting. It has now matured to include Test Automation and Continuous Integration principles.
 
 
