@@ -3,12 +3,20 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+// DON'T forget this use statement!!!
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Causevoxfundraiser.
  *
- * @ORM\Table(name="causevoxfundraiser", indexes={@ORM\Index(name="IDX_A8B6A1ADCB944F1A", columns={"student_id"})})
  * @ORM\Entity
+ * @ORM\Table(name="causevoxfundraiser",uniqueConstraints={@ORM\UniqueConstraint(columns={"email"})})
+ * @UniqueEntity(
+ *     fields={"email"},
+ *     errorPath="email",
+ *     message="This email is already registered"
+ * )
  */
 class Causevoxfundraiser
 {
@@ -25,8 +33,23 @@ class Causevoxfundraiser
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=100, nullable=false)
+     * @Assert\NotBlank()
      */
     private $email;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="first_name", type="string", length=100, nullable=true)
+     */
+    private $firstName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="last_name", type="string", length=100, nullable=true)
+     */
+    private $lastName;
 
     /**
      * @var string
@@ -50,14 +73,22 @@ class Causevoxfundraiser
     private $fundsNeeded;
 
     /**
-     * @var \Student
+     * @var Student
      *
      * @ORM\ManyToOne(targetEntity="Student", inversedBy="causevoxfundraisers")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="student_id", referencedColumnName="id")
-     * })
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotBlank()
      */
     private $student;
+
+    /**
+     * @var Teacher
+     *
+     * @ORM\ManyToOne(targetEntity="Teacher", inversedBy="causevoxfundraisers")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotBlank()
+     */
+    private $teacher;
 
     /**
      * Get id.
@@ -187,5 +218,77 @@ class Causevoxfundraiser
     public function getStudent()
     {
         return $this->student;
+    }
+
+    /**
+     * Set firstName.
+     *
+     * @param string $firstName
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    /**
+     * Get firstName.
+     *
+     * @return string
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * Set lastName.
+     *
+     * @param string $lastName
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * Get lastName.
+     *
+     * @return string
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * Set teacher
+     *
+     * @param \AppBundle\Entity\Teacher $teacher
+     *
+     * @return Causevoxfundraiser
+     */
+    public function setTeacher(\AppBundle\Entity\Teacher $teacher = null)
+    {
+        $this->teacher = $teacher;
+
+        return $this;
+    }
+
+    /**
+     * Get teacher
+     *
+     * @return \AppBundle\Entity\Teacher
+     */
+    public function getTeacher()
+    {
+        return $this->teacher;
     }
 }

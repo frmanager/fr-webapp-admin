@@ -2,14 +2,19 @@
 
 namespace AppBundle\Entity;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+// DON'T forget this use statement!!!
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
- * @UniqueEntity("name")
- * @UniqueEntity("url")
+ * @ORM\Table(name="causevoxteam",uniqueConstraints={@ORM\UniqueConstraint(columns={"url"})})
+ * @UniqueEntity(
+ *     fields={"url"},
+ *     errorPath="url",
+ *     message="This URL is already registered"
+ * )
  */
 class Causevoxteam
 {
@@ -43,8 +48,10 @@ class Causevoxteam
     private $fundsNeeded = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="causevoxteams", cascade={"all"})
-     * @ORM\JoinColumn(name="teacher_id", referencedColumnName="id", onDelete="CASCADE")
+     * @var Teacher
+     *
+     * @ORM\ManyToOne(targetEntity="Teacher", inversedBy="causevoxteams")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      */
     private $teacher;
 

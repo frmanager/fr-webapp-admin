@@ -92,10 +92,10 @@
     </div>
 </nav>
 <div style="height:64px;">&nbsp;</div>
-
+<div class="clearfix">&nbsp;</div>
 {% for type, messages in app.session.flashBag.all() %}
     {% for message in messages %}
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="alert alert-{{type}} alert-dismissible" role="alert">

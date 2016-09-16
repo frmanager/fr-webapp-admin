@@ -183,7 +183,7 @@ class CausevoxdonationController extends Controller
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
                 $csvHelper->getGradefromTeacherName();
                 $csvHelper->cleanTeacherNames();
-                $logger->info(print_r($csvHelper->getData(), true));
+                $logger->debug(print_r($csvHelper->getData(), true));
 
                 $templateFields = array('donation_page',
                 'fundraiser_first_name',
@@ -249,7 +249,7 @@ class CausevoxdonationController extends Controller
                             $failure = true;
                             $this->addFlash(
                               'danger',
-                              "Could not add Causevoxdonation for '".$item['donor_first_name'].' '.$item['donor_last_name']."'. Donation page was empty not found"
+                              '[ROW #'.($i + 2).'] Could not add Causevoxdonation for '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Must be associated with a Donation Page (Team/Fundraiser)'
                           );
                         }
 
@@ -259,38 +259,38 @@ class CausevoxdonationController extends Controller
                                 $failure = true;
                                 $this->addFlash(
                                   'danger',
-                                  "Could not add Causevoxdonation '".$item['donor_first_name'].' '.$item['donor_last_name']."'. Grade '".$item['grade']."' not found"
+                                  '[ROW #'.($i + 2).'] Could not add Causevoxdonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Grade '.$item['grade'].' not found'
                               );
                             }
                         }
 
                         if (!$failure) {
-                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneBy(
-                              array('teacherName' => $item['teachers_name'], 'grade' => $grade->getId())
-                          );
+                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
                             if (empty($teacher)) {
+                                $failure = true;
                                 $this->addFlash(
                                   'danger',
-                                    "Could not add Causevoxdonation '".$item['donor_first_name'].' '.$item['donor_last_name']."'. Teacher '".$item['teachers_name']."' not found"
+                                    '[ROW #'.($i + 2).'] Could not add Causevoxdonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Teacher '.$item['teachers_name'].' not found'
                               );
                             }
                         }
 
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                            array('teacher' => $teacher->getId(), 'name' => $item['students_name'])
+                            array('teacher' => $teacher, 'name' => $item['students_name'])
                           );
                             if (empty($student)) {
+                                $failure = true;
                                 $this->addFlash(
                                 'warning',
-                                  "Could not add Causevoxdonation '".$item['donor_first_name'].' '.$item['donor_last_name']."'. Student '".$item['students_name']."' not found"
+                                  '[ROW #'.($i + 2).'] Could not add Causevoxdonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Student '.$item['students_name'].' not found'
                             );
                             }
                         }
 
                         if (!$failure) {
                             //Example: 2016-08-25 16:35:54
-                                $date = new DateTime($item['donated_at']);
+                            $date = new DateTime($item['donated_at']);
 
                             $causevoxdonation->setAmount($item['amount']);
                             $causevoxdonation->setTip($item['tip']);
@@ -306,12 +306,22 @@ class CausevoxdonationController extends Controller
                             $causevoxdonation->setStudent($student);
                             $causevoxdonation->setTeacher($teacher);
 
-                            $em->persist($causevoxdonation);
-                                     // flush everything to the database every 20 inserts
-                                     if (($i % $batchSize) == 0) {
-                                         $em->flush();
-                                         $em->clear();
-                                     }
+                            $validator = $this->get('validator');
+                            $errors = $validator->validate($causevoxdonation);
+
+                            if (count($errors) > 0) {
+                                /*
+                                 * Uses a __toString method on the $errors variable which is a
+                                 * ConstraintViolationList object. This gives us a nice string
+                                 * for debugging.
+                                 */
+                                $errorsString = (string) $errors;
+                                $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add causevoxdonation for '.$item['donor_first_name'].' '.$item['donor_last_name'].' for $'.$item['amount'].', error:'.$errorsString);
+                            } else {
+                                $em->persist($causevoxdonation);
+                                $em->flush();
+                                $em->clear();
+                            }
                         }
                     }
 

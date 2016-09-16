@@ -218,7 +218,7 @@ class CausevoxteamController extends Controller
                         if (empty($grade)) {
                             $this->addFlash(
                                 'danger',
-                                "Could not add Causevoxteam '".$item['name']."'. Grade '".$item['grade']."' not found"
+                                '[ROW #'.($i + 2).'] Could not add Causevoxteam '.$item['name'].', Grade '.$item['grade'].' not found'
                             );
                         } else {
                             $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneBy(
@@ -227,7 +227,7 @@ class CausevoxteamController extends Controller
                             if (empty($teacher)) {
                                 $this->addFlash(
                                     'danger',
-                                      "Could not add Causevoxteam '".$item['name']."'. Teacher '".$item['teachers_name']."' not found"
+                                      '[ROW #'.($i + 2).']Could not add Causevoxteam '.$item['name'].'. Teacher '.$item['teachers_name'].' not found'
                                 );
                             } else {
                                 $causevoxteam->setName($item['name']);
@@ -235,20 +235,26 @@ class CausevoxteamController extends Controller
                                 $causevoxteam->setUrl($item['url']);
                                 $causevoxteam->setFundsRaised($item['funds_raised']);
                                 $causevoxteam->setTeacher($teacher);
-                                $em->persist($causevoxteam);
 
-                             // flush everything to the database every 20 inserts
-                             if (($i % $batchSize) == 0) {
-                                 $em->flush();
-                                 $em->clear();
-                             }
+                                $validator = $this->get('validator');
+                                $errors = $validator->validate($causevoxteam);
+
+                                if (count($errors) > 0) {
+                                    /*
+                                     * Uses a __toString method on the $errors variable which is a
+                                     * ConstraintViolationList object. This gives us a nice string
+                                     * for debugging.
+                                     */
+                                    $errorsString = (string) $errors;
+                                    $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add causevoxteam '.$item['name'].', error:'.$errorsString);
+                                } else {
+                                    $em->persist($causevoxteam);
+                                    $em->flush();
+                                    $em->clear();
+                                }
                             }
                         }
                     }
-
-                    // flush the remaining objects
-                    $em->flush();
-                    $em->clear();
 
                     $this->addFlash(
                         'info',

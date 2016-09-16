@@ -2,15 +2,19 @@
 
 namespace AppBundle\Entity;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
+// DON'T forget this use statement!!!
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 /**
  * @ORM\Entity
- * @UniqueEntity(fields={"name", "teacher"},
+ * @ORM\Table(name="student",uniqueConstraints={@ORM\UniqueConstraint(columns={"name", "teacher_id"})})
+ * @UniqueEntity(
+ *     fields={"name", "teacher"},
  *     errorPath="name",
- *     message="This teacher already has a student by this name."
+ *     message="Duplicate Student for Identified Teacher"
  * )
  */
 class Student
@@ -29,8 +33,10 @@ class Student
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="students", cascade={"remove"})
-     * @ORM\JoinColumn(name="teacher_id", referencedColumnName="id", onDelete="CASCADE")
+     * @var Teacher
+     *
+     * @ORM\ManyToOne(targetEntity="Teacher", inversedBy="students")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
     private $teacher;
@@ -141,53 +147,53 @@ class Student
      */
     public function __construct()
     {
-        $this->causevoxfundraiser = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->causevoxfundraisers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
      * Add causevoxfundraiser.
      *
-     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraisers
      *
      * @return Student
      */
-    public function addCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    public function addCausevoxfundraisers(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraisers)
     {
-        $this->causevoxfundraiser[] = $causevoxfundraiser;
+        $this->causevoxfundraisers[] = $causevoxfundraisers;
 
         return $this;
     }
 
     /**
-     * Remove causevoxfundraiser.
+     * Remove causevoxfundraisers.
      *
-     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraisers
      */
-    public function removeCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    public function removeCausevoxfundraisers(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraisers)
     {
-        $this->causevoxfundraiser->removeElement($causevoxfundraiser);
+        $this->causevoxfundraisers->removeElement($causevoxfundraisers);
     }
 
     /**
-     * Get causevoxfundraiser.
+     * Get causevoxfundraisers.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getCausevoxfundraiser()
+    public function getCausevoxfundraisers()
     {
-        return $this->causevoxfundraiser;
+        return $this->causevoxfundraisers;
     }
 
     /**
-     * Add causevoxdonation.
+     * Add causevoxdonations.
      *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
+     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
      *
      * @return Student
      */
-    public function addCausevoxdonation(\AppBundle\Entity\Causevoxdonation $causevoxdonation)
+    public function addCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
     {
-        $this->causevoxdonation[] = $causevoxdonation;
+        $this->causevoxdonations[] = $causevoxdonations;
 
         return $this;
     }
@@ -195,20 +201,20 @@ class Student
     /**
      * Remove causevoxdonation.
      *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
+     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
      */
-    public function removeCausevoxdonation(\AppBundle\Entity\Causevoxdonation $causevoxdonation)
+    public function removeCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
     {
-        $this->causevoxdonation->removeElement($causevoxdonation);
+        $this->causevoxdonations->removeElement($causevoxdonations);
     }
 
     /**
-     * Get causevoxdonation.
+     * Get causevoxdonations.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getCausevoxdonation()
+    public function getCausevoxdonations()
     {
-        return $this->causevoxdonation;
+        return $this->causevoxdonations;
     }
 }
