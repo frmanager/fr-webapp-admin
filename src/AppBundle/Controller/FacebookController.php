@@ -6,7 +6,7 @@ namespace AppBundle\Controller;
 // ...
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use DateTime;
+use AppBundle\Entity\Campaignsetting;
 
 // src/AppBundle/Controller/FacebookController.php
 
@@ -23,38 +23,29 @@ class FacebookController extends Controller
     public function facebookTab()
     {
         $logger = $this->get('logger');
-        $url = 'http://funrun.lrespto.org';
-        $campaign_start_date = '09/15/2016';
-        $campaign_end_date = '10/27/2016';
-        $campaign_funding_goal = '20000';
+        $data = [];
 
-        $campaignStartDateString = strtotime($campaign_start_date);
-        $campaignStartDate = date('Y-m-d', $campaignStartDateString);
+        $em = $this->getDoctrine()->getManager();
+        $campaignsettings = $em->getRepository('AppBundle:Campaignsetting')->findAll();
 
-        $campaignEndDateString = strtotime($campaign_end_date);
-        $campaignEndDate = date('Y-m-d', $campaignEndDateString);
+        foreach ($campaignsettings as $campaignsetting) {
+            $name = $campaignsetting->getName();
+            $value = $campaignsetting->getValue();
+            if (strcmp($name, 'campaign_start_date') == 0) {
+                $data['campaign_start_date'] = date('Y-m-d', strtotime($value));
+            } elseif (strcmp($name, 'campaign_end_date') == 0) {
+                $data['campaign_end_date'] = date('Y-m-d', strtotime($value));
+                $data['campaign_end_date_countdown'] = date('Y/m/d', strtotime($value));
+            } elseif (strcmp($name, 'campaign_funding_goal') == 0) {
+                $data['campaign_funding_goal'] = (float) $value;
+            } elseif (strcmp($name, 'campaign_url') == 0) {
+                $data['campaign_url'] = $value;
+            }
+        }
 
-        $campaignEndDateCountdown = date('Y/m/d', $campaignEndDateString);
-
-        //$campaignStartDate = new DateTime('09/15/2016T00:00:00-05:00Z');
-        //$campaignEndDate = new DateTime('10/27/2016T00:00:00-05:00Z');
-
-        $todaysDate = date('Y-m-d');
-
-        $data = [
-              'todays_date' => $todaysDate,
-              'campaign_url' => $url,
-              'campaign_start_date' => $campaignStartDate,
-              'campaign_end_date' => $campaignEndDate,
-              'campaign_end_date_countdown' => $campaignEndDateCountdown,
-              'campaign_funding_goal' => $campaign_funding_goal,
-            ];
-
-        //TODO: Make sure that only data necessary is going to the particular views....I.E. File Data
-
-        if ($todaysDate >= $campaignEndDate) {
+        if (date('Y-m-d') >= $data['campaign_end_date']) {
             $theView = 'closeout';
-        } elseif ($todaysDate >= $campaignStartDate) {
+        } elseif (date('Y-m-d') >= $data['campaign_start_date']) {
             $em = $this->getDoctrine()->getManager();
             $causevoxteams = $em->getRepository('AppBundle:Causevoxteam')->findAll();
 
