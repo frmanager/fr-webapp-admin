@@ -36,7 +36,7 @@ class Campaignsetting
     private $format;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $description;
 
@@ -120,5 +120,29 @@ class Campaignsetting
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set format.
+     *
+     * @param string $format
+     *
+     * @return Campaignsetting
+     */
+    public function setFormat($format)
+    {
+        $this->format = $format;
+
+        return $this;
+    }
+
+    /**
+     * Get format.
+     *
+     * @return string
+     */
+    public function getFormat()
+    {
+        return $this->format;
     }
 }
