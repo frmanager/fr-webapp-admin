@@ -2,18 +2,23 @@
 {% use 'bootstrap_3_horizontal_layout.html.twig' %}
 
 {% block body %}
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h1>Create new {{ entity }} Form</h1>
-
-                {{ form_start(form) }}
-                {{ form_widget(form) }}
-                <div>
-                  <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Cancel</a>
-                  <button type="reset" value="Reset" class="btn btn-primary">Reset</button>
-                  <input type="submit" value="Add New {{entity}}" class="btn btn-warning"/>
-                </div>
-                {{ form_end(form) }}
-            </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Create new
+                {{ entity }}</h1>
+            <hr/>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <div>
+                <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Cancel</a>
+                <button type="reset" value="Reset" class="btn btn-primary">Reset</button>
+                <input type="submit" value="Add New {{entity}}" class="btn btn-warning"/>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}

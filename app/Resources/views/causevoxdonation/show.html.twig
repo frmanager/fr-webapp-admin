@@ -2,15 +2,18 @@
 {% use 'bootstrap_3_horizontal_layout.html.twig' %}
 
 {% block body %}
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h1>View
-                    {{ entity }}</h1>
-            </br>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>View Donation</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <th>Id</th>
+                        <th>ID</th>
                         <td>{{ causevoxdonation.id }}</td>
                     </tr>
                     <tr>
@@ -30,20 +33,20 @@
                         <td>{{ causevoxdonation.student.teacher.teachername }}</td>
                     </tr>
                     <tr>
-                      <th>Student's Name</th>
-                      <td>{{ causevoxdonation.student.name }}</td>
+                        <th>Student's Name</th>
+                        <td>{{ causevoxdonation.student.name }}</td>
                     </tr>
                     <tr>
-                      <th>Donor Email</th>
-                      <td>{{ causevoxdonation.donorEmail }}</td>
+                        <th>Donor Email</th>
+                        <td>{{ causevoxdonation.donorEmail }}</td>
                     </tr>
                     <tr>
-                      <th>amount</th>
-                      <td style="text-align:right;">${{ causevoxdonation.amount|number_format(2, '.', ',') }}</td>
+                        <th>amount</th>
+                        <td style="text-align:right;">${{ causevoxdonation.amount|number_format(2, '.', ',') }}</td>
                     </tr>
                     <tr>
-                      <th>type</th>
-                      <td>{{ causevoxdonation.type }}</td>
+                        <th>type</th>
+                        <td>{{ causevoxdonation.type }}</td>
                     </tr>
                 </tbody>
             </table>
