@@ -15,8 +15,9 @@
                           <th>Id</th>
                           <th>Name</th>
                           <th>Value</th>
+                          <th>Format</th>
                           <th>Description</th>
-                          <th>Actions</th>                          
+                          <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -27,7 +28,8 @@
                                 </td>
                                 <td>{{ campaignsetting.name }}</td>
                                 <td>{{ campaignsetting.value }}</td>
-                                <td>{{ campaignsetting.description }}</td>
+                                <td>{% if campaignsetting.format is defined %}{{ campaignsetting.format }}{% endif %}</td>
+                                <td>{% if campaignsetting.description is defined %}{{ campaignsetting.description }}{% endif %}</td>
                                 <td style="text-align:center;">
                                     <a href="{{ path(entity|lower ~ '_show', { 'id': campaignsetting.id }) }}" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-eye-open"></i><span class="hidden-xs hidden-sm"> View</span></a>
                                     <a href="{{ path(entity|lower ~ '_edit', { 'id': campaignsetting.id }) }}" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i><span class="hidden-xs hidden-sm"> Edit</span></a>
