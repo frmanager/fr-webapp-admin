@@ -30,29 +30,31 @@
                     </button>
                     <a class="navbar-brand" href="{{ path('manage_index') }}">FUN RUN</a>
                 </div>
-                    <div class="collapse navbar-collapse navbar-x-collapse">
-                        <ul class="nav navbar-nav">
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    Core Data<span class="hidden-xs hidden-sm">
-                                        Administration</span>
-                                </strong>
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="drop3">
-                                <li>
-                                    <a href="{{ path('grade_index') }}">Manage Grades</a>
-                                </li>
-                                <li>
-                                    <a href="{{ path('teacher_index') }}">Manage Teachers</a>
-                                </li>
-                                <li>
-                                    <a href="{{ path('student_index') }}">Manage Students</a>
-                                </li>
+                <div class="collapse navbar-collapse navbar-x-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                Core Data<span class="hidden-xs hidden-sm">
+                                    Administration</span>
+                            </strong>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="drop3">
+                            <li>
+                                <a href="{{ path('grade_index') }}">Manage Grades</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('teacher_index') }}">Manage Teachers</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('student_index') }}">Manage Students</a>
+                            </li>
 
-                            </ul>
-                        </li>
-                        <li class="dropdown"><a href="{{ path('campaignsetting_index') }}">Manage Campaign</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="{{ path('campaignsetting_index') }}">Manage Campaign</a>
+                    </li>
                 </ul>
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
@@ -96,7 +98,9 @@
 </nav>
 
 <div class="container body-container">
-    <div class="row" style="height:36px;">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
     {% for type, messages in app.session.flashBag.all() %}
         {% for message in messages %}
             <div class="row">
@@ -112,40 +116,72 @@
             </div>
         {% endfor %}
     {% endfor %}
-    <div class="clearfix">&nbsp;</div>
     {% block body %}{% endblock %}
     <div class="clearfix">&nbsp;</div>
-    <div style="height:24px;">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
 </div>
-<div style="height:12px;">&nbsp;</div>
+<div class="clearfix">&nbsp;</div>
 <div class="container">
-<div class="row">
-    <div class="col-md-12">
-        <div style="text-align:center;"><strong>For help and support contact <a href="mailto:funrun@lrespto.org">funrun@lrespto.org</a></strong></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div style="text-align:center;">
+                <strong>For help and support contact
+                    <a href="mailto:funrun@lrespto.org">funrun@lrespto.org</a>
+                </strong>
+            </div>
+        </div>
     </div>
-</div>
+    <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left">
+        <span class="glyphicon glyphicon-chevron-up"></span>
+    </a>
+
 </div>
 {% block javascripts %}{% endblock %}
 </body>
 
-<script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
-
+<script type='application/javascript' src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/fastclick/lib/fastclick.js') }}"></script>
 <!-- IE 10 Viewport Bug Fix -->
 <script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
 
 <script type="text/javascript">
-$('[data-countdown]').each(function() {
-    var $this = $(this),
-        finalDate = $(this).data('countdown');
-    $this.countdown(finalDate, function(event) {
-        $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
+$(document).ready(function() {
+
+    $('[data-countdown]').each(function() {
+        var $this = $(this),
+            finalDate = $(this).data('countdown');
+        $this.countdown(finalDate, function(event) {
+            $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
+        });
+    });
+
+    $(".alert-success").fadeTo(2000, 500).slideUp(1000, function() {
+        $(".alert-success").slideUp(1000);
+    });
+
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 50) {
+            $('#back-to-top').fadeIn();
+        } else {
+            $('#back-to-top').fadeOut();
+        }
+    });
+    // scroll body to 0px on click
+    $('#back-to-top').click(function() {
+        $('#back-to-top').tooltip('hide');
+        $('body,html').animate({
+            scrollTop: 0
+        }, 800);
+        return false;
+    });
+    $('#back-to-top').tooltip('show');
+    
+    $(function() {
+        FastClick.attach(document.body);
     });
 });
 
-$(".alert-success").fadeTo(2000, 500).slideUp(1000, function() {
-    $(".alert-success").slideUp(1000);
-});
 </script>
 </html>
