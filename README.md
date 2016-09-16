@@ -90,15 +90,11 @@ The Phing configuration is dynamic and will support any amount of environments. 
 
 
 ### Update database from entities
+
   php bin/console doctrine:schema:update --force
 
 
-This project started as a fork from another project designed around a single page PHP Slim application to be put on shared hosting. It has now matured to include Test Automation and Continuous Integration principles.
 
+### Create new User via FOSUserBundle CLI
 
-
-
-
-##TODO
-
-1. Make the website configurable so I can easily setup phases that use the system dates to determine which page to show. Phases should be prepare (Show a simple splashpage before the campaign), track (show status, updates, information, contact information), closeout (Show results of campaign based upon completed data), off (show a simple splashpage saying thank you to contributors and we will be back next year).
+    php bin/console fos:user:create testuser test@example.com p@ssword
