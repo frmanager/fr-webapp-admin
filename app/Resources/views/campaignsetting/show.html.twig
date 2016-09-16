@@ -11,22 +11,26 @@
                 <tbody>
                     <tr>
                         <th>Id</th>
-                        <td>{{ teacher.id }}</td>
+                        <td>{{ campaignsetting.id }}</td>
                     </tr>
                     <tr>
-                        <th>Grade</th>
-                        <td>{{ teacher.grade.name }}</td>
+                        <th>Name</th>
+                        <td>{{ campaignsetting.name }}</td>
                     </tr>
                     <tr>
-                        <th>Teacher's name</th>
-                        <td>{{ teacher.teacherName }}</td>
+                        <th>Value</th>
+                        <td>{{ campaignsetting.value }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ campaignsetting.description }}</td>
                     </tr>
                 </tbody>
             </table>
             {{ form_start(delete_form) }}
             <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
-            <a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.id }) }}" class="btn btn-primary">Edit</a>
-            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{teacher.id}}?')" class="btn btn-danger">
+            <a href="{{ path(entity|lower ~ '_edit', { 'id': campaignsetting.id }) }}" class="btn btn-primary">Edit</a>
+            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{campaignsetting.id}}?')" class="btn btn-danger">
             {{ form_end(delete_form) }}
         </div>
     </div>

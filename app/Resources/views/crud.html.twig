@@ -19,83 +19,86 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-default navbar-fixed-top">
+        <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
-              <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-x-collapse" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="{{ path('manage_index') }}">FUN RUN</a>
-    </div>
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-x-collapse" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ path('manage_index') }}">FUN RUN</a>
+                </div>
+                    <div class="collapse navbar-collapse navbar-x-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    Core Data<span class="hidden-xs hidden-sm">
+                                        Administration</span>
+                                </strong>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="drop3">
+                                <li>
+                                    <a href="{{ path('grade_index') }}">Manage Grades</a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('teacher_index') }}">Manage Teachers</a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('student_index') }}">Manage Students</a>
+                                </li>
 
-
-                {% if is_granted('ROLE_USER') %}
-                <div class="collapse navbar-collapse navbar-x-collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                Core Data<span class="hidden-xs hidden-sm"> Administration</span></strong>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="drop3">
-                            <li>
-                                <a href="{{ path('grade_index') }}">Manage Grades</a>
-                            </li>
-                            <li>
-                                <a href="{{ path('teacher_index') }}">Manage Teachers</a>
-                            </li>
-                            <li>
-                                <a href="{{ path('student_index') }}">Manage Students</a>
-                            </li>
-
-                        </ul>
-                    </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a href="{{ path('campaignsetting_index') }}">Manage Campaign</a></li>
                 </ul>
-            {% endif %}
-            <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            CauseVox Data<span class="hidden-xs hidden-sm">
+                                Administration</span>
+                        </strong>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="drop4">
+                        <li>
+                            <a href="{{ path('causevoxteam_index') }}">Manage Causevox Teams</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('causevoxfundraiser_index') }}">Manage Causevox Fundraisers</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('causevoxdonation_index') }}">Manage Causevox Donations</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        CauseVox Data<span class="hidden-xs hidden-sm"> Administration</span></strong>
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="drop4">
-                    <li>
-                        <a href="{{ path('causevoxteam_index') }}">Manage Causevox Teams</a>
-                    </li>
-                    <li>
-                        <a href="{{ path('causevoxfundraiser_index') }}">Manage Causevox Fundraisers</a>
-                    </li>
-                    <li>
-                        <a href="{{ path('causevoxdonation_index') }}">Manage Causevox Donations</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <i class="glyphicon glyphicon-user"></i><span class="hidden-xs hidden-sm"> Signed in as</span>
-                    {{ app.user.username }}
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="drop3">
-                    <li>
-                        <a href="/logout">Logout</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-</div>
+                        <i class="glyphicon glyphicon-user"></i>
+                        <span class="hidden-xs hidden-sm">
+                            Signed in as</span>
+                        {{ app.user.username }}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="drop3">
+                        <li>
+                            <a href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
-<div style="height:64px;">&nbsp;</div>
-<div class="clearfix">&nbsp;</div>
-{% for type, messages in app.session.flashBag.all() %}
-    {% for message in messages %}
-        <div class="container-fluid">
+
+<div class="container body-container">
+    <div class="row" style="height:36px;">&nbsp;</div>
+    {% for type, messages in app.session.flashBag.all() %}
+        {% for message in messages %}
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="alert alert-{{type}} alert-dismissible" role="alert">
@@ -107,11 +110,21 @@
                     </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
     {% endfor %}
-{% endfor %}
-
-{% block body %}{% endblock %}
+    <div class="clearfix">&nbsp;</div>
+    {% block body %}{% endblock %}
+    <div class="clearfix">&nbsp;</div>
+    <div style="height:24px;">&nbsp;</div>
+</div>
+<div style="height:12px;">&nbsp;</div>
+<div class="container">
+<div class="row">
+    <div class="col-md-12">
+        <div style="text-align:center;"><strong>For help and support contact <a href="mailto:funrun@lrespto.org">funrun@lrespto.org</a></strong></div>
+    </div>
+</div>
+</div>
 {% block javascripts %}{% endblock %}
 </body>
 
