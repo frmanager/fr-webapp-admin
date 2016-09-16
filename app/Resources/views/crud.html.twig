@@ -139,10 +139,10 @@
 {% block javascripts %}{% endblock %}
 </body>
 
-<script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
-
+<script type='application/javascript' src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/fastclick/lib/fastclick.js') }}"></script>
 <!-- IE 10 Viewport Bug Fix -->
 <script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
 
@@ -177,7 +177,10 @@ $(document).ready(function() {
         return false;
     });
     $('#back-to-top').tooltip('show');
-
+    
+    $(function() {
+        FastClick.attach(document.body);
+    });
 });
 
 </script>
