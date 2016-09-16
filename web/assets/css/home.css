@@ -14,11 +14,13 @@ body {
 .transparent-container {
   background-color:white;
   color:black;
-  opacity: 0.75;
-  filter: alpha(opacity=75); /* For IE8 and earlier */
   -webkit-border-radius: 3px;
 -moz-border-radius: 3px;
 border-radius: 3px;
+
+-webkit-box-shadow: 1px 1px 3px 1px rgba(50, 50, 50, 0.50);
+-moz-box-shadow:    1px 1px 3px 1px rgba(50, 50, 50, 0.50);
+box-shadow:         1px 1px 3px 1px rgba(50, 50, 50, 0.50);
 }
 
 

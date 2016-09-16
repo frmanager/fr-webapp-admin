@@ -14,19 +14,23 @@
                         <tr>
                           <th>Id</th>
                           <th>Name</th>
-                          <th>Actions</th>
+                          <th>Value</th>
+                          <th>Description</th>
+                          <th>Actions</th>                          
                         </tr>
                     </thead>
                     <tbody>
-                        {% for grade in grades %}
+                        {% for campaignsetting in campaignsettings %}
                             <tr>
                                 <td>
-                                    <a href="{{ path(entity|lower ~ '_show', { 'id': grade.id }) }}">{{ grade.id }}</a>
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': campaignsetting.id }) }}">{{ campaignsetting.id }}</a>
                                 </td>
-                                <td>{{ grade.name }}</td>
+                                <td>{{ campaignsetting.name }}</td>
+                                <td>{{ campaignsetting.value }}</td>
+                                <td>{{ campaignsetting.description }}</td>
                                 <td style="text-align:center;">
-                                    <a href="{{ path(entity|lower ~ '_show', { 'id': grade.id }) }}" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-eye-open"></i><span class="hidden-xs hidden-sm"> View</span></a>
-                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': grade.id }) }}" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i><span class="hidden-xs hidden-sm"> Edit</span></a>
+                                    <a href="{{ path(entity|lower ~ '_show', { 'id': campaignsetting.id }) }}" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-eye-open"></i><span class="hidden-xs hidden-sm"> View</span></a>
+                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': campaignsetting.id }) }}" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i><span class="hidden-xs hidden-sm"> Edit</span></a>
                                 </td>
                             </tr>
                         {% endfor %}
