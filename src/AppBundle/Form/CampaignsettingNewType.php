@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class CampaignsettingType extends AbstractType
+class CampaignsettingNewType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -16,9 +16,9 @@ class CampaignsettingType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, array('disabled' => true))
-            ->add('value')
-            ->add('format')
+            ->add('name', TextType::class, array('required' => true))
+            ->add('value', TextType::class, array('required' => true))
+            ->add('format', TextType::class, array('required' => true))
             ->add('description')
         ;
     }

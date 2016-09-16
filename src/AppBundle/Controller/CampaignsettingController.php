@@ -34,6 +34,7 @@ class CampaignsettingController extends Controller
             array_push($defaultCampaignSettings, array('name' => 'campaign_start_date', 'value' => '9/15/'.date('Y'), 'format' => 'mm/dd/yyyy'));
             array_push($defaultCampaignSettings, array('name' => 'campaign_end_date', 'value' => '10/27/'.date('Y'), 'format' => 'mm/dd/yyyy'));
             array_push($defaultCampaignSettings, array('name' => 'campaign_funding_goal', 'value' => '20000', 'format' => 'an Amount, no commas!'));
+            array_push($defaultCampaignSettings, array('name' => 'campaign_url', 'value' => 'http://funrun.lrespto.org', 'format' => 'FQDN'));
 
             foreach ($defaultCampaignSettings as $defaultCampaignSetting) {
                 $em = $this->getDoctrine()->getManager();
@@ -73,7 +74,7 @@ class CampaignsettingController extends Controller
     {
         $entity = 'Campaignsetting';
         $campaignsetting = new Campaignsetting();
-        $form = $this->createForm('AppBundle\Form\CampaignsettingType', $campaignsetting);
+        $form = $this->createForm('AppBundle\Form\CampaignsettingNewType', $campaignsetting);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -119,7 +120,7 @@ class CampaignsettingController extends Controller
     {
         $entity = 'Campaignsetting';
         $deleteForm = $this->createDeleteForm($campaignsetting);
-        $editForm = $this->createForm('AppBundle\Form\CampaignsettingType', $campaignsetting);
+        $editForm = $this->createForm('AppBundle\Form\CampaignsettingEditType', $campaignsetting);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
