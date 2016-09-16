@@ -2,41 +2,58 @@
 {% use 'bootstrap_3_layout.html.twig' %}
 
 {% block body %}
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h1>{{entity|capitalize}}s</h1>
-                <div style="text-align:right;">
-                    <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> Add New</a>
-                    <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default"><i class="glyphicon glyphicon-upload"></i> Upload CSV</a>
-                </div>
-                <br/>
-                <table class="table table-bordered table-striped table-condensed">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Grade</th>
-                            <th>Teacher's name</th>
-                            <th>Student's Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                            <tr>
-                                <td>
-                                    <a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}">{{ student.id }}</a>
-                                </td>
-                                <td>{{ student.teacher.grade.name }}</td>
-                                <td>{{ student.teacher.teachername }}</td>
-                                <td>{{ student.name }}</td>
-                                <td style="text-align:center;">
-                                    <a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}" class="btn btn-sm btn-info"><i class="glyphicon glyphicon-eye-open"></i><span class="hidden-xs hidden-sm"> View</span></a>
-                                    <a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i><span class="hidden-xs hidden-sm"> Edit</span></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Students</h1>
+            <hr/>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div style="text-align:right;">
+                <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    Add New</a>
+                <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    Upload CSV</a>
+            </div>
+            <br/>
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Grade</th>
+                        <th>Teacher's name</th>
+                        <th>Student's Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}">{{ student.id }}</a>
+                            </td>
+                            <td>{{ student.teacher.grade.name }}</td>
+                            <td>{{ student.teacher.teachername }}</td>
+                            <td>{{ student.name }}</td>
+                            <td style="text-align:center;">
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}" class="btn btn-sm btn-info">
+                                    <i class="glyphicon glyphicon-eye-open"></i>
+                                    <span class="hidden-xs hidden-sm">
+                                        View</span>
+                                </a>
+                                <a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-sm btn-warning">
+                                    <i class="glyphicon glyphicon-edit"></i>
+                                    <span class="hidden-xs hidden-sm">
+                                        Edit</span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

@@ -2,9 +2,14 @@
 {% use 'bootstrap_3_layout.html.twig' %}
 
 {% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>CauseVox Teams</h1>
+        <hr/>
+    </div>
+</div>
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h1>CauseVox Teams</h1>
                 <div style="text-align:right;">
                     <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> Add New</a>
                     <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default"><i class="glyphicon glyphicon-upload"></i> Upload CSV</a>

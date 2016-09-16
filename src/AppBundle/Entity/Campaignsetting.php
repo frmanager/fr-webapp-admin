@@ -31,14 +31,19 @@ class Campaignsetting
     private $value;
 
     /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $format;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $description;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -46,7 +51,7 @@ class Campaignsetting
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -60,7 +65,7 @@ class Campaignsetting
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -70,7 +75,7 @@ class Campaignsetting
     }
 
     /**
-     * Set value
+     * Set value.
      *
      * @param string $value
      *
@@ -84,7 +89,7 @@ class Campaignsetting
     }
 
     /**
-     * Get value
+     * Get value.
      *
      * @return string
      */
@@ -94,7 +99,7 @@ class Campaignsetting
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
      *
@@ -108,7 +113,7 @@ class Campaignsetting
     }
 
     /**
-     * Get description
+     * Get description.
      *
      * @return string
      */

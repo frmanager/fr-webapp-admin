@@ -2,11 +2,14 @@
 {% use 'bootstrap_3_horizontal_layout.html.twig' %}
 
 {% block body %}
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h1>View
-                    {{ entity }}</h1>
-            </br>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>View Campaign</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
             <table class="table table-bordered">
                 <tbody>
                     <tr>
@@ -22,8 +25,16 @@
                         <td>{{ campaignsetting.value }}</td>
                     </tr>
                     <tr>
+                        <th>Format</th>
+                        <td>
+                            {% if campaignsetting.format is defined %}{{ campaignsetting.format }}{% endif %}
+                        </td>
+                    </tr>
+                    <tr>
                         <th>Description</th>
-                        <td>{{ campaignsetting.description }}</td>
+                        <td>
+                            {% if campaignsetting.description is defined %}{{ campaignsetting.description }}{% endif %}
+                        </td>
                     </tr>
                 </tbody>
             </table>
