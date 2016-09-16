@@ -213,46 +213,66 @@ class CausevoxfundraiserController extends Controller
                     $batchSize = 20;
 
                     foreach ($csvHelper->getData() as $i => $item) {
+                        $failure = false;
                         $causevoxfundraiser = new Causevoxfundraiser();
-                        $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
-                        if (empty($grade)) {
-                            $this->addFlash(
+
+                        if (!$failure) {
+                            $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
+                            if (empty($grade)) {
+                                $failure = true;
+                                $this->addFlash(
                                 'danger',
-                                "Could not add Causevoxfundraiser '".$item['name']."'. Grade '".$item['grade']."' not found"
+                                '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].'. Grade '.$item['grade'].' not found'
                             );
-                        } else {
-                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneBy(
-                                array('teacherName' => $item['teachers_name'], 'grade' => $grade->getId())
-                            );
+                            }
+                        }
+
+                        if (!$failure) {
+                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
                             if (empty($teacher)) {
+                                $failure = true;
+                                $this->addFlash(
+                                'danger',
+                                  '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].'. Teacher '.$item['teachers_name'].' not found'
+                            );
+                            }
+                        }
+
+                        if (!$failure) {
+                            $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
+                                array('teacher' => $teacher->getId(), 'name' => $item['students_name'])
+                              );
+                            if (empty($student)) {
+                                $failure = true;
                                 $this->addFlash(
                                     'danger',
-                                      "Could not add Causevoxfundraiser '".$item['name']."'. Teacher '".$item['teachers_name']."' not found"
+                                      '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].'. Student '.$item['students_name'].' not found'
                                 );
+                            }
+                        }
+
+                        if (!$failure) {
+                            $causevoxfundraiser->setEmail($item['email']);
+                            $causevoxfundraiser->setFundsNeeded($item['funds_needed']);
+                            $causevoxfundraiser->setUrl($item['stub']);
+                            $causevoxfundraiser->setFundsRaised($item['funds_raised']);
+                            $causevoxfundraiser->setStudent($student);
+                            $causevoxfundraiser->setTeacher($teacher);
+                            $validator = $this->get('validator');
+                            $errors = $validator->validate($causevoxfundraiser);
+
+                            if (count($errors) > 0) {
+                                /*
+                                         * Uses a __toString method on the $errors variable which is a
+                                         * ConstraintViolationList object. This gives us a nice string
+                                         * for debugging.
+                                         */
+                                        $errorsString = (string) $errors;
+                                $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].', error:'.$errorsString);
                             } else {
-                                $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                                  array('teacher' => $teacher->getId(), 'name' => $item['students_name'])
-                                );
-                                if (empty($student)) {
-                                    $this->addFlash(
-                                      'danger',
-                                        "Could not add Causevoxfundraiser '".$item['first_name'].' '.$item['last_name']."'. Student '".$item['students_name']."' not found"
-                                  );
-                                } else {
-                                    $causevoxfundraiser->setEmail($item['email']);
-                                    $causevoxfundraiser->setFundsNeeded($item['funds_needed']);
-                                    $causevoxfundraiser->setUrl($item['stub']);
-                                    $causevoxfundraiser->setFundsRaised($item['funds_raised']);
-                                    $causevoxfundraiser->setStudent($student);
-
-                                    $em->persist($causevoxfundraiser);
-
-                                     // flush everything to the database every 20 inserts
-                                     if (($i % $batchSize) == 0) {
-                                         $em->flush();
-                                         $em->clear();
-                                     }
-                                }
+                                $em->persist($causevoxfundraiser);
+                                $em->flush();
+                                $em->clear();
                             }
                         }
                     }

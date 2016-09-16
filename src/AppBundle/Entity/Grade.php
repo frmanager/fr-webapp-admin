@@ -2,18 +2,17 @@
 
 namespace AppBundle\Entity;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @UniqueEntity("name")
+ * @ORM\Table(name="grade",uniqueConstraints={@ORM\UniqueConstraint(columns={"name"})})
  */
 class Grade
 {
     /**
-     * @ORM\OneToMany(targetEntity="Teacher", mappedBy="grade")
+     * @ORM\OneToMany(targetEntity="Teacher", mappedBy="grade", cascade={"remove"})
      */
     private $teachers;
 

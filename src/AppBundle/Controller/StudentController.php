@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Student;
+use AppBundle\Utils\CSVHelper;
 
 /**
  * Student controller.
@@ -156,11 +157,20 @@ class StudentController extends Controller
      */
     public function uploadForm(Request $request)
     {
+        $truncateFlag = false;
         $logger = $this->get('logger');
+        $failure = false;
         $entity = 'Student';
         $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity));
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if (null != $form['truncate_table']->getData()) {
+                $str = $form['truncate_table']->getData();
+                if (in_array('truncate_yes', $str)) {
+                    $truncateFlag = true;
+                    $logger->info('Truncate table set to true');
+                }
+            }
             $entity = $form['entity']->getData();
             $uploadFile = $form['attachment']->getData();
 
@@ -168,80 +178,70 @@ class StudentController extends Controller
                 $logger->info('File was a .csv, attempting to load');
 
                 $uploadFile->move('temp/', strtolower($entity).'.csv');
-                $csvFile = fopen('temp/'.strtolower($entity).'.csv', 'r');
 
-                $counter = 0;
-                $fileData = [];
-                $thisRow;
-                $fileLabels;
+                $csvHelper = new csvHelper();
+                $csvHelper->processFile('temp/', strtolower($entity).'.csv');
+                $logger->debug(print_r($csvHelper->getData(), true));
+                $templateFields = array('name', 'grade', 'teachers_name');
 
-                while (!feof($csvFile)) {
-                    $thisRow = fgetcsv($csvFile);
-                    //$logger->info(print_r($thisRow, true));
-                  //Skip Empty Rows
-                  if (!empty($thisRow)) {
-                      $thisRowAsObjects = [];
-                      if ($counter == 0) {
-                          foreach ($thisRow as $key => $value) {
-                              $fileLabels[$key] = $this->clean($value);
-                          }
-                      } else {
-                          foreach ($thisRow as $key => $value) {
-                              $thisRowAsObjects[$this->clean($fileLabels[$key])] = trim($value);
-                          }
-                          array_push($fileData, $thisRowAsObjects);
-                      }
-                  }
-                    ++$counter;
-                }
-                fclose($csvFile);
-                unlink('temp/'.strtolower($entity).'.csv');
-                $logger->info(print_r($fileLabels, true));
-                if (in_array('name', $fileLabels) || in_array('grade', $fileLabels) || in_array('teachers_name', $fileLabels)) {
-                    $logger->info('Making changes to database');
-                    $logger->info('Clearing Table.');
-
+                if ($csvHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
-                    $qb = $em->createQueryBuilder();
-                    $qb->delete('AppBundle:Student', 's');
-                    $query = $qb->getQuery();
 
-                    if ($query->getResult() == 0) {
-                        $logger->info('Something Happened');
+                    if ($truncateFlag) {
+                        $logger->info('Clearing Table.');
+                        $students = $em->getRepository('AppBundle:Student')->findAll();
+                        foreach ($students as $student) {
+                            $em->remove($student);
+                        }
+                        $em->flush();
+                        $em->clear();
+                        $this->addFlash(
+                          'info',
+                          'Students table truncated'
+                      );
                     }
-                    $em->flush();
-                    $logger->info('Uploading Data');
+
+                    $logger->debug('Getting Teachers');
                     $em = $this->getDoctrine()->getManager();
+                    $teachers = $em->getRepository('AppBundle:Teacher')->findAll();
                     $batchSize = 20;
 
-                    foreach ($fileData as $i => $item) {
-                        $student = new Student();
-                        $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
+                    foreach ($csvHelper->getData() as $i => $item) {
+                        $failure = false;
+                        $teacher;
+                        //$grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findByName($item['grade']);
 
-                        if (empty($grade)) {
+                        $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
+
+                        if (!isset($teacher)) {
+                            $failure = true;
                             $this->addFlash(
-                                'danger',
-                                "Could not add student '".$item['name']."' with teacher's name '".$item['teachers_name']."'"
-                            );
-                        } else {
-                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneBy(
-                                array('teacherName' => $item['teachers_name'], 'grade' => $grade->getId())
-                            );
-                            if (empty($teacher)) {
-                                $this->addFlash(
-                                    'danger',
-                                    "Could not add student '".$item['name']."' with teacher's name '".$item['teachers_name']."'"
-                                );
-                            } else {
-                                $student->setName($item['name']);
-                                $student->setTeacher($teacher);
-                                $em->persist($student);
+                            'danger',
+                            '[ROW #'.($i + 2).'] Could not add student '.$item['name'].', teacher '.$item['teachers_name'].' could not be found with Grade '.$item['grade']
+                        );
+                        }
 
-                             // flush everything to the database every 20 inserts
-                             if (($i % $batchSize) == 0) {
-                                 $em->flush();
-                                 $em->clear();
-                             }
+                        if (!$failure) {
+                            $student = new Student();
+
+                            $student->setName($item['name']);
+                            $student->setTeacher($teacher);
+
+                            $validator = $this->get('validator');
+                            $errors = $validator->validate($student);
+
+                            if (count($errors) > 0) {
+                                /*
+                                 * Uses a __toString method on the $errors variable which is a
+                                 * ConstraintViolationList object. This gives us a nice string
+                                 * for debugging.
+                                 */
+                                $errorsString = (string) $errors;
+                                $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add student '.$item['name'].' for teacher '.$item['teachers_name'].', error:'.$errorsString);
+                            } else {
+                                $em->persist($student);
+                                $em->flush();
+                                $em->clear();
                             }
                         }
                     }
@@ -277,14 +277,5 @@ class StudentController extends Controller
             'form' => $form->createView(),
             'entity' => $entity,
         ));
-    }
-
-    private function clean($string)
-    {
-        $string = str_replace(' ', '_', $string); // Replaces all spaces with underscores.
-        $string = preg_replace('/[^A-Za-z0-9\_]/', '', $string); // Removes special chars.
-        $string = trim($string);
-
-        return strtolower($string);
     }
 }

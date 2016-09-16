@@ -83,6 +83,16 @@ The Phing configuration is dynamic and will support any amount of environments. 
   export BOWERPHP_TOKEN=<GITHUB_API_KEY>
 
 
+
+### Update entity getters and setters from database
+
+  php bin/console doctrine:generate:entities AppBundle:Causevoxfundraiser
+
+
+### Update database from entities
+  php bin/console doctrine:schema:update --force
+
+
 This project started as a fork from another project designed around a single page PHP Slim application to be put on shared hosting. It has now matured to include Test Automation and Continuous Integration principles.
 
 

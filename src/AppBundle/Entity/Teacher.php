@@ -2,28 +2,27 @@
 
 namespace AppBundle\Entity;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @UniqueEntity("teacherName")
+ * @ORM\Table(name="teacher",uniqueConstraints={@ORM\UniqueConstraint(columns={"teacher_name", "grade_id"})})
  */
 class Teacher
 {
     /**
-     * @ORM\OneToMany(targetEntity="Student", mappedBy="teacher", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Student", mappedBy="teacher", cascade={"remove"})
      */
     private $students;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher", cascade={"remove"})
      */
     private $causevoxteams;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="teacher", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="teacher", cascade={"remove"})
      */
     private $causevoxdonations;
 
@@ -35,8 +34,10 @@ class Teacher
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Grade",inversedBy="teachers", cascade={"all"})
-     * @ORM\JoinColumn(name="grade_id", referencedColumnName="id", onDelete="CASCADE")
+     * @var Grade
+     *
+     * @ORM\ManyToOne(targetEntity="Grade", inversedBy="teachers", cascade={"remove"})
+     * @ORM\JoinColumn(name="grade_id", referencedColumnName="id")
      * @Assert\NotNull()
      */
     private $grade;
@@ -150,25 +151,25 @@ class Teacher
     /**
      * Add causevoxteam.
      *
-     * @param \AppBundle\Entity\Causevoxteam $causevoxteam
+     * @param \AppBundle\Entity\Causevoxteam $causevoxteams
      *
      * @return Teacher
      */
-    public function addCausevoxteam(\AppBundle\Entity\Causevoxteam $causevoxteam)
+    public function addCausevoxteam(\AppBundle\Entity\Causevoxteam $causevoxteams)
     {
-        $this->causevoxteams[] = $causevoxteam;
+        $this->causevoxteams[] = $causevoxteams;
 
         return $this;
     }
 
     /**
-     * Remove causevoxteam.
+     * Remove causevoxteams.
      *
-     * @param \AppBundle\Entity\Causevoxteam $causevoxteam
+     * @param \AppBundle\Entity\Causevoxteam $causevoxteams
      */
-    public function removeCausevoxteam(\AppBundle\Entity\Causevoxteam $causevoxteam)
+    public function removeCausevoxteam(\AppBundle\Entity\Causevoxteam $causevoxteams)
     {
-        $this->causevoxteams->removeElement($causevoxteam);
+        $this->causevoxteams->removeElement($causevoxteams);
     }
 
     /**
@@ -184,25 +185,25 @@ class Teacher
     /**
      * Add causevoxdonation.
      *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
+     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
      *
      * @return Teacher
      */
-    public function addCausevoxdonation(\AppBundle\Entity\Causevoxdonation $causevoxdonation)
+    public function addCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
     {
-        $this->causevoxdonation[] = $causevoxdonation;
+        $this->causevoxdonations[] = $causevoxdonations;
 
         return $this;
     }
 
     /**
-     * Remove causevoxdonation.
+     * Remove causevoxdonations.
      *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonation
+     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
      */
-    public function removeCausevoxdonation(\AppBundle\Entity\Causevoxdonation $causevoxdonation)
+    public function removeCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
     {
-        $this->causevoxdonation->removeElement($causevoxdonation);
+        $this->causevoxdonations->removeElement($causevoxdonations);
     }
 
     /**
@@ -210,8 +211,8 @@ class Teacher
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getCausevoxdonation()
+    public function getCausevoxdonations()
     {
-        return $this->causevoxdonation;
+        return $this->causevoxdonations;
     }
 }

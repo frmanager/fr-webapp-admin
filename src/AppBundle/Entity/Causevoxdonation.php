@@ -3,14 +3,19 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+// DON'T forget this use statement!!!
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Causevoxdonation.
  *
- * @ORM\Table(name="causevoxdonation")
  * @ORM\Entity
- * @UniqueEntity(fields={"donatedAt","type","teacher", "student"})
+ * @ORM\Table(name="causevoxdonation",uniqueConstraints={@ORM\UniqueConstraint(columns={"teacher_id", "student_id", "donated_at"})})
+ * @UniqueEntity(
+ *     fields={"teacher", "student", "donatedAt", "donorEmail", "type"},
+ *     errorPath="donorEmail",
+ *     message="Already received a donation from this donor on this day...."
+ * )
  */
 class Causevoxdonation
 {
@@ -24,13 +29,17 @@ class Causevoxdonation
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Teacher",inversedBy="causevoxdonations", cascade={"remove"})
+     * @var Teacher
+     *
+     * @ORM\ManyToOne(targetEntity="Teacher", inversedBy="causevoxdonations")
      * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      */
     private $teacher;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Student",inversedBy="causevoxdonations", cascade={"remove"})
+     * @var Student
+     *
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="causevoxdonations")
      * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      */
     private $student;
