@@ -27,11 +27,6 @@ class Teacher
     private $causevoxdonations;
 
     /**
-     * @ORM\OneToMany(targetEntity="Offlinedonation", mappedBy="teacher", cascade={"remove"})
-     */
-    private $offlinedonations;
-
-    /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")

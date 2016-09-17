@@ -180,42 +180,14 @@ class OfflinedonationController extends Controller
                 $logger->info('File was a .csv, attempting to load');
                 $uploadFile->move('temp/', strtolower($entity).'.csv');
                 $csvHelper = new csvHelper();
+                $csvHelper->setHeaderRowIndex(1);
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
-                $csvHelper->getGradefromTeacherName();
-                $csvHelper->cleanTeacherNames();
-                $logger->debug(print_r($csvHelper->getData(), true));
+                $csvHelper->cleanAmounts();
+                //$logger->debug(print_r($csvHelper->getData(), true));
 
-                $templateFields = array('donation_page',
-                'fundraiser_first_name',
-                'fundraiser_last_name',
-                'fundraiser_email',
-                'fundraiser_location',
-                'donor_first_name',
-                'donor_last_name',
-                'donor_email',
-                'donor_comment',
-                'anonymous',
-                'line_1',
-                'line_2',
-                'city',
-                'state',
-                'zip_code',
-                'country',
-                'amount',
-                'est_cc_fee',
-                'offline_fee',
-                'tip',
-                'type',
-                'recurring',
-                'subscribed',
-                'giftaid',
-                'transaction_id',
-                'donated_at',
-                'teachers_name',
-                'students_name', );
+                $templateFields = array('date', 'grade', 'teacher', 'student', 'amount');
 
                 if ($csvHelper->validateHeaders($templateFields)) {
-                    $logger->info('Making changes to database');
                     $em = $this->getDoctrine()->getManager();
 
                     if ($truncateFlag) {
@@ -231,26 +203,40 @@ class OfflinedonationController extends Controller
                         $em->flush();
 
                         $this->addFlash(
-                            'info',
-                            'Offlinedonation table truncated'
+                            'success',
+                            'Offlinedonation table truncated Successfully'
                         );
                     }
 
                     $logger->info('Uploading Data');
                     $em = $this->getDoctrine()->getManager();
-                    $batchSize = 20;
+                    $breakLoop = false;
 
                     foreach ($csvHelper->getData() as $i => $item) {
                         $offlinedonation = new Offlinedonation();
                         $failure = false;
 
-                        if (null == $item['donation_page'] || empty($item['donation_page']) || strcmp('none', $item['donation_page']) == 0) {
-                            $logger->debug('Donation Page: '.$item['donation_page']);
+                        //ECHECKING FOR END ROW
+                        if (strcmp('END', $item['date']) == 0) {
                             $failure = true;
-                            $this->addFlash(
+                            $breakLoop = true;
+                        }
+
+                        //NO AMOUNT
+                        if (!$failure) {
+                            if (is_null($item['amount']) || empty($item['amount']) || strcmp($item['amount'], '') == 0) {
+                                $failure = true;
+                            }
+                        }
+
+                        if (!$failure) {
+                            if (!isset($item['date']) || empty($item['date']) || strcmp('none', $item['date']) == 0) {
+                                $failure = true;
+                                $this->addFlash(
                               'danger',
-                              '[ROW #'.($i + 2).'] Could not add Offlinedonation for '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Must be associated with a Donation Page (Team/Fundraiser)'
+                              '[ROW #'.($i + 3).'] Could not add Offlinedonation. Field: "DATE" required!'
                           );
+                            }
                         }
 
                         if (!$failure) {
@@ -259,52 +245,47 @@ class OfflinedonationController extends Controller
                                 $failure = true;
                                 $this->addFlash(
                                   'danger',
-                                  '[ROW #'.($i + 2).'] Could not add Offlinedonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Grade '.$item['grade'].' not found'
+                                  '[ROW #'.($i + 3).'] Could not add Offlinedonation. Grade '.$item['grade'].' not found'
                               );
                             }
                         }
 
                         if (!$failure) {
-                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
+                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teacher']);
                             if (empty($teacher)) {
                                 $failure = true;
                                 $this->addFlash(
                                   'danger',
-                                    '[ROW #'.($i + 2).'] Could not add Offlinedonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Teacher '.$item['teachers_name'].' not found'
+                                    '[ROW #'.($i + 3).'] Could not add Offlinedonation. Teacher "'.$item['teacher'].'" not found'
                               );
                             }
                         }
 
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                            array('teacher' => $teacher, 'name' => $item['students_name'])
+                            array('teacher' => $teacher, 'name' => $item['student'])
                           );
                             if (empty($student)) {
                                 $failure = true;
                                 $this->addFlash(
                                 'warning',
-                                  '[ROW #'.($i + 2).'] Could not add Offlinedonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Student '.$item['students_name'].' not found'
+                                  '[ROW #'.($i + 3).'] Could not add Offlinedonation. Student "'.$item['student'].'" not found'
                             );
                             }
                         }
 
+                        if ($breakLoop) {
+                            break;
+                        }
+
                         if (!$failure) {
                             //Example: 2016-08-25 16:35:54
-                            $date = new DateTime($item['donated_at']);
+                            $logger->debug(print_r($item, true));
+                            $date = new DateTime($item['date']);
 
                             $offlinedonation->setAmount($item['amount']);
-                            $offlinedonation->setTip($item['tip']);
-                            $offlinedonation->setEstimatedCcFee($item['est_cc_fee']);
-                            $offlinedonation->setOfflineFee($item['offline_fee']);
-                            $offlinedonation->setType($item['type']);
-                            $offlinedonation->setDonorFirstName($item['donor_first_name']);
-                            $offlinedonation->setDonorLastName($item['donor_last_name']);
-                            $offlinedonation->setDonorEmail($item['donor_email']);
-                            $offlinedonation->setDonorComment($item['donor_comment']);
-                            $offlinedonation->setDonationPage($item['donation_page']);
                             $offlinedonation->setDonatedAt($date);
                             $offlinedonation->setStudent($student);
-                            $offlinedonation->setTeacher($teacher);
 
                             $validator = $this->get('validator');
                             $errors = $validator->validate($offlinedonation);
@@ -316,7 +297,7 @@ class OfflinedonationController extends Controller
                                  * for debugging.
                                  */
                                 $errorsString = (string) $errors;
-                                $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add offlinedonation for '.$item['donor_first_name'].' '.$item['donor_last_name'].' for $'.$item['amount'].', error:'.$errorsString);
+                                $this->addFlash('danger', '[ROW #'.($i + 4).'] Could not add offlinedonation for '.$item['student'].', error:'.$errorsString);
                             } else {
                                 $em->persist($offlinedonation);
                                 $em->flush();
@@ -330,7 +311,7 @@ class OfflinedonationController extends Controller
                     $em->clear();
 
                     $this->addFlash(
-                        'info',
+                        'success',
                         'Completed'
                     );
 

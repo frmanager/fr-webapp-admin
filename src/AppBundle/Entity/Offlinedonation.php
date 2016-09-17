@@ -10,9 +10,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * Offlinedonation.
  *
  * @ORM\Entity
- * @ORM\Table(name="0fflinedonation",uniqueConstraints={@ORM\UniqueConstraint(columns={"teacher_id", "student_id", "donated_at"})})
+ * @ORM\Table(name="0fflinedonation",uniqueConstraints={@ORM\UniqueConstraint(columns={"student_id", "donated_at"})})
  * @UniqueEntity(
- *     fields={"teacher", "student", "donatedAt"},
+ *     fields={"student", "donatedAt"},
  *     errorPath="student",
  *     message="Already received a donation from this student on this day...."
  * )
@@ -27,14 +27,6 @@ class Offlinedonation
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
-
-    /**
-     * @var Teacher
-     *
-     * @ORM\ManyToOne(targetEntity="Teacher", inversedBy="offlinedonations")
-     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $teacher;
 
     /**
      * @var Student
@@ -59,9 +51,9 @@ class Offlinedonation
     private $donatedAt;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -69,7 +61,7 @@ class Offlinedonation
     }
 
     /**
-     * Set amount
+     * Set amount.
      *
      * @param float $amount
      *
@@ -83,7 +75,7 @@ class Offlinedonation
     }
 
     /**
-     * Get amount
+     * Get amount.
      *
      * @return float
      */
@@ -93,7 +85,7 @@ class Offlinedonation
     }
 
     /**
-     * Set donatedAt
+     * Set donatedAt.
      *
      * @param \DateTime $donatedAt
      *
@@ -107,7 +99,7 @@ class Offlinedonation
     }
 
     /**
-     * Get donatedAt
+     * Get donatedAt.
      *
      * @return \DateTime
      */
@@ -117,31 +109,7 @@ class Offlinedonation
     }
 
     /**
-     * Set teacher
-     *
-     * @param \AppBundle\Entity\Teacher $teacher
-     *
-     * @return Offlinedonation
-     */
-    public function setTeacher(\AppBundle\Entity\Teacher $teacher = null)
-    {
-        $this->teacher = $teacher;
-
-        return $this;
-    }
-
-    /**
-     * Get teacher
-     *
-     * @return \AppBundle\Entity\Teacher
-     */
-    public function getTeacher()
-    {
-        return $this->teacher;
-    }
-
-    /**
-     * Set student
+     * Set student.
      *
      * @param \AppBundle\Entity\Student $student
      *
@@ -155,7 +123,7 @@ class Offlinedonation
     }
 
     /**
-     * Get student
+     * Get student.
      *
      * @return \AppBundle\Entity\Student
      */
