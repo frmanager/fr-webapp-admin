@@ -42,14 +42,19 @@ class Student
     private $teacher;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxfundraiser", mappedBy="student", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Causevoxfundraiser", mappedBy="student", cascade={"remove"})
      */
     private $causevoxfundraisers;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="student", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="student", cascade={"remove"})
      */
     private $causevoxdonations;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Offlinedonation", mappedBy="student", cascade={"remove"})
+     */
+    private $offlinedonations;
 
     /**
      * Get id.
@@ -184,6 +189,10 @@ class Student
         return $this->causevoxfundraisers;
     }
 
+    public function getStudentAndTeacher()
+    {
+        return sprintf('%s - %s - %s', $this->teacher->getGrade()->getName(), $this->teacher->getTeacherName(), $this->name);
+    }
     /**
      * Add causevoxdonations.
      *

@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use AppBundle\Entity\Teacher;
+use Doctrine\ORM\EntityRepository;
 
 class StudentType extends AbstractType
 {
@@ -19,7 +20,10 @@ class StudentType extends AbstractType
         $builder
             ->add('teacher', EntityType::class, array(
               'class' => 'AppBundle:Teacher',
-              'choice_label' => 'teachername',
+              'query_builder' => function (EntityRepository $er) {
+                  return $er->createQueryBuilder('u')->orderBy('u.grade, u.teacherName', 'ASC');
+              },
+              'choice_label' => 'teacherAndGrade',
               ))
             ->add('name')
         ;

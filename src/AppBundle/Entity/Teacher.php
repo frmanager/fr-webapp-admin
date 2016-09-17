@@ -27,6 +27,11 @@ class Teacher
     private $causevoxdonations;
 
     /**
+     * @ORM\OneToMany(targetEntity="Offlinedonation", mappedBy="teacher", cascade={"remove"})
+     */
+    private $offlinedonations;
+
+    /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -204,6 +209,11 @@ class Teacher
     public function removeCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
     {
         $this->causevoxdonations->removeElement($causevoxdonations);
+    }
+
+    public function getTeacherAndGrade()
+    {
+        return sprintf('%s - %s', $this->grade->getName(), $this->teacherName);
     }
 
     /**
