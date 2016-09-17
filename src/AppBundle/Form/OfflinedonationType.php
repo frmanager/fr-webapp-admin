@@ -9,8 +9,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use AppBundle\Entity\Student;
 use AppBundle\Entity\Teacher;
+use Doctrine\ORM\EntityRepository;
 
-class CausevoxdonationType extends AbstractType
+class OfflinedonationType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -21,16 +22,20 @@ class CausevoxdonationType extends AbstractType
         $builder
             ->add('student', EntityType::class, array(
               'class' => 'AppBundle:Student',
-              'choice_label' => 'name',
+              'query_builder' => function (EntityRepository $er) {
+                  return $er->createQueryBuilder('u')->orderBy('u.teacher, u.name', 'ASC');
+              },
+              'choice_label' => 'studentAndTeacher',
               ))
-            ->add('teacher', EntityType::class, array(
-              'class' => 'AppBundle:Teacher',
-              'choice_label' => 'teachername',
-              ))
+              ->add('teacher', EntityType::class, array(
+                'class' => 'AppBundle:Teacher',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')->orderBy('u.grade, u.teacherName', 'ASC');
+                },
+                'choice_label' => 'teacherAndGrade',
+                ))
             ->add('amount')
             ->add('donated_at', DateType::class)
-            ->add('donor_email')
-            ->add('type')
         ;
     }
 
@@ -40,7 +45,7 @@ class CausevoxdonationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Causevoxdonation',
+            'data_class' => 'AppBundle\Entity\Offlinedonation',
         ));
     }
 }

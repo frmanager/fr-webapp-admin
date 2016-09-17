@@ -4,12 +4,12 @@
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h1>Students</h1>
+            <h1>CauseVox Donations</h1>
             <hr/>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-10 col-md-offset-1">
             <div style="text-align:right;">
                 <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-plus"></i>
@@ -23,26 +23,34 @@
                 <thead>
                     <tr>
                         <th>Id</th>
+                        <th>Donated At</th>
                         <th>Teacher</th>
-                        <th>Student's Name</th>
+                        <th>Student</th>
+                        <th>Donor Email</th>
+                        <th>amount</th>
+                        <th>type</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for student in students %}
+                    {% for causevoxdonation in causevoxdonations %}
                         <tr>
                             <td>
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}">{{ student.id }}</a>
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxdonation.id }) }}">{{ causevoxdonation.id }}</a>
                             </td>
-                            <td>{{ student.teacher.grade.name }} - {{ student.teacher.teachername }}</td>
-                            <td>{{ student.name }}</td>
+                            <td>{{ causevoxdonation.donatedAt|date("m/d/Y")  }}</td>
+                            <td>{{ causevoxdonation.teacher.teachername }}</td>
+                            <td>{{ causevoxdonation.student.name }}</td>
+                            <td>{{ causevoxdonation.donorEmail }}</td>
+                            <td style="text-align:right;">${{ causevoxdonation.amount|number_format(2, '.', ',')  }}</td>
+                            <td>{{ causevoxdonation.type }}</td>
                             <td style="text-align:center;">
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}" class="btn btn-sm btn-info">
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxdonation.id }) }}" class="btn btn-sm btn-info">
                                     <i class="glyphicon glyphicon-eye-open"></i>
                                     <span class="hidden-xs hidden-sm">
                                         View</span>
                                 </a>
-                                <a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-sm btn-warning">
+                                <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxdonation.id }) }}" class="btn btn-sm btn-warning">
                                     <i class="glyphicon glyphicon-edit"></i>
                                     <span class="hidden-xs hidden-sm">
                                         Edit</span>

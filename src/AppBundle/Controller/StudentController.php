@@ -99,7 +99,7 @@ class StudentController extends Controller
             $em->persist($student);
             $em->flush();
 
-            return $this->redirectToRoute(strtolower($entity).'_edit', array('id' => $student->getId()));
+            return $this->redirectToRoute(strtolower($entity).'_show', array('id' => $student->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(
