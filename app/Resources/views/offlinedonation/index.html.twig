@@ -37,8 +37,8 @@
                                 <a href="{{ path(entity|lower ~ '_show', { 'id': offlinedonation.id }) }}">{{ offlinedonation.id }}</a>
                             </td>
                             <td>{{ offlinedonation.donatedAt|date("m/d/Y")  }}</td>
-                            <td>{{ offlinedonation.teacher.teachername }}</td>
-                            <td>{{ offlinedonation.student.name }}</td>
+                            <td>{% if offlinedonation.student.teacher is defined %}{{ offlinedonation.student.teacher.teacherName }}{% endif %}</td>
+                            <td>{% if offlinedonation.student is defined %}{{ offlinedonation.student.name }}{% endif %}</td>
                             <td style="text-align:right;">${{ offlinedonation.amount|number_format(2, '.', ',')  }}</td>
                             <td style="text-align:center;">
                                 <a href="{{ path(entity|lower ~ '_show', { 'id': offlinedonation.id }) }}" class="btn btn-sm btn-info">

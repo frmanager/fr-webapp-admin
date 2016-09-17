@@ -202,8 +202,8 @@ class CausevoxteamController extends Controller
                         $em->flush();
 
                         $this->addFlash(
-                            'info',
-                            'Causevoxteam table truncated'
+                            'success',
+                            'Causevoxteam table truncated successfully'
                         );
                     }
 

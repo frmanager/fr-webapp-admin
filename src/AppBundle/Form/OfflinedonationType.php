@@ -27,13 +27,6 @@ class OfflinedonationType extends AbstractType
               },
               'choice_label' => 'studentAndTeacher',
               ))
-              ->add('teacher', EntityType::class, array(
-                'class' => 'AppBundle:Teacher',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u')->orderBy('u.grade, u.teacherName', 'ASC');
-                },
-                'choice_label' => 'teacherAndGrade',
-                ))
             ->add('amount')
             ->add('donated_at', DateType::class)
         ;

@@ -13,7 +13,7 @@ class CSVHelper
     private $filePath = null;
     private $CSVFile = null;
     private $headerWhiteList = [];
-
+    private $headerRowIndex = 0;
     public function __construct()
     {
     }
@@ -32,9 +32,9 @@ class CSVHelper
             $thisRow = fgetcsv($this->getCSVFile());
             if (!empty($thisRow)) {
                 $thisRowAsObjects = [];
-                if ($counter == 0) {
+                if ($counter == $this->getHeaderRowIndex()) {
                     $this->setHeaders($thisRow);
-                } else {
+                } elseif ($counter > $this->getHeaderRowIndex()) {
                     $this->addRow($thisRow);
                 }
                 ++$counter;
@@ -105,6 +105,16 @@ class CSVHelper
         return $this->headers;
     }
 
+    public function setHeaderRowIndex($headerRowIndex)
+    {
+        $this->headerRowIndex = $headerRowIndex;
+    }
+
+    public function getHeaderRowIndex()
+    {
+        return $this->headerRowIndex;
+    }
+
     public function setData($data)
     {
         $this->data = $data;
@@ -170,7 +180,7 @@ class CSVHelper
         foreach ($this->getHeaders() as $key => $value) {
             $loopCheck = false;
             foreach ($makeStringArray as $key2 => $value2) {
-                if (strcmp($value, $value2)) {
+                if (strcmp($value, $value2) == 0) {
                     $loopCheck = true;
                 }
             }
@@ -205,7 +215,14 @@ class CSVHelper
 
     public function cleanDataString($string)
     {
-        $string = preg_replace('/[^A-Za-z0-9\_ -.]/', '', $string); // Removes special chars.
+        $string = preg_replace('/[^A-Za-z0-9\/_ -.]/', '', $string); // Removes special chars.
+        $string = trim($string);
+
+        return $string;
+    }
+    public function cleanAmountString($string)
+    {
+        $string = preg_replace('/[^0-9.]*/', '', $string); // Removes special chars.
         $string = trim($string);
 
         return $string;
@@ -219,6 +236,20 @@ class CSVHelper
                 if (strcmp($key, 'teachers_name') == 0) {
                     $teacherNameString = substr(trim($value), strpos(trim($value), ' - ') + 3, strlen(trim($value)));
                     $thisData[$rowIndex][$key] = $teacherNameString;
+                }
+            }
+        }
+
+        $this->setData($thisData);
+    }
+
+    public function cleanAmounts()
+    {
+        $thisData = $this->getData();
+        foreach ($thisData as $rowIndex => $rowData) {
+            foreach ($rowData as $key => $value) {
+                if (strcmp($key, 'amount') == 0) {
+                    $thisData[$rowIndex][$key] = $this->cleanAmountString($value);
                 }
             }
         }

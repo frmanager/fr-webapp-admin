@@ -161,6 +161,17 @@ $(document).ready(function() {
         $(".alert-success").slideUp(1000);
     });
 
+    $(".alert-default").fadeTo(2000, 500).slideUp(1000, function() {
+        $(".alert-success").slideUp(1000);
+    });
+
+    $(".alert-info").fadeTo(2000, 500).slideUp(1000, function() {
+        $(".alert-success").slideUp(1000);
+    });
+    $(".alert-warning").fadeTo(2000, 500).slideUp(1000, function() {
+        $(".alert-success").slideUp(1000);
+    });
+
     $(window).scroll(function() {
         if ($(this).scrollTop() > 50) {
             $('#back-to-top').fadeIn();

@@ -26,7 +26,7 @@
                     </tr>
                     <tr>
                         <th>Teacher's name</th>
-                        <td>{{ offlinedonation.student.teacher.teachername }}</td>
+                        <td>{% if offlinedonation.student is defined %}{{ offlinedonation.student.teacher.teachername }}{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Student's Name</th>

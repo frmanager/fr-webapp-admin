@@ -24,6 +24,7 @@ class UploadType extends AbstractType
               'Cause Vox Teams' => 'Causevoxteam',
               'Cause Vox Fundraisers' => 'Causevoxfundraiser',
               'Cause Vox Donations' => 'Causevoxdonation',
+              'Offline Donations' => 'Offlinedonation',
             ),
             'disabled' => true,
           )
