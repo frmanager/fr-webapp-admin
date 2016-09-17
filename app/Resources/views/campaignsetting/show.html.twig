@@ -10,34 +10,23 @@
     </div>
     <div class="row">
         <div class="col-md-10 col-md-offset-2">
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th>Id</th>
-                        <td>{{ campaignsetting.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>{{ campaignsetting.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Value</th>
-                        <td>{{ campaignsetting.value }}</td>
-                    </tr>
-                    <tr>
-                        <th>Format</th>
-                        <td>
-                            {% if campaignsetting.format is defined %}{{ campaignsetting.format }}{% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            {% if campaignsetting.description is defined %}{{ campaignsetting.description }}{% endif %}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <dl class="dl-horizontal">
+                <dt>ID</dt>
+                <dd>{{ campaignsetting.id }}</dd>
+                <dt>Name</dt>
+                <dd>{{ campaignsetting.name }}</dd>
+                <dt>Value</dt>
+                <dd>{{ campaignsetting.value }}</dd>
+                <dt>Format</dt>
+                <dd>
+                    {% if campaignsetting.format is defined %}{{ campaignsetting.format }}{% endif %}
+                </dd>
+                <dt>Description</dt>
+                <dd>
+                    {% if campaignsetting.description is defined %}{{ campaignsetting.description }}{% endif %}
+                </dd>
+            </dl>
+
             {{ form_start(delete_form) }}
             <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
             <a href="{{ path(entity|lower ~ '_edit', { 'id': campaignsetting.id }) }}" class="btn btn-primary">Edit</a>

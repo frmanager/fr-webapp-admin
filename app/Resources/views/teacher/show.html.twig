@@ -10,22 +10,14 @@
     </div>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th>Id</th>
-                        <td>{{ teacher.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Grade</th>
-                        <td>{{ teacher.grade.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Teacher's name</th>
-                        <td>{{ teacher.teacherName }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <dl class="dl-horizontal">
+                <dt>ID</dt>
+                <dd>{{ teacher.id }}</dd>
+                <dt>Grade</dt>
+                <dd>{{ teacher.grade.name }}</dd>
+                <dt>Teacher</dt>
+                <dd>{{ teacher.teacherName }}</dd>
+            </dl>
             {{ form_start(delete_form) }}
             <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
             <a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.id }) }}" class="btn btn-primary">Edit</a>
