@@ -54,11 +54,21 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a href="{{ path('campaignsetting_index') }}">Manage Campaign</a>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                Manage Campaign</span>
+                            </strong>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="drop3">
+                            <li>
+                                <a href="{{ path('campaignsetting_index') }}">Manage Campaign</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('campaignaward_index') }}">Manage Awards</a>
+                            </li>
+                        </ul>
                     </li>
-                </ul>
-                <ul class="nav navbar-nav">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             CauseVox Data<span class="hidden-xs hidden-sm">

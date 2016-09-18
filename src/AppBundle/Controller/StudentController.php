@@ -27,7 +27,7 @@ class StudentController extends Controller
         $entity = 'Student';
         $em = $this->getDoctrine()->getManager();
 
-        $students = $em->getRepository('AppBundle:Student')->findAll();
+        $students = $em->getRepository('AppBundle:Student')->findBy(array(), array('id' => 'asc'));
 
         return $this->render(strtolower($entity).'/index.html.twig', array(
             'students' => $students,
