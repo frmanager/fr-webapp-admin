@@ -98,7 +98,7 @@ class CampaignawardController extends Controller
             $em->persist($campaignaward);
             $em->flush();
 
-            return $this->redirectToRoute('campaignaward_edit', array('id' => $campaignaward->getId()));
+            return $this->redirectToRoute('campaignaward_index', array('id' => $campaignaward->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(

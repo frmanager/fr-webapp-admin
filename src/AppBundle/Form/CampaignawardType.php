@@ -28,8 +28,8 @@ class CampaignawardType extends AbstractType
             ))
             ->add('award_style', ChoiceType::class, array(
                 'choices' => array(
-                    'Top' => 'top',
-                    'Level' => 'level',
+                    'Place' => 'place',
+                    'Donation Level' => 'level',
                 ),
             ))
             ->add('amount', NumberType::class, array('required' => false))
