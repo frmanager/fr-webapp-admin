@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Student;
 use AppBundle\Utils\CSVHelper;
+use AppBundle\Utils\ValidationHelper;
 
 /**
  * Student controller.
@@ -157,21 +158,18 @@ class StudentController extends Controller
      */
     public function uploadForm(Request $request)
     {
-        $truncateFlag = false;
         $logger = $this->get('logger');
-        $failure = false;
         $entity = 'Student';
+        $mode = 'update';
         $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity));
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (null != $form['truncate_table']->getData()) {
-                $str = $form['truncate_table']->getData();
-                if (in_array('truncate_yes', $str)) {
-                    $truncateFlag = true;
-                    $logger->info('Truncate table set to true');
-                }
+            if (null != $form['upload_mode']->getData()) {
+                $mode = $form['upload_mode']->getData();
+            } else {
+                $logger->error('No mode was selected. defaulted to update');
             }
-            $entity = $form['entity']->getData();
+
             $uploadFile = $form['attachment']->getData();
 
             if (strpos($uploadFile->getClientOriginalName(), '.csv') !== false) {
@@ -181,48 +179,82 @@ class StudentController extends Controller
 
                 $csvHelper = new csvHelper();
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
-                $logger->debug(print_r($csvHelper->getData(), true));
                 $templateFields = array('name', 'grade', 'teachers_name');
 
                 if ($csvHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
 
-                    if ($truncateFlag) {
-                        $logger->info('Clearing Table.');
-                        $students = $em->getRepository('AppBundle:Student')->findAll();
-                        foreach ($students as $student) {
-                            $em->remove($student);
-                        }
+                    if (strcmp($mode, 'truncate') == 0) {
+                        $logger->info('User selected to [truncate] table');
+
+                        $qb = $em->createQueryBuilder();
+                        $qb->delete('AppBundle:'.$entity, 's');
+                        $query = $qb->getQuery();
+
+                        $query->getResult();
+
                         $em->flush();
-                        $em->clear();
+
                         $this->addFlash(
-                          'info',
-                          'Students table truncated'
-                      );
+                            'info',
+                            'The Causevox Teams table has been truncated'
+                        );
                     }
 
-                    $logger->debug('Getting Teachers');
+                    $logger->info('Uploading Data');
                     $em = $this->getDoctrine()->getManager();
-                    $teachers = $em->getRepository('AppBundle:Teacher')->findAll();
-                    $batchSize = 20;
-
+                    $errorMessages = [];
+                    $errorMessage;
                     foreach ($csvHelper->getData() as $i => $item) {
                         $failure = false;
-                        $teacher;
-                        //$grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findByName($item['grade']);
+                        unset($errorMessage);
 
-                        $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
-
-                        if (!isset($teacher)) {
-                            $failure = true;
-                            $this->addFlash(
-                            'danger',
-                            '[ROW #'.($i + 2).'] Could not add student '.$item['name'].', teacher '.$item['teachers_name'].' could not be found with Grade '.$item['grade']
-                        );
+                        if (!$failure) {
+                            $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
+                            if (empty($grade)) {
+                                $failure = true;
+                                $errorMessage = new ValidationHelper(array(
+                              'entity' => $entity,
+                              'row_index' => ($i + 2),
+                              'error_field' => 'grade',
+                              'error_field_value' => $item['grade'],
+                              'error_message' => 'Could not find grade',
+                              'error_level' => ValidationHelper::$level_error, ));
+                            }
                         }
 
                         if (!$failure) {
-                            $student = new Student();
+                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
+                            if (empty($teacher)) {
+                                $failure = true;
+                                $errorMessage = new ValidationHelper(array(
+                              'entity' => $entity,
+                              'row_index' => ($i + 2),
+                              'error_field' => 'teachers_name',
+                              'error_field_value' => $item['teachers_name'],
+                              'error_message' => 'Could not find teacher',
+                              'error_level' => ValidationHelper::$level_error, ));
+                            }
+                        }
+
+                        if (!$failure) {
+                            $student = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                        array('teacher' => $teacher, 'name' => $item['name'])
+                        );
+                        //Going to perform "Insert" vs "Update"
+                          if (empty($student)) {
+                              $logger->debug($entity.' not found....creating new record');
+                              $student = new Student();
+                          } else {
+                              $logger->debug($entity.' found....updating existing record');
+                              $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'name',
+                                'error_field_value' => $item['name'],
+                                'error_message' => 'Duplicate with Student #'.$student->getId(),
+                                'error_level' => ValidationHelper::$level_warning, ));
+                          }
 
                             $student->setName($item['name']);
                             $student->setTeacher($teacher);
@@ -230,34 +262,53 @@ class StudentController extends Controller
                             $validator = $this->get('validator');
                             $errors = $validator->validate($student);
 
-                            if (count($errors) > 0) {
-                                /*
-                                 * Uses a __toString method on the $errors variable which is a
-                                 * ConstraintViolationList object. This gives us a nice string
-                                 * for debugging.
-                                 */
-                                $errorsString = (string) $errors;
-                                $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add student '.$item['name'].' for teacher '.$item['teachers_name'].', error:'.$errorsString);
-                            } else {
-                                $em->persist($student);
-                                $em->flush();
-                                $em->clear();
-                            }
+                            if (strcmp($mode, 'validate') !== 0) {
+                                if (count($errors) > 0) {
+                                    $errorsString = (string) $errors;
+                                    $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
+                                    $this->addFlash(
+                                        'danger',
+                                        '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
+                                    );
+                                } else {
+                                    $em->persist($student);
+                                    $em->flush();
+                                    $em->clear();
+                                }
+                            } //Otherwise we do Nothing....
+                        }
+
+                        if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {
+                            $this->addFlash(
+                                  $errorMessage->getErrorLevel(),
+                                  $errorMessage->printFlashBagMessage()
+                              );
+                        }
+
+                        //Push Error Message
+                        if (isset($errorMessage)) {
+                            array_push($errorMessages, $errorMessage->getMap());
                         }
                     }
 
-                    // flush the remaining objects
-                    $em->flush();
-                    $em->clear();
+                    if (strcmp($mode, 'validate') !== 0) {
+                        $em->flush();
+                        $em->clear();
 
-                    $this->addFlash(
-                        'info',
-                        'Completed'
-                    );
-
-                    return $this->redirectToRoute(strtolower($entity).'_index');
+                        return $this->redirectToRoute(strtolower($entity).'_index');
+                    } else {
+                        return $this->render('crud/validate.html.twig', array(
+                          'error_messages' => $errorMessages,
+                          'entity' => $entity,
+                      ));
+                    }
                 } else {
-                    $logger->info('file does not have mandatory "Grade", "Name", and "Teachers Name" fields');
+                    $logger->info('file does not have mandatory fields. ['.implode(', ', $templateFields).']');
+                    $logger->info('File was not a .csv');
+                    $this->addFlash(
+                      'danger',
+                      'file does not have mandatory fields. ['.implode(', ', $templateFields).']'
+                  );
                 }
             } else {
                 $logger->info('File was not a .csv');

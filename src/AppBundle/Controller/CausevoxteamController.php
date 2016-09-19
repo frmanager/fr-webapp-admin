@@ -181,8 +181,6 @@ class CausevoxteamController extends Controller
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
                 $csvHelper->cleanTeacherNames();
 
-                $logger->info(print_r($csvHelper->getData(), true));
-
                 $templateFields = array('name', 'grade', 'url', 'funds_needed', 'funds_raised', 'teachers_name', 'members', 'admins');
 
                 if ($csvHelper->validateHeaders($templateFields)) {

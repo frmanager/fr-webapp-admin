@@ -10,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * Offlinedonation.
  *
  * @ORM\Entity
- * @ORM\Table(name="0fflinedonation",uniqueConstraints={@ORM\UniqueConstraint(columns={"student_id", "donated_at"})})
+ * @ORM\Table(name="0fflinedonation",uniqueConstraints={@ORM\UniqueConstraint(columns={"donated_at", "student_id", "donated_at"})})
  * @UniqueEntity(
  *     fields={"student", "donatedAt"},
  *     errorPath="student",

@@ -380,11 +380,11 @@ class CausevoxdonationController extends Controller
                       ));
                     }
                 } else {
-                    $logger->info('file does not have mandatory fields. Please verify it was downloaded from Causevox');
+                    $logger->info('file does not have mandatory fields ['.implode(', ', $templateFields).']. Please verify it was downloaded from Causevox');
                     $logger->info('File was not a .csv');
                     $this->addFlash(
                         'danger',
-                        'file does not have mandatory fields. Please verify it was downloaded from Causevox'
+                        'file does not have mandatory fields ['.implode(', ', $templateFields).']. Please verify it was downloaded from Causevox'
                     );
                 }
             } else {
