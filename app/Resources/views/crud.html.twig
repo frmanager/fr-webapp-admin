@@ -32,7 +32,7 @@
                 </div>
                 <div class="collapse navbar-collapse navbar-x-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="dropdown">
+                        <li class="dropdown {% if app.request.attributes.get('_route') in ['grade_index', 'teacher_index', 'student_index']%}active{% endif %}">
                             <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 Core Data<span class="hidden-xs hidden-sm">
                                     Administration</span>
@@ -40,36 +40,36 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="drop3">
-                            <li>
+                            <li {% if app.request.attributes.get('_route') == 'grade_index'%} class="active" {% endif %}>
                                 <a href="{{ path('grade_index') }}">Manage Grades</a>
                             </li>
-                            <li>
+                            <li  {% if app.request.attributes.get('_route') == 'teacher_index'%} class="active" {% endif %}>
                                 <a href="{{ path('teacher_index') }}">Manage Teachers</a>
                             </li>
-                            <li>
+                            <li  {% if app.request.attributes.get('_route') == 'student_index'%} class="active" {% endif %}>
                                 <a href="{{ path('student_index') }}">Manage Students</a>
                             </li>
                         </ul>
                     </li>
-                        <li class="dropdown">
+                        <li class="dropdown {% if app.request.attributes.get('_route') in ['campaignsetting_index', 'campaignaward_index', 'offlinedonation_index']%}active{% endif %}">
                             <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 Manage Campaign</span>
                             </strong>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="drop3">
-                            <li>
+                            <li {% if app.request.attributes.get('_route') == 'campaignsetting_index'%} class="active" {% endif %}>
                                 <a href="{{ path('campaignsetting_index') }}">Manage Campaign</a>
                             </li>
-                            <li>
+                            <li {% if app.request.attributes.get('_route') == 'campaignaward_index'%} class="active" {% endif %}>
                                 <a href="{{ path('campaignaward_index') }}">Manage Awards</a>
                             </li>
-                            <li>
+                            <li {% if app.request.attributes.get('_route') == 'offlinedonation_index'%} class="active" {% endif %}>
                                 <a href="{{ path('offlinedonation_index') }}">Manage Offline Donations</a>
-                            </li>                            
+                            </li>
                         </ul>
                     </li>
-                    <li class="dropdown">
+                    <li class="dropdown {% if app.request.attributes.get('_route') in ['causevoxteam_index', 'causevoxfundraiser_index', 'causevoxdonation_index']%}active{% endif %}">
                         <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             CauseVox Data<span class="hidden-xs hidden-sm">
                                 Administration</span>
@@ -77,13 +77,13 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="drop4">
-                        <li>
+                        <li {% if app.request.attributes.get('_route') == 'causevoxteam_index'%} class="active" {% endif %}>
                             <a href="{{ path('causevoxteam_index') }}">Manage Causevox Teams</a>
                         </li>
-                        <li>
+                        <li {% if app.request.attributes.get('_route') == 'causevoxfundraiser_index'%} class="active" {% endif %}>
                             <a href="{{ path('causevoxfundraiser_index') }}">Manage Causevox Fundraisers</a>
                         </li>
-                        <li>
+                        <li {% if app.request.attributes.get('_route') == 'causevoxdonation_index'%} class="active" {% endif %}>
                             <a href="{{ path('causevoxdonation_index') }}">Manage Causevox Donations</a>
                         </li>
                     </ul>
