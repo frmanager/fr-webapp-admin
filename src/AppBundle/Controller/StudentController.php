@@ -179,7 +179,7 @@ class StudentController extends Controller
 
                 $csvHelper = new csvHelper();
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
-                $templateFields = array('name', 'grade', 'teachers_name');
+                $templateFields = array('students_name', 'grade', 'teachers_name');
 
                 if ($csvHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
@@ -239,7 +239,7 @@ class StudentController extends Controller
 
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                        array('teacher' => $teacher, 'name' => $item['name'])
+                        array('teacher' => $teacher, 'name' => $item['students_name'])
                         );
                         //Going to perform "Insert" vs "Update"
                           if (empty($student)) {
@@ -250,13 +250,13 @@ class StudentController extends Controller
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
                                 'row_index' => ($i + 2),
-                                'error_field' => 'name',
-                                'error_field_value' => $item['name'],
+                                'error_field' => 'students_name',
+                                'error_field_value' => $item['students_name'],
                                 'error_message' => 'Duplicate with Student #'.$student->getId(),
                                 'error_level' => ValidationHelper::$level_warning, ));
                           }
 
-                            $student->setName($item['name']);
+                            $student->setName($item['students_name']);
                             $student->setTeacher($teacher);
 
                             $validator = $this->get('validator');
