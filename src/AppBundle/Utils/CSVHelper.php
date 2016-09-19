@@ -234,7 +234,7 @@ class CSVHelper
         $string = preg_replace('/[^0-9.]*/', '', $string); // Removes special chars.
         $string = trim($string);
 
-        return $string;
+        return floatval($string);
     }
 
     public function cleanTeacherNames()
