@@ -27,7 +27,6 @@
                         <th>Teacher</th>
                         <th>Student</th>
                         <th span class="hidden-xs hidden-sm">email</th>
-                        <th>URL</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -43,7 +42,6 @@
                                 {% if causevoxfundraiser.student is not null %}{{ causevoxfundraiser.student.name }}{% endif %}
                             </td>
                             <td span class="hidden-xs hidden-sm">{{ causevoxfundraiser.email }}</td>
-                            <td>{{ causevoxfundraiser.url }}</td>
                             <td style="text-align:center;">
                                 <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-info">
                                     <i class="glyphicon glyphicon-eye-open"></i>

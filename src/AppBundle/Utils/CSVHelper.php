@@ -215,7 +215,7 @@ class CSVHelper
 
     public function cleanDataString($string)
     {
-        $string = preg_replace('/[^A-Za-z0-9\/_ -.]/', '', $string); // Removes special chars.
+        $string = preg_replace('/[^A-Za-z0-9@\/_ -.]/', '', $string); // Removes special chars.
         $string = trim($string);
 
         return $string;
