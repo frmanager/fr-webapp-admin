@@ -184,7 +184,7 @@ class OfflinedonationController extends Controller
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
                 $csvHelper->cleanAmounts();
 
-                $templateFields = array('date', 'grade', 'teacher', 'student', 'amount');
+                $templateFields = array('date', 'grade', 'teachers_name', 'students_name', 'amount');
 
                 if ($csvHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
@@ -250,14 +250,14 @@ class OfflinedonationController extends Controller
                         }
 
                         if (!$failure) {
-                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teacher']);
+                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
                             if (empty($teacher)) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
                                 'row_index' => ($i + 2),
-                                'error_field' => 'teacher',
-                                'error_field_value' => $item['teacher'],
+                                'error_field' => 'teachers_name',
+                                'error_field_value' => $item['teachers_name'],
                                 'error_message' => 'Could not find teacher',
                                 'error_level' => ValidationHelper::$level_error, ));
                             }
@@ -265,15 +265,15 @@ class OfflinedonationController extends Controller
 
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                          array('teacher' => $teacher, 'name' => $item['student'])
+                          array('teacher' => $teacher, 'name' => $item['students_name'])
                         );
                             if (empty($student)) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                               'entity' => $entity,
                               'row_index' => ($i + 2),
-                              'error_field' => 'student',
-                              'error_field_value' => $item['student'],
+                              'error_field' => 'students_name',
+                              'error_field_value' => $item['students_name'],
                               'error_message' => 'Could not find student',
                               'error_level' => ValidationHelper::$level_error, ));
                             }
