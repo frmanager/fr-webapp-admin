@@ -4,7 +4,7 @@
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h1>CauseVox Fundraisers</h1>
+            <h1>Campaign Awards</h1>
             <hr/>
         </div>
     </div>
@@ -14,41 +14,38 @@
                 <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-plus"></i>
                     Add New</a>
-                <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default">
-                    <i class="glyphicon glyphicon-upload"></i>
-                    Upload CSV</a>
             </div>
             <br/>
             <table class="table table-bordered table-striped table-condensed">
                 <thead>
                     <tr>
                         <th>Id</th>
-                        <th>Grade</th>
-                        <th>Teacher</th>
-                        <th>Student</th>
-                        <th span class="hidden-xs hidden-sm">email</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Style</th>
+                        <th>Place</th>
+                        <th>Amount</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for causevoxfundraiser in causevoxfundraisers %}
+                    {% for campaignaward in campaignawards %}
                         <tr>
                             <td>
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}">{{ causevoxfundraiser.id }}</a>
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': campaignaward.id }) }}">{{ campaignaward.id }}</a>
                             </td>
-                            <td>{{ causevoxfundraiser.teacher.grade.name }}</td>
-                            <td>{{ causevoxfundraiser.teacher.teachername }}</td>
-                            <td>
-                                {% if causevoxfundraiser.student is not null %}{{ causevoxfundraiser.student.name }}{% endif %}
-                            </td>
-                            <td span class="hidden-xs hidden-sm">{{ causevoxfundraiser.email }}</td>
+                            <td>{{ campaignaward.name }}</td>
+                            <td>{% if campaignaward.campaignawardtype is defined %}{{ campaignaward.campaignawardtype.value }}{% endif %}</td>
+                            <td>{% if campaignaward.campaignawardstyle is defined %}{{ campaignaward.campaignawardstyle.value }}{% endif %}</td>
+                            <td>{% if campaignaward.campaignawardstyle.value == 'place' %}{{ campaignaward.place }}{% else %}N/A{% endif %}</td>
+                            <td>{% if campaignaward.campaignawardstyle.value == 'level' %}${{ campaignaward.amount|number_format(2, '.', ',') }}{% else %}N/A{% endif %}</td>
                             <td style="text-align:center;">
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-info">
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': campaignaward.id }) }}" class="btn btn-sm btn-info">
                                     <i class="glyphicon glyphicon-eye-open"></i>
                                     <span class="hidden-xs hidden-sm">
                                         View</span>
                                 </a>
-                                <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxfundraiser.id }) }}" class="btn btn-sm btn-warning">
+                                <a href="{{ path(entity|lower ~ '_edit', { 'id': campaignaward.id }) }}" class="btn btn-sm btn-warning">
                                     <i class="glyphicon glyphicon-edit"></i>
                                     <span class="hidden-xs hidden-sm">
                                         Edit</span>

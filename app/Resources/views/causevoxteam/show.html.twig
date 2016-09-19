@@ -11,26 +11,16 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th>Id</th>
-                            <td>{{ causevoxteam.id }}</td>
-                        </tr>
-                        <tr>
-                            <th>Grade</th>
-                            <td>{{ causevoxteam.teacher.grade.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Teacher's name</th>
-                            <td>{{ causevoxteam.teacher.teachername }}</td>
-                        </tr>
-                        <tr>
-                            <th>Student's Name</th>
-                            <td>{{ causevoxteam.name }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+              <dl class="dl-horizontal">
+                  <dt>ID</dt>
+                  <dd>{{ causevoxteam.id }}</dd>
+                  <dt>Teacher</dt>
+                  <dd>{{ causevoxteam.teacher.grade.name }} - {{ causevoxteam.teacher.teachername }}</dd>
+                  <dt>Name</dt>
+                  <dd>{{ causevoxteam.name }}</dd>
+                  <dt>URL</dt>
+                  <dd>{{ causevoxteam.url }}</dd>
+              </dl>
                 {{ form_start(delete_form) }}
                 <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
                 <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxteam.id }) }}" class="btn btn-primary">Edit</a>

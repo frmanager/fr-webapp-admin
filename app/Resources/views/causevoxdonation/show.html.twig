@@ -10,46 +10,28 @@
     </div>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th>ID</th>
-                        <td>{{ causevoxdonation.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Donation Page</th>
-                        <td>{{ causevoxdonation.donationPage}}</td>
-                    </tr>
-                    <tr>
-                        <th>Donated At</th>
-                        <td>{{ causevoxdonation.donatedAt|date("m/d/Y") }}</td>
-                    </tr>
-                    <tr>
-                        <th>Grade</th>
-                        <td>{{ causevoxdonation.teacher.grade.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Teacher's name</th>
-                        <td>{{ causevoxdonation.student.teacher.teachername }}</td>
-                    </tr>
-                    <tr>
-                        <th>Student's Name</th>
-                        <td>{{ causevoxdonation.student.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Donor Email</th>
-                        <td>{{ causevoxdonation.donorEmail }}</td>
-                    </tr>
-                    <tr>
-                        <th>amount</th>
-                        <td style="text-align:right;">${{ causevoxdonation.amount|number_format(2, '.', ',') }}</td>
-                    </tr>
-                    <tr>
-                        <th>type</th>
-                        <td>{{ causevoxdonation.type }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <dl class="dl-horizontal">
+                <dt>ID</dt>
+                <dd>{{ causevoxdonation.id }}</dd>
+                <dt>Donated At</dt>
+                <dd>{{ causevoxdonation.donatedAt|date("m/d/Y") }}</dd>
+                <dt>Type</dt>
+                <dd>{{ causevoxdonation.type }}</dd>                
+                <dt>Teacher</dt>
+                <dd>{{ causevoxdonation.student.teacher.grade.name }}
+                    -
+                    {{ causevoxdonation.student.teacher.teachername }}</dd>
+                <dt>Student</dt>
+                <dd>{{ causevoxdonation.student.name }}</dd>
+                <dt>Donation Page</dt>
+                <dd>{{ causevoxdonation.donationPage }}</dd>
+                <dt>Donor Email</dt>
+                <dd>{{ causevoxdonation.donorEmail }}</dd>
+                <dt>Amount</dt>
+                <dd>${{ causevoxdonation.amount|number_format(2, '.', ',') }}</dd>
+
+            </dl>
+
             {{ form_start(delete_form) }}
             <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
             <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxdonation.id }) }}" class="btn btn-primary">Edit</a>

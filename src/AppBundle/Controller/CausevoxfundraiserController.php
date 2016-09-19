@@ -10,6 +10,7 @@ use AppBundle\Entity\Causevoxfundraiser;
 use AppBundle\Entity\Grade;
 use AppBundle\Entity\Student;
 use AppBundle\Utils\CSVHelper;
+use AppBundle\Utils\ValidationHelper;
 
 /**
  * Causevoxfundraiser controller.
@@ -29,7 +30,7 @@ class CausevoxfundraiserController extends Controller
         $entity = 'Causevoxfundraiser';
         $em = $this->getDoctrine()->getManager();
 
-        $causevoxfundraisers = $em->getRepository('AppBundle:Causevoxfundraiser')->findAll();
+        $causevoxfundraisers = $em->getRepository('AppBundle:'.$entity)->findAll();
 
         return $this->render(strtolower($entity).'/index.html.twig', array(
             'causevoxfundraisers' => $causevoxfundraisers,
@@ -161,18 +162,17 @@ class CausevoxfundraiserController extends Controller
     {
         $logger = $this->get('logger');
         $entity = 'Causevoxfundraiser';
-        $truncateFlag = false;
+        $mode = 'update';
         $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if (null != $form['truncate_table']->getData()) {
-                $str = $form['truncate_table']->getData();
-                if (in_array('truncate_yes', $str)) {
-                    $truncateFlag = true;
-                    $logger->info('Truncate table set to true');
-                }
+            if (null != $form['upload_mode']->getData()) {
+                $mode = $form['upload_mode']->getData();
+            } else {
+                $logger->error('No mode was selected. defaulted to update');
             }
+
             $uploadFile = $form['attachment']->getData();
 
             if (strpos($uploadFile->getClientOriginalName(), '.csv') !== false) {
@@ -182,48 +182,60 @@ class CausevoxfundraiserController extends Controller
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
                 $csvHelper->cleanTeacherNames();
 
-                $logger->info(print_r($csvHelper->getData(), true));
-
-                $templateFields = array('stub', 'first_name', 'last_name', 'email', 'funds_raised', 'funds_needed', 'numbe_rof_donations', 'teams', 'joined', 'grade', 'teachers_name', 'student_name');
+                $templateFields = array(
+                  'stub',
+                  'first_name',
+                  'last_name',
+                  'email',
+                  'funds_raised',
+                  'funds_needed',
+                  'number_of_donations',
+                  'teams',
+                  'joined',
+                  'grade',
+                  'teachers_name',
+                  'students_name', );
 
                 if ($csvHelper->validateHeaders($templateFields)) {
                     $logger->info('Making changes to database');
                     $em = $this->getDoctrine()->getManager();
 
-                    if ($truncateFlag) {
-                        $logger->info('Clearing Table.');
+                    if (strcmp($mode, 'truncate') == 0) {
+                        $logger->info('User selected to [truncate] table');
 
                         $qb = $em->createQueryBuilder();
-                        $qb->delete('AppBundle:Causevoxfundraiser', 's');
+                        $qb->delete('AppBundle:'.$entity, 's');
                         $query = $qb->getQuery();
 
-                        if ($query->getResult() == 0) {
-                            $logger->info('Something Happened');
-                        }
+                        $query->getResult();
+
                         $em->flush();
 
                         $this->addFlash(
                             'info',
-                            'Causevoxfundraiser table truncated'
+                            'The '.$entity.' table has been truncated'
                         );
                     }
 
                     $logger->info('Uploading Data');
                     $em = $this->getDoctrine()->getManager();
-                    $batchSize = 20;
-
+                    $errorMessages = [];
+                    $errorMessage;
                     foreach ($csvHelper->getData() as $i => $item) {
                         $failure = false;
-                        $causevoxfundraiser = new Causevoxfundraiser();
+                        unset($errorMessage);
 
                         if (!$failure) {
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
                             if (empty($grade)) {
                                 $failure = true;
-                                $this->addFlash(
-                                'danger',
-                                '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].'. Grade '.$item['grade'].' not found'
-                            );
+                                $errorMessage = new ValidationHelper(array(
+                              'entity' => $entity,
+                              'row_index' => ($i + 2),
+                              'error_field' => 'grade',
+                              'error_field_value' => $item['grade'],
+                              'error_message' => 'Could not find grade',
+                              'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
@@ -231,27 +243,51 @@ class CausevoxfundraiserController extends Controller
                             $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
                             if (empty($teacher)) {
                                 $failure = true;
-                                $this->addFlash(
-                                'danger',
-                                  '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].'. Teacher '.$item['teachers_name'].' not found'
-                            );
+                                $errorMessage = new ValidationHelper(array(
+                              'entity' => $entity,
+                              'row_index' => ($i + 2),
+                              'error_field' => 'teachers_name',
+                              'error_field_value' => $item['teachers_name'],
+                              'error_message' => 'Could not find teacher',
+                              'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                                array('teacher' => $teacher->getId(), 'name' => $item['students_name'])
-                              );
+                          array('teacher' => $teacher, 'name' => $item['students_name'])
+                        );
                             if (empty($student)) {
                                 $failure = true;
-                                $this->addFlash(
-                                    'danger',
-                                      '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].'. Student '.$item['students_name'].' not found'
-                                );
+                                $errorMessage = new ValidationHelper(array(
+                              'entity' => $entity,
+                              'row_index' => ($i + 2),
+                              'error_field' => 'students_name',
+                              'error_field_value' => $item['students_name'],
+                              'error_message' => 'Could not find student',
+                              'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
                         if (!$failure) {
+                            $causevoxfundraiser = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                        array('email' => $item['email'], 'student' => $student, 'teacher' => $teacher)
+                        );
+                        //Going to perform "Insert" vs "Update"
+                          if (empty($causevoxfundraiser)) {
+                              $logger->debug($entity.' not found....creating new record');
+                              $causevoxfundraiser = new Causevoxfundraiser();
+                          } else {
+                              $logger->debug($entity.' not found....updating existing record');
+                              $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'N/A',
+                                'error_field_value' => 'N/A',
+                                'error_message' => 'Duplicate with Causvox Donation #'.$causevoxfundraiser->getId(),
+                                'error_level' => ValidationHelper::$level_warning, ));
+                          }
+
                             $causevoxfundraiser->setEmail($item['email']);
                             $causevoxfundraiser->setFundsNeeded($item['funds_needed']);
                             $causevoxfundraiser->setUrl($item['stub']);
@@ -261,38 +297,55 @@ class CausevoxfundraiserController extends Controller
                             $validator = $this->get('validator');
                             $errors = $validator->validate($causevoxfundraiser);
 
-                            if (count($errors) > 0) {
-                                /*
-                                         * Uses a __toString method on the $errors variable which is a
-                                         * ConstraintViolationList object. This gives us a nice string
-                                         * for debugging.
-                                         */
-                                        $errorsString = (string) $errors;
-                                $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add Causevoxfundraiser '.$item['email'].', error:'.$errorsString);
-                            } else {
-                                $em->persist($causevoxfundraiser);
-                                $em->flush();
-                                $em->clear();
-                            }
+                            $validator = $this->get('validator');
+                            $errors = $validator->validate($causevoxfundraiser);
+
+                            if (strcmp($mode, 'validate') !== 0) {
+                                if (count($errors) > 0) {
+                                    $errorsString = (string) $errors;
+                                    $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
+                                    $this->addFlash(
+                                        'danger',
+                                        '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
+                                    );
+                                } else {
+                                    $em->persist($causevoxfundraiser);
+                                    $em->flush();
+                                    $em->clear();
+                                }
+                            } //Otherwise we do Nothing....
+                        }
+
+                        if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {
+                            $this->addFlash(
+                                $errorMessage->getErrorLevel(),
+                                $errorMessage->printFlashBagMessage()
+                            );
+                        }
+
+                        //Push Error Message
+                        if (isset($errorMessage)) {
+                            array_push($errorMessages, $errorMessage->getMap());
                         }
                     }
 
-                    // flush the remaining objects
-                    $em->flush();
-                    $em->clear();
+                    if (strcmp($mode, 'validate') !== 0) {
+                        $em->flush();
+                        $em->clear();
 
-                    $this->addFlash(
-                        'info',
-                        'Completed'
-                    );
-
-                    return $this->redirectToRoute(strtolower($entity).'_index');
+                        return $this->redirectToRoute(strtolower($entity).'_index');
+                    } else {
+                        return $this->render('crud/validate.html.twig', array(
+                          'error_messages' => $errorMessages,
+                          'entity' => $entity,
+                      ));
+                    }
                 } else {
-                    $logger->info('file does not have mandatory fields. Please verify it was downloaded from Causevox');
+                    $logger->info('file does not have mandatory fields ['.implode(', ', $templateFields).']. Please verify it was downloaded from Causevox');
                     $logger->info('File was not a .csv');
                     $this->addFlash(
                         'danger',
-                        'file does not have mandatory fields. Please verify it was downloaded from Causevox'
+                        'file does not have mandatory fields ['.implode(', ', $templateFields).']. Please verify it was downloaded from Causevox'
                     );
                 }
             } else {

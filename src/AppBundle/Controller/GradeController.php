@@ -119,7 +119,7 @@ class GradeController extends Controller
             $em->persist($grade);
             $em->flush();
 
-            return $this->redirectToRoute('grade_edit', array('id' => $grade->getId()));
+            return $this->redirectToRoute('grade_index', array('id' => $grade->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(

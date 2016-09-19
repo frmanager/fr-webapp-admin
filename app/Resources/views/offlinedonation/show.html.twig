@@ -10,34 +10,19 @@
     </div>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th>ID</th>
-                        <td>{{ offlinedonation.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Donated At</th>
-                        <td>{{ offlinedonation.donatedAt|date("m/d/Y") }}</td>
-                    </tr>
-                    <tr>
-                        <th>Grade</th>
-                        <td>{{ offlinedonation.teacher.grade.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Teacher's name</th>
-                        <td>{% if offlinedonation.student is defined %}{{ offlinedonation.student.teacher.teachername }}{% endif %}</td>
-                    </tr>
-                    <tr>
-                        <th>Student's Name</th>
-                        <td>{{ offlinedonation.student.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>amount</th>
-                        <td style="text-align:right;">${{ offlinedonation.amount|number_format(2, '.', ',') }}</td>
-                    </tr>
-                </tbody>
-            </table>
+          <dl class="dl-horizontal">
+            <dt>ID</dt>
+            <dd>{{ offlinedonation.id }}</dd>
+            <dt>Donated At</dt>
+            <dd>{{ offlinedonation.donatedAt|date("m/d/Y") }}</dd>
+            <dt>Teacher</dt>
+            <dd>{% if offlinedonation.student is defined %}{{ offlinedonation.student.teacher.grade.name }} - {{ offlinedonation.student.teacher.teachername }}{% endif %}</dd>
+            <dt>Student</dt>
+            <dd>{{ offlinedonation.student.name }}</dd>
+            <dt>Amount</dt>
+            <dd>${{ offlinedonation.amount|number_format(2, '.', ',') }}</dd>
+          </dl>
+
             {{ form_start(delete_form) }}
             <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
             <a href="{{ path(entity|lower ~ '_edit', { 'id': offlinedonation.id }) }}" class="btn btn-primary">Edit</a>

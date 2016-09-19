@@ -1,0 +1,46 @@
+{% extends 'crud.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Validator Results</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <h4>{{ entity }} Validation Results</h4>
+            <hr/>
+            <div>Issues Found: <span class="badge">{{error_messages|length}}</span></div>
+            <div style="text-align:right;">
+                <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    Upload CSV</a>
+            </div>
+            <br/>
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>Error Level</th>
+                        <th>Field</th>
+                        <th>Value</th>
+                        <th>Error Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for errorMessage in error_messages %}
+                        <tr class="{{ errorMessage.error_level }}">
+                            <td>{{ errorMessage.row_index }}</td>
+                            <td>{{ errorMessage.error_level | capitalize }}</td>
+                            <td>{% if errorMessage.error_field is defined %}{{ errorMessage.error_field }}{% endif %}</td>
+                            <td>{% if errorMessage.error_field_value is defined %}{{ errorMessage.error_field_value }}{% endif %}</td>
+                            <td>{% if errorMessage.error_message is defined %}{{ errorMessage.error_message }}{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div><a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-info">Back</a></div>
+        </div>
+    </div>
+{% endblock %}

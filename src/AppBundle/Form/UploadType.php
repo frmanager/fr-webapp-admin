@@ -30,12 +30,14 @@ class UploadType extends AbstractType
           )
         )
         ->add('attachment', FileType::class)
-        ->add('truncate_table', ChoiceType::class, array(
+        ->add('upload_mode', ChoiceType::class, array(
               'expanded' => true,
-              'multiple' => true,
-              'choices' => [
-                      ' ' => 'truncate_yes',
-                  ],
+              'choices' => array(
+                      'Insert/Update (Default)' => 'update',
+                      'Truncate (Delete All First)' => 'truncate',
+                      'Validate Only (No Database Changes)' => 'validate',
+                  ),
+              'data' => 'update',
                ));
     }
 }

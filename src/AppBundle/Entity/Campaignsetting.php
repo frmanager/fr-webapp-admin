@@ -5,9 +5,14 @@ namespace AppBundle\Entity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
+// DON'T forget this use statement!!!
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 /**
  * @ORM\Entity
- * @ORM\Table(name="campaignsetting",uniqueConstraints={@ORM\UniqueConstraint(columns={"name"})})
+ * @ORM\Table(name="campaignsetting",uniqueConstraints={@ORM\UniqueConstraint(columns={"display_name"}), @ORM\UniqueConstraint(columns={"value"})})
+ * @UniqueEntity(fields={"displayName"})
+ * @UniqueEntity(fields={"value"})
  */
 class Campaignsetting
 {
@@ -22,7 +27,7 @@ class Campaignsetting
      * @ORM\Column(type="string", length=100)
      * @Assert\NotNull()
      */
-    private $name;
+    private $displayName;
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -41,9 +46,9 @@ class Campaignsetting
     private $description;
 
     /**
-     * Get id.
+     * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -51,31 +56,31 @@ class Campaignsetting
     }
 
     /**
-     * Set name.
+     * Set displayName
      *
-     * @param string $name
+     * @param string $displayName
      *
      * @return Campaignsetting
      */
-    public function setName($name)
+    public function setDisplayName($displayName)
     {
-        $this->name = $name;
+        $this->displayName = $displayName;
 
         return $this;
     }
 
     /**
-     * Get name.
+     * Get displayName
      *
      * @return string
      */
-    public function getName()
+    public function getDisplayName()
     {
-        return $this->name;
+        return $this->displayName;
     }
 
     /**
-     * Set value.
+     * Set value
      *
      * @param string $value
      *
@@ -89,7 +94,7 @@ class Campaignsetting
     }
 
     /**
-     * Get value.
+     * Get value
      *
      * @return string
      */
@@ -99,31 +104,7 @@ class Campaignsetting
     }
 
     /**
-     * Set description.
-     *
-     * @param string $description
-     *
-     * @return Campaignsetting
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description.
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * Set format.
+     * Set format
      *
      * @param string $format
      *
@@ -137,12 +118,36 @@ class Campaignsetting
     }
 
     /**
-     * Get format.
+     * Get format
      *
      * @return string
      */
     public function getFormat()
     {
         return $this->format;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return Campaignsetting
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

@@ -6,6 +6,7 @@ namespace AppBundle\Utils;
 
 class CSVHelper
 {
+    public static $eof_string = 'END OF FILE';
     private $headers = [];
     private $data = [];
     private $fileName = null; //Includes Extension
@@ -35,7 +36,10 @@ class CSVHelper
                 if ($counter == $this->getHeaderRowIndex()) {
                     $this->setHeaders($thisRow);
                 } elseif ($counter > $this->getHeaderRowIndex()) {
-                    $this->addRow($thisRow);
+                    //While adding, we check for end-of-file
+                    if (!$this->addRow($thisRow)) {
+                        break;
+                    }
                 }
                 ++$counter;
             }
@@ -131,8 +135,13 @@ class CSVHelper
         $row = $this->cleanRow($rowData);
         foreach ($this->getHeaders() as $key => $value) {
             $theObject[$value] = $row[$key];
+            if (strcmp($row[$key], self::$eof_string) == 0) {
+                return false;
+            }
         }
         array_push($this->data, $theObject);
+
+        return true;
     }
 
     public function cleanRow($rowData)
@@ -215,7 +224,7 @@ class CSVHelper
 
     public function cleanDataString($string)
     {
-        $string = preg_replace('/[^A-Za-z0-9\/_ -.]/', '', $string); // Removes special chars.
+        $string = preg_replace('/[^A-Za-z0-9@\/_ -.]/', '', $string); // Removes special chars.
         $string = trim($string);
 
         return $string;

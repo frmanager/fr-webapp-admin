@@ -8,8 +8,8 @@ export PATH=/home/$USER/.php/composer:$PATH
 
 export SYMFONY_ENV=prod
 
-
-#git pull
+# Just in Case
+git pull
 
 composer self-update
 

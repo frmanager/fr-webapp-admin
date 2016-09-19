@@ -10,6 +10,7 @@ use AppBundle\Entity\Grade;
 use AppBundle\Entity\Student;
 use AppBundle\Utils\CSVHelper;
 use AppBundle\Entity\Offlinedonation;
+use AppBundle\Utils\ValidationHelper;
 use DateTime;
 
 /**
@@ -162,18 +163,17 @@ class OfflinedonationController extends Controller
     {
         $logger = $this->get('logger');
         $entity = 'Offlinedonation';
-        $truncateFlag = false;
+        $mode = 'update';
         $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if (null != $form['truncate_table']->getData()) {
-                $str = $form['truncate_table']->getData();
-                if (in_array('truncate_yes', $str)) {
-                    $truncateFlag = true;
-                    $logger->info('Truncate table set to true');
-                }
+            if (null != $form['upload_mode']->getData()) {
+                $mode = $form['upload_mode']->getData();
+            } else {
+                $logger->error('No mode was selected. defaulted to update');
             }
+
             $uploadFile = $form['attachment']->getData();
 
             if (strpos($uploadFile->getClientOriginalName(), '.csv') !== false) {
@@ -183,59 +183,55 @@ class OfflinedonationController extends Controller
                 $csvHelper->setHeaderRowIndex(1);
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
                 $csvHelper->cleanAmounts();
-                //$logger->debug(print_r($csvHelper->getData(), true));
 
                 $templateFields = array('date', 'grade', 'teacher', 'student', 'amount');
 
                 if ($csvHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
 
-                    if ($truncateFlag) {
-                        $logger->info('Clearing Table.');
+                    if (strcmp($mode, 'truncate') == 0) {
+                        $logger->info('User selected to [truncate] table');
 
                         $qb = $em->createQueryBuilder();
-                        $qb->delete('AppBundle:Offlinedonation', 's');
+                        $qb->delete('AppBundle:'.$entity, 's');
                         $query = $qb->getQuery();
 
-                        if ($query->getResult() == 0) {
-                            $logger->info('Something Happened');
-                        }
+                        $query->getResult();
+
                         $em->flush();
 
                         $this->addFlash(
-                            'success',
-                            'Offlinedonation table truncated Successfully'
+                            'info',
+                            'The Causevox Teams table has been truncated'
                         );
                     }
 
                     $logger->info('Uploading Data');
                     $em = $this->getDoctrine()->getManager();
-                    $breakLoop = false;
+                    $errorMessages = [];
+                    $errorMessage;
 
                     foreach ($csvHelper->getData() as $i => $item) {
-                        $offlinedonation = new Offlinedonation();
                         $failure = false;
+                        unset($errorMessage);
 
-                        //ECHECKING FOR END ROW
-                        if (strcmp('END', $item['date']) == 0) {
-                            $failure = true;
-                            $breakLoop = true;
-                        }
-
-                        //NO AMOUNT
                         if (!$failure) {
-                            if (is_null($item['amount']) || empty($item['amount']) || strcmp($item['amount'], '') == 0) {
+                            if (is_null($item['amount']) || !isset($item['amount']) || empty($item['amount']) || strcmp($item['amount'], '') == 0) {
                                 $failure = true;
+                              //We do not notify if amount is empty.....we just ignore it.
                             }
                         }
 
                         if (!$failure) {
                             if (!isset($item['date']) || empty($item['date']) || strcmp('none', $item['date']) == 0) {
                                 $failure = true;
-                                $this->addFlash(
-                              'danger',
-                              '[ROW #'.($i + 3).'] Could not add Offlinedonation. Field: "DATE" required!'
-                          );
+                                $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'date',
+                                'error_field_value' => $item['date'],
+                                'error_message' => 'Date cannot be null',
+                                'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
@@ -243,10 +239,13 @@ class OfflinedonationController extends Controller
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
                             if (empty($grade)) {
                                 $failure = true;
-                                $this->addFlash(
-                                  'danger',
-                                  '[ROW #'.($i + 3).'] Could not add Offlinedonation. Grade '.$item['grade'].' not found'
-                              );
+                                $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'grade',
+                                'error_field_value' => $item['grade'],
+                                'error_message' => 'Could not find grade',
+                                'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
@@ -254,35 +253,57 @@ class OfflinedonationController extends Controller
                             $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teacher']);
                             if (empty($teacher)) {
                                 $failure = true;
-                                $this->addFlash(
-                                  'danger',
-                                    '[ROW #'.($i + 3).'] Could not add Offlinedonation. Teacher "'.$item['teacher'].'" not found'
-                              );
+                                $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'teacher',
+                                'error_field_value' => $item['teacher'],
+                                'error_message' => 'Could not find teacher',
+                                'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                            array('teacher' => $teacher, 'name' => $item['student'])
-                          );
+                          array('teacher' => $teacher, 'name' => $item['student'])
+                        );
                             if (empty($student)) {
                                 $failure = true;
-                                $this->addFlash(
-                                'warning',
-                                  '[ROW #'.($i + 3).'] Could not add Offlinedonation. Student "'.$item['student'].'" not found'
-                            );
+                                $errorMessage = new ValidationHelper(array(
+                              'entity' => $entity,
+                              'row_index' => ($i + 2),
+                              'error_field' => 'student',
+                              'error_field_value' => $item['student'],
+                              'error_message' => 'Could not find student',
+                              'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
-                        if ($breakLoop) {
-                            break;
-                        }
-
                         if (!$failure) {
-                            //Example: 2016-08-25 16:35:54
-                            $logger->debug(print_r($item, true));
-                            $date = new DateTime($item['date']);
 
+                          //Example: 2016-08-25 16:35:54
+                          $date = new DateTime($item['date']);
+
+                            $offlinedonation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                          array('student' => $student, 'donatedAt' => $date)
+                          );
+                          //Going to perform "Insert" vs "Update"
+                          if (empty($offlinedonation)) {
+                              $logger->debug($entity.' not found....creating new record');
+                              $offlinedonation = new OfflineDonation();
+                          } else {
+                              $logger->debug($entity.' found....cannot update.');
+                              $failure = true;
+                              $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'N/A',
+                                'error_field_value' => 'N/A',
+                                'error_message' => 'A donation for this student and date already exists #'.$offlinedonation->getId(),
+                                'error_level' => ValidationHelper::$level_error, ));
+                          }
+                        }
+                        if (!$failure) {
                             $offlinedonation->setAmount($item['amount']);
                             $offlinedonation->setDonatedAt($date);
                             $offlinedonation->setStudent($student);
@@ -290,38 +311,51 @@ class OfflinedonationController extends Controller
                             $validator = $this->get('validator');
                             $errors = $validator->validate($offlinedonation);
 
-                            if (count($errors) > 0) {
-                                /*
-                                 * Uses a __toString method on the $errors variable which is a
-                                 * ConstraintViolationList object. This gives us a nice string
-                                 * for debugging.
-                                 */
-                                $errorsString = (string) $errors;
-                                $this->addFlash('danger', '[ROW #'.($i + 4).'] Could not add offlinedonation for '.$item['student'].', error:'.$errorsString);
-                            } else {
-                                $em->persist($offlinedonation);
-                                $em->flush();
-                                $em->clear();
-                            }
+                            if (strcmp($mode, 'validate') !== 0) {
+                                if (count($errors) > 0) {
+                                    $errorsString = (string) $errors;
+                                    $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
+                                    $this->addFlash(
+                                        'danger',
+                                        '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
+                                    );
+                                } else {
+                                    $em->persist($offlinedonation);
+                                    $em->flush();
+                                    $em->clear();
+                                }
+                            } //Otherwise we do Nothing....
+                        }
+                        if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {
+                            $this->addFlash(
+                                  $errorMessage->getErrorLevel(),
+                                  $errorMessage->printFlashBagMessage()
+                              );
+                        }
+
+                        //Push Error Message
+                        if (isset($errorMessage)) {
+                            array_push($errorMessages, $errorMessage->getMap());
                         }
                     }
 
-                    // flush the remaining objects
-                    $em->flush();
-                    $em->clear();
+                    if (strcmp($mode, 'validate') !== 0) {
+                        $em->flush();
+                        $em->clear();
 
-                    $this->addFlash(
-                        'success',
-                        'Completed'
-                    );
-
-                    return $this->redirectToRoute(strtolower($entity).'_index');
+                        return $this->redirectToRoute(strtolower($entity).'_index');
+                    } else {
+                        return $this->render('crud/validate.html.twig', array(
+                          'error_messages' => $errorMessages,
+                          'entity' => $entity,
+                      ));
+                    }
                 } else {
-                    $logger->info('file does not have mandatory fields. Please verify it was downloaded from Offline');
+                    $logger->info('file does not have mandatory fields. ['.implode(', ', $templateFields).']. Please validate it was downloaded from the "FUNRUN LEDGER"');
                     $logger->info('File was not a .csv');
                     $this->addFlash(
                         'danger',
-                        'file does not have mandatory fields. Please verify it was downloaded from Offline'
+                        'file does not have mandatory fields. ['.implode(', ', $templateFields).']. Please validate it was downloaded from the "FUNRUN LEDGER"'
                     );
                 }
             } else {

@@ -10,6 +10,7 @@ use AppBundle\Entity\Causevoxdonation;
 use AppBundle\Entity\Grade;
 use AppBundle\Entity\Student;
 use AppBundle\Utils\CSVHelper;
+use AppBundle\Utils\ValidationHelper;
 use DateTime;
 
 /**
@@ -30,7 +31,7 @@ class CausevoxdonationController extends Controller
         $entity = 'Causevoxdonation';
         $em = $this->getDoctrine()->getManager();
 
-        $causevoxdonations = $em->getRepository('AppBundle:Causevoxdonation')->findAll();
+        $causevoxdonations = $em->getRepository('AppBundle:'.$entity)->findAll();
 
         return $this->render(strtolower($entity).'/index.html.twig', array(
             'causevoxdonations' => $causevoxdonations,
@@ -162,18 +163,17 @@ class CausevoxdonationController extends Controller
     {
         $logger = $this->get('logger');
         $entity = 'Causevoxdonation';
-        $truncateFlag = false;
+        $mode = 'update';
         $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if (null != $form['truncate_table']->getData()) {
-                $str = $form['truncate_table']->getData();
-                if (in_array('truncate_yes', $str)) {
-                    $truncateFlag = true;
-                    $logger->info('Truncate table set to true');
-                }
+            if (null != $form['upload_mode']->getData()) {
+                $mode = $form['upload_mode']->getData();
+            } else {
+                $logger->error('No mode was selected. defaulted to update');
             }
+
             $uploadFile = $form['attachment']->getData();
 
             if (strpos($uploadFile->getClientOriginalName(), '.csv') !== false) {
@@ -215,52 +215,58 @@ class CausevoxdonationController extends Controller
                 'students_name', );
 
                 if ($csvHelper->validateHeaders($templateFields)) {
-                    $logger->info('Making changes to database');
+                    $logger->debug('Making changes to database');
                     $em = $this->getDoctrine()->getManager();
 
-                    if ($truncateFlag) {
-                        $logger->info('Clearing Table.');
+                    if (strcmp($mode, 'truncate') == 0) {
+                        $logger->info('User selected to [truncate] table');
 
                         $qb = $em->createQueryBuilder();
-                        $qb->delete('AppBundle:Causevoxdonation', 's');
+                        $qb->delete('AppBundle:'.$entity, 's');
                         $query = $qb->getQuery();
 
-                        if ($query->getResult() == 0) {
-                            $logger->info('Something Happened');
-                        }
+                        $query->getResult();
+
                         $em->flush();
 
                         $this->addFlash(
                             'info',
-                            'Causevoxdonation table truncated'
+                            'The Causevox Donations table has been truncated'
                         );
                     }
 
                     $logger->info('Uploading Data');
                     $em = $this->getDoctrine()->getManager();
-                    $batchSize = 20;
-
+                    $errorMessages = [];
+                    $errorMessage;
                     foreach ($csvHelper->getData() as $i => $item) {
-                        $causevoxdonation = new Causevoxdonation();
                         $failure = false;
+                        unset($errorMessage);
 
                         if (null == $item['donation_page'] || empty($item['donation_page']) || strcmp('none', $item['donation_page']) == 0) {
                             $logger->debug('Donation Page: '.$item['donation_page']);
                             $failure = true;
-                            $this->addFlash(
-                              'danger',
-                              '[ROW #'.($i + 2).'] Could not add Causevoxdonation for '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Must be associated with a Donation Page (Team/Fundraiser)'
-                          );
+                            $errorMessage = new ValidationHelper(array(
+                              'row_index' => ($i + 2),
+                              'error_field' => 'donation_page',
+                              'error_field_value' => 'null',
+                              'error_message' => 'Donation Page URL Required',
+                              'error_level' => ValidationHelper::$level_error, ));
+
+                            //$validations{}
                         }
 
                         if (!$failure) {
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
                             if (empty($grade)) {
                                 $failure = true;
-                                $this->addFlash(
-                                  'danger',
-                                  '[ROW #'.($i + 2).'] Could not add Causevoxdonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Grade '.$item['grade'].' not found'
-                              );
+                                $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'grade',
+                                'error_field_value' => $item['grade'],
+                                'error_message' => 'Could not find grade',
+                                'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
@@ -268,10 +274,13 @@ class CausevoxdonationController extends Controller
                             $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
                             if (empty($teacher)) {
                                 $failure = true;
-                                $this->addFlash(
-                                  'danger',
-                                    '[ROW #'.($i + 2).'] Could not add Causevoxdonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Teacher '.$item['teachers_name'].' not found'
-                              );
+                                $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'teachers_name',
+                                'error_field_value' => $item['teachers_name'],
+                                'error_message' => 'Could not find teacher',
+                                'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
@@ -281,16 +290,37 @@ class CausevoxdonationController extends Controller
                           );
                             if (empty($student)) {
                                 $failure = true;
-                                $this->addFlash(
-                                'warning',
-                                  '[ROW #'.($i + 2).'] Could not add Causevoxdonation '.$item['donor_first_name'].' '.$item['donor_last_name'].'. Student '.$item['students_name'].' not found'
-                            );
+                                $errorMessage = new ValidationHelper(array(
+                                'entity' => $entity,
+                                'row_index' => ($i + 2),
+                                'error_field' => 'students_name',
+                                'error_field_value' => $item['students_name'],
+                                'error_message' => 'Could not find student',
+                                'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
                         if (!$failure) {
                             //Example: 2016-08-25 16:35:54
-                            $date = new DateTime($item['donated_at']);
+                          $date = new DateTime($item['donated_at']);
+
+                            $causevoxdonation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                          array('donatedAt' => $date, 'student' => $student, 'teacher' => $teacher)
+                          );
+                          //Going to perform "Insert" vs "Update"
+                            if (empty($causevoxdonation)) {
+                                $logger->debug($entity.' not found....creating new record');
+                                $causevoxdonation = new Causevoxdonation();
+                            } else {
+                                $logger->debug($entity.' not found....updating existing record');
+                                $errorMessage = new ValidationHelper(array(
+                                  'entity' => $entity,
+                                  'row_index' => ($i + 2),
+                                  'error_field' => 'N/A',
+                                  'error_field_value' => 'N/A',
+                                  'error_message' => 'Duplicate with Causvox Donation #'.$causevoxdonation->getId(),
+                                  'error_level' => ValidationHelper::$level_warning, ));
+                            }
 
                             $causevoxdonation->setAmount($item['amount']);
                             $causevoxdonation->setTip($item['tip']);
@@ -309,38 +339,52 @@ class CausevoxdonationController extends Controller
                             $validator = $this->get('validator');
                             $errors = $validator->validate($causevoxdonation);
 
-                            if (count($errors) > 0) {
-                                /*
-                                 * Uses a __toString method on the $errors variable which is a
-                                 * ConstraintViolationList object. This gives us a nice string
-                                 * for debugging.
-                                 */
-                                $errorsString = (string) $errors;
-                                $this->addFlash('danger', '[ROW #'.($i + 2).'] Could not add causevoxdonation for '.$item['donor_first_name'].' '.$item['donor_last_name'].' for $'.$item['amount'].', error:'.$errorsString);
-                            } else {
-                                $em->persist($causevoxdonation);
-                                $em->flush();
-                                $em->clear();
-                            }
+                            if (strcmp($mode, 'validate') !== 0) {
+                                if (count($errors) > 0) {
+                                    $errorsString = (string) $errors;
+                                    $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
+                                    $this->addFlash(
+                                        'danger',
+                                        '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
+                                    );
+                                } else {
+                                    $em->persist($causevoxdonation);
+                                    $em->flush();
+                                    $em->clear();
+                                }
+                            } //Otherwise we do Nothing....
+                        }
+
+                        if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {
+                            $this->addFlash(
+                                  $errorMessage->getErrorLevel(),
+                                  $errorMessage->printFlashBagMessage()
+                              );
+                        }
+
+                        //Push Error Message
+                        if (isset($errorMessage)) {
+                            array_push($errorMessages, $errorMessage->getMap());
                         }
                     }
 
-                    // flush the remaining objects
-                    $em->flush();
-                    $em->clear();
+                    if (strcmp($mode, 'validate') !== 0) {
+                        $em->flush();
+                        $em->clear();
 
-                    $this->addFlash(
-                        'info',
-                        'Completed'
-                    );
-
-                    return $this->redirectToRoute(strtolower($entity).'_index');
+                        return $this->redirectToRoute(strtolower($entity).'_index');
+                    } else {
+                        return $this->render('crud/validate.html.twig', array(
+                          'error_messages' => $errorMessages,
+                          'entity' => $entity,
+                      ));
+                    }
                 } else {
-                    $logger->info('file does not have mandatory fields. Please verify it was downloaded from Causevox');
+                    $logger->info('file does not have mandatory fields ['.implode(', ', $templateFields).']. Please verify it was downloaded from Causevox');
                     $logger->info('File was not a .csv');
                     $this->addFlash(
                         'danger',
-                        'file does not have mandatory fields. Please verify it was downloaded from Causevox'
+                        'file does not have mandatory fields ['.implode(', ', $templateFields).']. Please verify it was downloaded from Causevox'
                     );
                 }
             } else {
