@@ -29,7 +29,7 @@ class FacebookController extends Controller
         $campaignsettings = $em->getRepository('AppBundle:Campaignsetting')->findAll();
 
         foreach ($campaignsettings as $campaignsetting) {
-            $name = $campaignsetting->getName();
+            $name = $campaignsetting->getDisplayName();
             $value = $campaignsetting->getValue();
             if (strcmp($name, 'campaign_start_date') == 0) {
                 $data['campaign_start_date'] = date('Y-m-d', strtotime($value));
