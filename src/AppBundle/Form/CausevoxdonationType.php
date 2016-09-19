@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,7 +28,7 @@ class CausevoxdonationType extends AbstractType
               'class' => 'AppBundle:Teacher',
               'choice_label' => 'teachername',
               ))
-            ->add('amount')
+            ->add('amount', MoneyType::class, array('required' => true, 'currency' => 'USD'))
             ->add('donated_at', DateType::class)
             ->add('donor_email')
             ->add('type')
