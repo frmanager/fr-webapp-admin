@@ -49,10 +49,6 @@ class Causevoxdonation
      * @var float
      *
      * @ORM\Column(name="amount", type="float", precision=10, scale=2, nullable=false)
-     * @Assert\Type(
-     *     type="float",
-     *     message="The value {{ value }} is not a valid {{ type }}."
-     * )
      */
     private $amount;
 
