@@ -100,7 +100,7 @@ class TeacherController extends Controller
             $em->persist($teacher);
             $em->flush();
 
-            return $this->redirectToRoute('teacher_edit', array('id' => $teacher->getId()));
+            return $this->redirectToRoute('teacher_index', array('id' => $teacher->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(
