@@ -183,6 +183,7 @@ class CausevoxdonationController extends Controller
                 $csvHelper->processFile('temp/', strtolower($entity).'.csv');
                 $csvHelper->getGradefromTeacherName();
                 $csvHelper->cleanTeacherNames();
+                $csvHelper->cleanAmounts();
                 $logger->debug(print_r($csvHelper->getData(), true));
 
                 $templateFields = array('donation_page',
