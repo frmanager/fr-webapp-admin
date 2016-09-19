@@ -32,7 +32,7 @@
                             <td>
                                 <a href="{{ path(entity|lower ~ '_show', { 'id': campaignsetting.id }) }}">{{ campaignsetting.id }}</a>
                             </td>
-                            <td>{{ campaignsetting.name }}</td>
+                            <td>{{ campaignsetting.displayName }}</td>
                             <td>{{ campaignsetting.value }}</td>
                             <td>
                                 {% if campaignsetting.format is defined %}{{ campaignsetting.format }}{% endif %}

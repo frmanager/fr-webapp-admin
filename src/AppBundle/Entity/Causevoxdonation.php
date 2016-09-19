@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 // DON'T forget this use statement!!!
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Causevoxdonation.
@@ -48,6 +49,10 @@ class Causevoxdonation
      * @var float
      *
      * @ORM\Column(name="amount", type="float", precision=10, scale=2, nullable=false)
+     * @Assert\Type(
+     *     type="float",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
     private $amount;
 
@@ -90,6 +95,7 @@ class Causevoxdonation
      * @var datetime
      *
      * @ORM\Column(name="donated_at", type="datetime", nullable=false)
+     * @Assert\Date()
      */
     private $donatedAt;
 

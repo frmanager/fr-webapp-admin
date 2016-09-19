@@ -4,7 +4,7 @@
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h1>View Grade</h1>
+            <h1>View Campaign Award</h1>
             <hr/>
         </div>
     </div>
@@ -16,13 +16,13 @@
                 <dt>Name</dt>
                 <dd>{{ campaignaward.name }}</dd>
                 <dt>Type</dt>
-                <dd>{{ campaignaward.awardType }}</dd>
+                <dd>{{ campaignaward.campaignawardtype.displayName }}</dd>
                 <dt>Style</dt>
-                <dd>{{ campaignaward.awardStyle }}</dd>
+                <dd>{{ campaignaward.campaignawardstyle.displayName }}</dd>
                 <dt>Place</dt>
                 <dd>{{ campaignaward.place }}</dd>
                 <dt>Amount</dt>
-                <dd>{% if campaignaward.amount is not null %}${{ campaignaward.amount }}{% endif %}</dd>
+                <dd>{% if campaignaward.amount is not null %}${{ campaignaward.amount|number_format(2, '.', ',') }}{% endif %}</dd>
                 <dt>Description</dt>
                 <dd>{{ campaignaward.description }}</dd>
             </dl>

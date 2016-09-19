@@ -4,7 +4,7 @@
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h1>Grades</h1>
+            <h1>Campaign Awards</h1>
             <hr/>
         </div>
     </div>
@@ -23,6 +23,8 @@
                         <th>Name</th>
                         <th>Type</th>
                         <th>Style</th>
+                        <th>Place</th>
+                        <th>Amount</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -33,8 +35,10 @@
                                 <a href="{{ path(entity|lower ~ '_show', { 'id': campaignaward.id }) }}">{{ campaignaward.id }}</a>
                             </td>
                             <td>{{ campaignaward.name }}</td>
-                              <td>{{ campaignaward.awardType }}</td>
-                            <td>{{ campaignaward.awardStyle }}</td>
+                            <td>{% if campaignaward.campaignawardtype is defined %}{{ campaignaward.campaignawardtype.value }}{% endif %}</td>
+                            <td>{% if campaignaward.campaignawardstyle is defined %}{{ campaignaward.campaignawardstyle.value }}{% endif %}</td>
+                            <td>{% if campaignaward.campaignawardstyle.value == 'place' %}{{ campaignaward.place }}{% else %}N/A{% endif %}</td>
+                            <td>{% if campaignaward.campaignawardstyle.value == 'level' %}${{ campaignaward.amount|number_format(2, '.', ',') }}{% else %}N/A{% endif %}</td>
                             <td style="text-align:center;">
                                 <a href="{{ path(entity|lower ~ '_show', { 'id': campaignaward.id }) }}" class="btn btn-sm btn-info">
                                     <i class="glyphicon glyphicon-eye-open"></i>

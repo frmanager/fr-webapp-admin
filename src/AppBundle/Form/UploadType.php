@@ -34,7 +34,7 @@ class UploadType extends AbstractType
               'expanded' => true,
               'choices' => array(
                       'Insert/Update (Default)' => 'update',
-                      'Truncate (Delete All)' => 'truncate',
+                      'Truncate (Delete All First)' => 'truncate',
                       'Validate Only (No Database Changes)' => 'validate',
                   ),
               'data' => 'update',

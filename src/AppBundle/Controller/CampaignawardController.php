@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Campaignaward;
+use AppBundle\Entity\Campaignawardtype;
+use AppBundle\Entity\Campaignawardstyle;
 
 /**
  * Campaignaward controller.
@@ -26,7 +28,49 @@ class CampaignawardController extends Controller
         $entity = 'Campaignaward';
         $em = $this->getDoctrine()->getManager();
 
-        $campaignawards = $em->getRepository('AppBundle:Campaignaward')->findAll();
+        $campaignawardtypes = $em->getRepository('AppBundle:Campaignawardtype')->findAll();
+        if (empty($campaignawardtypes)) {
+            $defaultCampaignawardtypes = [];
+
+            array_push($defaultCampaignawardtypes, array('displayName' => 'Teacher/Class', 'value' => 'teacher', 'description' => ''));
+            array_push($defaultCampaignawardtypes, array('displayName' => 'Student/Individual', 'value' => 'student', 'description' => ''));
+
+            foreach ($defaultCampaignawardtypes as $defaultCampaignawardtype) {
+                $em = $this->getDoctrine()->getManager();
+
+                $campaignawardtype = new Campaignawardtype();
+                $campaignawardtype->setDisplayName($defaultCampaignawardtype['displayName']);
+                $campaignawardtype->setValue($defaultCampaignawardtype['value']);
+                $campaignawardtype->setDescription($defaultCampaignawardtype['description']);
+
+                $em->persist($campaignawardtype);
+                $em->flush();
+            }
+        }
+
+        $campaignawardstyles = $em->getRepository('AppBundle:Campaignawardstyle')->findAll();
+        if (empty($campaignawardstyles)) {
+            $defaultCampaignawardstyles = [];
+
+            array_push($defaultCampaignawardstyles, array('displayName' => 'Place', 'value' => 'place', 'description' => ''));
+            array_push($defaultCampaignawardstyles, array('displayName' => 'Donation Level', 'value' => 'level', 'description' => 'award received if (Teacher/Student) reach donation amount'));
+
+            foreach ($defaultCampaignawardstyles as $defaultCampaignawardstyle) {
+                $em = $this->getDoctrine()->getManager();
+
+                $campaignawardstyle = new Campaignawardstyle();
+                $campaignawardstyle->setDisplayName($defaultCampaignawardstyle['displayName']);
+                $campaignawardstyle->setValue($defaultCampaignawardstyle['value']);
+                $campaignawardstyle->setDescription($defaultCampaignawardstyle['description']);
+
+                $em->persist($campaignawardstyle);
+                $em->flush();
+            }
+        }
+
+        $em->clear();
+
+        $campaignawards = $em->getRepository('AppBundle:'.$entity)->findAll();
 
         return $this->render(strtolower($entity).'/index.html.twig', array(
             'campaignawards' => $campaignawards,
@@ -42,17 +86,87 @@ class CampaignawardController extends Controller
      */
     public function newAction(Request $request)
     {
+        $logger = $this->get('logger');
         $entity = 'Campaignaward';
         $campaignaward = new Campaignaward();
         $form = $this->createForm('AppBundle\Form\CampaignawardType', $campaignaward);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $failure = false;
             $em = $this->getDoctrine()->getManager();
-            $em->persist($campaignaward);
-            $em->flush();
 
-            return $this->redirectToRoute('campaignaward_index', array('id' => $campaignaward->getId()));
+            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'level') == 0) {
+                if (null == $campaignaward->getAmount()) {
+                    $failure = true;
+                    $this->addFlash(
+                    'danger',
+                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated amount'
+                );
+                } else {
+                    if ($campaignaward->getAmount() < 0.01) {
+                        $failure = true;
+                        $this->addFlash(
+                      'danger',
+                      'Amount must be greater than $0.01'
+                  );
+                    }
+                    $campaignaward->setPlace(null);
+                }
+            }
+
+            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'place') == 0) {
+                if (null == $campaignaward->getPlace()) {
+                    $failure = true;
+                    $this->addFlash(
+                    'danger',
+                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated place'
+                );
+                } else {
+                    if ($campaignaward->getPlace() < 1) {
+                        $failure = true;
+                        $this->addFlash(
+                      'danger',
+                      'Place must be greater than 0'
+                  );
+                    }
+                    $campaignaward->setAmount(null);
+                }
+            }
+
+            if (!$failure) {
+                $validator = $this->get('validator');
+                $errors = $validator->validate($campaignaward);
+                if (count($errors) > 0) {
+                    $failure = true;
+                    $errorsString = (string) $errors;
+                    $logger->error('Could not update ['.$entity.']: '.$errorsString);
+                    $this->addFlash(
+                  'danger',
+                  'Could not update ['.$entity.']: '.$errorsString
+              );
+                }
+            }
+
+            if (!$failure) {
+                $campaignawardCheck = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+          array('campaignawardtype' => $campaignaward->getCampaignawardtype(), 'campaignawardstyle' => $campaignaward->getCampaignawardstyle(), 'amount' => $campaignaward->getAmount(), 'place' => $campaignaward->getPlace())
+          );
+                if (!empty($campaignawardCheck)) {
+                    $failure = true;
+                    $this->addFlash(
+                            'danger',
+                            'This combination for an award [Type/Style/Place/Amount] already exists'
+                        );
+                }
+            }
+
+            if (!$failure) {
+                $em->persist($campaignaward);
+                $em->flush();
+
+                return $this->redirectToRoute('campaignaward_index', array('id' => $campaignaward->getId()));
+            }
         }
 
         return $this->render('crud/new.html.twig', array(
@@ -88,6 +202,7 @@ class CampaignawardController extends Controller
      */
     public function editAction(Request $request, Campaignaward $campaignaward)
     {
+        $logger = $this->get('logger');
         $entity = 'Campaignaward';
         $deleteForm = $this->createDeleteForm($campaignaward);
         $editForm = $this->createForm('AppBundle\Form\CampaignawardType', $campaignaward);
@@ -95,10 +210,79 @@ class CampaignawardController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($campaignaward);
-            $em->flush();
+            $failure = false;
+            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'level') == 0) {
+                if (null == $campaignaward->getAmount()) {
+                    $failure = true;
+                    $this->addFlash(
+                    'danger',
+                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated amount'
+                );
+                } else {
+                    if ($campaignaward->getAmount() < 0.01) {
+                        $failure = true;
+                        $this->addFlash(
+                      'danger',
+                      'Amount must be greater than $0.01'
+                  );
+                    }
+                    $campaignaward->setPlace(null);
+                }
+            }
 
-            return $this->redirectToRoute('campaignaward_index', array('id' => $campaignaward->getId()));
+            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'place') == 0) {
+                if (null == $campaignaward->getPlace()) {
+                    $failure = true;
+                    $this->addFlash(
+                    'danger',
+                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated place'
+                );
+                } else {
+                    if ($campaignaward->getPlace() < 1) {
+                        $failure = true;
+                        $this->addFlash(
+                      'danger',
+                      'Place must be greater than 0'
+                  );
+                    }
+
+                    $campaignaward->setAmount(null);
+                }
+            }
+
+            if (!$failure) {
+                $validator = $this->get('validator');
+                $errors = $validator->validate($campaignaward);
+                if (count($errors) > 0) {
+                    $failure = true;
+                    $errorsString = (string) $errors;
+                    $logger->error('Could not update ['.$entity.']: '.$errorsString);
+                    $this->addFlash(
+                  'danger',
+                  'Could not update ['.$entity.']: '.$errorsString
+              );
+                }
+            }
+
+            if (!$failure) {
+                $campaignawardCheck = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+          array('campaignawardtype' => $campaignaward->getCampaignawardtype(), 'campaignawardstyle' => $campaignaward->getCampaignawardstyle(), 'amount' => $campaignaward->getAmount(), 'place' => $campaignaward->getPlace())
+          );
+                if (!empty($campaignawardCheck)) {
+                    $failure = true;
+                    $this->addFlash(
+                            'danger',
+                            'This combination for an award [Type/Style/Place/Amount] already exists'
+                        );
+                }
+            }
+
+            if (!$failure) {
+                $em->persist($campaignaward);
+                $em->flush();
+
+                return $this->redirectToRoute('campaignaward_index', array('id' => $campaignaward->getId()));
+            }
         }
 
         return $this->render('crud/edit.html.twig', array(
@@ -146,12 +330,5 @@ class CampaignawardController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
-    }
-
-    private function clean($string)
-    {
-        $string = str_replace(' ', '_', $string); // Replaces all spaces with underscores.
-   $string = preg_replace('/[^A-Za-z0-9\_]/', '', $string); // Removes special chars.
-   return strtolower($string);
     }
 }

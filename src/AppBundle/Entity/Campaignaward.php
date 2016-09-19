@@ -2,12 +2,19 @@
 
 namespace AppBundle\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+// DON'T forget this use statement!!!
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="campaignaward",uniqueConstraints={@ORM\UniqueConstraint(columns={"award_type","award_style", "place", "amount"})})
+ * @ORM\Table(name="campaignaward",uniqueConstraints={@ORM\UniqueConstraint(columns={"campaignawardtype_id","campaignawardstyle_id", "place", "amount"})})
+ * @UniqueEntity(
+ *     fields={"campaignawardtype", "campaignawardstyle", "place", "amount"},
+ *     errorPath="campaignawardtype",
+ *     message="Cannot have duplicative places or amounts for this type and style"
+ * )
  */
 class Campaignaward
 {
@@ -19,16 +26,18 @@ class Campaignaward
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=100, nullable=false)
+     * @ORM\ManyToOne(targetEntity="Campaignawardtype", inversedBy="campaignawards")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
-    private $awardType;
+    private $campaignawardtype;
 
     /**
-     * @ORM\Column(type="string", length=100, nullable=false)
+     * @ORM\ManyToOne(targetEntity="Campaignawardstyle", inversedBy="campaignawards")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
-    private $awardStyle;
+    private $campaignawardstyle;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=false)
@@ -37,12 +46,12 @@ class Campaignaward
     private $name;
 
     /**
-     * @ORM\Column(type="integer", length=100, nullable=true)
+     * @ORM\Column(type="integer", length=10, nullable=true)
      */
     private $place;
 
     /**
-     * @ORM\Column(type="float", length=100, nullable=true)
+     * @ORM\Column(type="float", length=17, nullable=true)
      */
     private $amount;
 
@@ -62,59 +71,11 @@ class Campaignaward
     }
 
     /**
-     * Set type.
-     *
-     * @param string $type
-     *
-     * @return Campaignawards
-     */
-    public function setAwardType($awardType)
-    {
-        $this->awardType = $awardType;
-
-        return $this;
-    }
-
-    /**
-     * Get type.
-     *
-     * @return string
-     */
-    public function getAwardType()
-    {
-        return $this->awardType;
-    }
-
-    /**
-     * Set awardStyle.
-     *
-     * @param string $awardStyle
-     *
-     * @return Campaignawards
-     */
-    public function setAwardStyle($awardStyle)
-    {
-        $this->awardStyle = $awardStyle;
-
-        return $this;
-    }
-
-    /**
-     * Get awardStyle.
-     *
-     * @return string
-     */
-    public function getAwardStyle()
-    {
-        return $this->awardStyle;
-    }
-
-    /**
      * Set name.
      *
      * @param string $name
      *
-     * @return Campaignawards
+     * @return Campaignaward
      */
     public function setName($name)
     {
@@ -138,7 +99,7 @@ class Campaignaward
      *
      * @param int $place
      *
-     * @return Campaignawards
+     * @return Campaignaward
      */
     public function setPlace($place)
     {
@@ -162,7 +123,7 @@ class Campaignaward
      *
      * @param float $amount
      *
-     * @return Campaignawards
+     * @return Campaignaward
      */
     public function setAmount($amount)
     {
@@ -186,7 +147,7 @@ class Campaignaward
      *
      * @param string $description
      *
-     * @return Campaignawards
+     * @return Campaignaward
      */
     public function setDescription($description)
     {
@@ -203,5 +164,53 @@ class Campaignaward
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set campaignawardtype.
+     *
+     * @param \AppBundle\Entity\Campaignawardtype $campaignawardtype
+     *
+     * @return Campaignaward
+     */
+    public function setCampaignawardtype(\AppBundle\Entity\Campaignawardtype $campaignawardtype = null)
+    {
+        $this->campaignawardtype = $campaignawardtype;
+
+        return $this;
+    }
+
+    /**
+     * Get campaignawardtype.
+     *
+     * @return \AppBundle\Entity\Campaignawardtype
+     */
+    public function getCampaignawardtype()
+    {
+        return $this->campaignawardtype;
+    }
+
+    /**
+     * Set campaignawardstyle.
+     *
+     * @param \AppBundle\Entity\Campaignawardstyle $campaignawardstyle
+     *
+     * @return Campaignaward
+     */
+    public function setCampaignawardstyle(\AppBundle\Entity\Campaignawardstyle $campaignawardstyle = null)
+    {
+        $this->campaignawardstyle = $campaignawardstyle;
+
+        return $this;
+    }
+
+    /**
+     * Get campaignawardstyle.
+     *
+     * @return \AppBundle\Entity\Campaignawardstyle
+     */
+    public function getCampaignawardstyle()
+    {
+        return $this->campaignawardstyle;
     }
 }

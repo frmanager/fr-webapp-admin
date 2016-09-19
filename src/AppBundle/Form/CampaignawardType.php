@@ -5,9 +5,10 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class CampaignawardType extends AbstractType
 {
@@ -19,21 +20,21 @@ class CampaignawardType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('description', TextType::class, array('required' => false))
-            ->add('award_type', ChoiceType::class, array(
-                'choices' => array(
-                    'Teacher/class' => 'teacher',
-                    'Individual/Student' => 'student',
-                ),
-            ))
-            ->add('award_style', ChoiceType::class, array(
-                'choices' => array(
-                    'Place' => 'place',
-                    'Donation Level' => 'level',
-                ),
-            ))
+            ->add('campaignawardtype', EntityType::class, array(
+              'class' => 'AppBundle:Campaignawardtype',
+              'choice_label' => 'displayName',
+              'label' => 'Type',
+              'placeholder' => 'Choose an option',
+              ))
+              ->add('campaignawardstyle', EntityType::class, array(
+                'class' => 'AppBundle:Campaignawardstyle',
+                'choice_label' => 'displayName',
+                'label' => 'Style',
+                'placeholder' => 'Choose an option',
+                ))
             ->add('amount', NumberType::class, array('required' => false))
-            ->add('place', NumberType::class, array('required' => false))
+            ->add('place', IntegerType::class, array('required' => false))
+            ->add('description', TextType::class, array('required' => false))
         ;
     }
 
