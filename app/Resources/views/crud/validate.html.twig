@@ -13,7 +13,7 @@
             <hr/>
             <div>Issues Found: <span class="badge">{{error_messages|length}}</span></div>
             <div style="text-align:right;">
-                <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-default">
+                <a href="{{ path(entity|lower ~ '_upload') }}?file_type={{ file_type }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-upload"></i>
                     Upload CSV</a>
             </div>

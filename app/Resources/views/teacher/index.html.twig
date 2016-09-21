@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-10 col-md-offset-1">
             <div style="text-align:right;">
                 <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-plus"></i>
@@ -25,7 +25,7 @@
                         <th>Id</th>
                         <th>Grade</th>
                         <th>Teacher's Name</th>
-                        <th>Actions</th>
+                        <th class="col-md-2 col-sm-1" >Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,12 +37,12 @@
                             <td>{{ teacher.grade.name }}</td>
                             <td>{{ teacher.teacherName }}</td>
                             <td style="text-align:center;">
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': teacher.id }) }}" class="btn btn-sm btn-info">
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': teacher.id }) }}" class="btn btn-xs btn-info">
                                     <i class="glyphicon glyphicon-eye-open"></i>
                                     <span class="hidden-xs hidden-sm">
                                         View</span>
                                 </a>
-                                <a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.id }) }}" class="btn btn-sm btn-warning">
+                                <a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.id }) }}" class="btn btn-xs btn-warning">
                                     <i class="glyphicon glyphicon-edit"></i>
                                     <span class="hidden-xs hidden-sm">
                                         Edit</span>
@@ -54,4 +54,12 @@
             </table>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+<script>
+$(document).ready(function(){
+    $('.table').DataTable();
+});
+
+</script>
 {% endblock %}

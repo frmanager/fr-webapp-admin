@@ -42,3 +42,12 @@ body {
 .footer a {
   color:#fff; !important;
 }
+
+.dashboard-ticker, .dashboard-ticker .progress{
+  margin-bottom:0px;
+
+}
+
+.dashboard .panel-heading {
+    padding: 5px 5px;
+}

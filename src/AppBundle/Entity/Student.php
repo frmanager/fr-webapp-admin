@@ -42,19 +42,14 @@ class Student
     private $teacher;
 
     /**
+     * @ORM\OneToMany(targetEntity="Donation", mappedBy="student", cascade={"remove"})
+     */
+    private $donations;
+
+    /**
      * @ORM\OneToMany(targetEntity="Causevoxfundraiser", mappedBy="student", cascade={"remove"})
      */
     private $causevoxfundraisers;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="student", cascade={"remove"})
-     */
-    private $causevoxdonations;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Offlinedonation", mappedBy="student", cascade={"remove"})
-     */
-    private $offlinedonations;
 
     /**
      * Get id.
@@ -193,37 +188,62 @@ class Student
     {
         return sprintf('%s - %s - %s', $this->teacher->getGrade()->getName(), $this->teacher->getTeacherName(), $this->name);
     }
+
     /**
-     * Add causevoxdonations.
+     * Add donation.
      *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
+     * @param \AppBundle\Entity\Donation $donation
      *
      * @return Student
      */
-    public function addCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
+    public function addDonation(\AppBundle\Entity\Donation $donation)
     {
-        $this->causevoxdonations[] = $causevoxdonations;
+        $this->donations[] = $donation;
 
         return $this;
     }
 
     /**
-     * Remove causevoxdonation.
+     * Remove donation.
      *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
+     * @param \AppBundle\Entity\Donation $donation
      */
-    public function removeCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
+    public function removeDonation(\AppBundle\Entity\Donation $donation)
     {
-        $this->causevoxdonations->removeElement($causevoxdonations);
+        $this->donations->removeElement($donation);
     }
 
     /**
-     * Get causevoxdonations.
+     * Get donations.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getCausevoxdonations()
+    public function getDonations()
     {
-        return $this->causevoxdonations;
+        return $this->donations;
+    }
+
+    /**
+     * Add causevoxfundraiser.
+     *
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     *
+     * @return Student
+     */
+    public function addCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    {
+        $this->causevoxfundraisers[] = $causevoxfundraiser;
+
+        return $this;
+    }
+
+    /**
+     * Remove causevoxfundraiser.
+     *
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     */
+    public function removeCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    {
+        $this->causevoxfundraisers->removeElement($causevoxfundraiser);
     }
 }

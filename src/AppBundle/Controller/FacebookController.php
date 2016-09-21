@@ -50,10 +50,10 @@ class FacebookController extends Controller
             $causevoxteams = $em->getRepository('AppBundle:Causevoxteam')->findAll();
 
             $qb = $em->createQueryBuilder();
-            $qb->select(array('SUM(u.amount) as total'))->from('AppBundle:Causevoxdonation', 'u');
+            $qb->select(array('SUM(u.amount) as total'))->from('AppBundle:Donation', 'u');
             $query = $qb->getQuery();
             $result = $query->getResult();
-            $logger->debug('Total Donations from Causevoxe: '.$result[0]['total']);
+            $logger->debug('Total Donations : '.$result[0]['total']);
             $data['total_donations'] = $result[0]['total'];
 
             $data['causevoxteams'] = $causevoxteams;

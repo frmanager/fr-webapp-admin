@@ -22,11 +22,6 @@ class Teacher
     private $causevoxteams;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxdonation", mappedBy="teacher", cascade={"remove"})
-     */
-    private $causevoxdonations;
-
-    /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -182,42 +177,8 @@ class Teacher
         return $this->causevoxteams;
     }
 
-    /**
-     * Add causevoxdonation.
-     *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
-     *
-     * @return Teacher
-     */
-    public function addCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
-    {
-        $this->causevoxdonations[] = $causevoxdonations;
-
-        return $this;
-    }
-
-    /**
-     * Remove causevoxdonations.
-     *
-     * @param \AppBundle\Entity\Causevoxdonation $causevoxdonations
-     */
-    public function removeCausevoxdonations(\AppBundle\Entity\Causevoxdonation $causevoxdonations)
-    {
-        $this->causevoxdonations->removeElement($causevoxdonations);
-    }
-
     public function getTeacherAndGrade()
     {
         return sprintf('%s - %s', $this->grade->getName(), $this->teacherName);
-    }
-
-    /**
-     * Get causevoxdonation.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCausevoxdonations()
-    {
-        return $this->causevoxdonations;
     }
 }
