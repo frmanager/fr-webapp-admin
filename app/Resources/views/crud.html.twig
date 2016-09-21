@@ -9,10 +9,11 @@
             {% block title %}Welcome!{% endblock %}
         </title>
         <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
+
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.12/fh-3.1.2/r-2.1.0/sc-1.4.2/datatables.min.css"/>
         <link rel="stylesheet" href="{{ asset('assets/css/crud.css') }}">
 
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
-
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->
@@ -32,140 +33,135 @@
                 </div>
                 <div class="collapse navbar-collapse navbar-x-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="dropdown {% if app.request.attributes.get('_route') in ['grade_index', 'teacher_index', 'student_index']%}active{% endif %}">
-                            <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                Core Data<span class="hidden-xs hidden-sm">
-                                    Administration</span>
-                            </strong>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="drop3">
-                            <li {% if app.request.attributes.get('_route') == 'grade_index'%} class="active" {% endif %}>
-                                <a href="{{ path('grade_index') }}">Manage Grades</a>
-                            </li>
-                            <li  {% if app.request.attributes.get('_route') == 'teacher_index'%} class="active" {% endif %}>
-                                <a href="{{ path('teacher_index') }}">Manage Teachers</a>
-                            </li>
-                            <li  {% if app.request.attributes.get('_route') == 'student_index'%} class="active" {% endif %}>
-                                <a href="{{ path('student_index') }}">Manage Students</a>
-                            </li>
-                        </ul>
-                    </li>
-                        <li class="dropdown {% if app.request.attributes.get('_route') in ['campaignsetting_index', 'campaignaward_index', 'offlinedonation_index']%}active{% endif %}">
+                        <li class="dropdown {% if app.request.attributes.get('_route') in ['manage_index', 'campaignsetting_index', 'campaignaward_index', 'donation_index', 'causevoxfundraiser_index','causevoxteam_index']%}active{% endif %}">
                             <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 Manage Campaign</span>
-                            </strong>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="drop3">
-                            <li {% if app.request.attributes.get('_route') == 'campaignsetting_index'%} class="active" {% endif %}>
-                                <a href="{{ path('campaignsetting_index') }}">Manage Campaign</a>
-                            </li>
-                            <li {% if app.request.attributes.get('_route') == 'campaignaward_index'%} class="active" {% endif %}>
-                                <a href="{{ path('campaignaward_index') }}">Manage Awards</a>
-                            </li>
-                            <li {% if app.request.attributes.get('_route') == 'offlinedonation_index'%} class="active" {% endif %}>
-                                <a href="{{ path('offlinedonation_index') }}">Manage Offline Donations</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown {% if app.request.attributes.get('_route') in ['causevoxteam_index', 'causevoxfundraiser_index', 'causevoxdonation_index']%}active{% endif %}">
-                        <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            CauseVox Data<span class="hidden-xs hidden-sm">
-                                Administration</span>
                         </strong>
                         <span class="caret"></span>
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="drop4">
+                    <ul class="dropdown-menu" aria-labelledby="drop3">
+                        <li {% if app.request.attributes.get('_route') == 'manage_index'%} class="active" {% endif %}>
+                            <a href="{{ path('manage_index') }}" id="dropdown" role="button">
+                                <span class="glyphicon glyphicon-dashboard"></span>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li {% if app.request.attributes.get('_route') == 'campaignsetting_index'%} class="active" {% endif %}>
+                            <a href="{{ path('campaignsetting_index') }}"><span class="glyphicon glyphicon-cog"></span> Campaign Settings</a>
+                        </li>
+                        <li {% if app.request.attributes.get('_route') == 'campaignaward_index'%} class="active" {% endif %}>
+                            <a href="{{ path('campaignaward_index') }}"><span class="glyphicon glyphicon-star"></span> Awards</a>
+                        </li>
+                        <li {% if app.request.attributes.get('_route') == 'offlinedonation_index'%} class="active" {% endif %}>
+                            <a href="{{ path('donation_index') }}"><span class="glyphicon glyphicon-usd"></span>Donations</a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">CauseVox</li>
                         <li {% if app.request.attributes.get('_route') == 'causevoxteam_index'%} class="active" {% endif %}>
-                            <a href="{{ path('causevoxteam_index') }}">Manage Causevox Teams</a>
+                            <a href="{{ path('causevoxteam_index') }}"><span class="glyphicon glyphicon-apple"></span> Causevox Teams</a>
                         </li>
                         <li {% if app.request.attributes.get('_route') == 'causevoxfundraiser_index'%} class="active" {% endif %}>
-                            <a href="{{ path('causevoxfundraiser_index') }}">Manage Causevox Fundraisers</a>
-                        </li>
-                        <li {% if app.request.attributes.get('_route') == 'causevoxdonation_index'%} class="active" {% endif %}>
-                            <a href="{{ path('causevoxdonation_index') }}">Manage Causevox Donations</a>
+                            <a href="{{ path('causevoxfundraiser_index') }}"><span class="glyphicon glyphicon-user"></span> Causevox Fundraisers</a>
                         </li>
                     </ul>
                 </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
+                  <li {% if app.request.attributes.get('_route') == 'student_index'%} class="active" {% endif %}>
+                    <a href="{{ path('student_index') }}"><span class="glyphicon glyphicon-user"></span> Students</a>
+                  </li>
+                  <li {% if app.request.attributes.get('_route') == 'teacher_index'%} class="active" {% endif %}>
+                    <a href="{{ path('teacher_index') }}"><span class="glyphicon glyphicon-apple"></span> Teachers</a>
+                  </li>
+               {% if is_granted('ROLE_ADMIN') %}
+                <li class="dropdown {% if app.request.attributes.get('_route') in ['grade_index']%}active{% endif %}">
                     <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="glyphicon glyphicon-user"></i>&nbsp;
-                        {{ app.user.username }}&nbsp;
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="drop3">
-                        <li>
-                            <a href="/logout">Logout</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+                        Admin
+                    </strong>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="drop4">
+                    <li class="dropdown-header">Core Data</li>
+                    <li {% if app.request.attributes.get('_route') == 'grade_index'%} class="active" {% endif %}>
+                        <a href="{{ path('grade_index') }}">Manage Grades</a>
+                    </li>
+                </ul>
+            </li>
+           {% endif %}
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="glyphicon glyphicon-user"></i>&nbsp;
+                    {{ app.user.username }}&nbsp;
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="drop3">
+                    <li>
+                        <a href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </div>
+</div>
 </nav>
 
 <div class="container body-container">
-    <div class="clearfix">&nbsp;</div>
-    <div class="clearfix">&nbsp;</div>
-    <div class="clearfix">&nbsp;</div>
-    {% for type, messages in app.session.flashBag.all() %}
-        {% for message in messages %}
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="alert alert-{{type}} alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <strong>{{ type|capitalize }}!</strong>
-                        {{message}}
-                    </div>
+<div class="clearfix">&nbsp;</div>
+<div class="clearfix">&nbsp;</div>
+<div class="clearfix">&nbsp;</div>
+{% for type, messages in app.session.flashBag.all() %}
+    {% for message in messages %}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="alert alert-{{type}} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>{{ type|capitalize }}!</strong>
+                    {{message}}
                 </div>
             </div>
-        {% endfor %}
+        </div>
     {% endfor %}
-    {% block body %}{% endblock %}
-    <div class="clearfix">&nbsp;</div>
-    <div class="clearfix">&nbsp;</div>
+{% endfor %}
+{% block body %}{% endblock %}
+<div class="clearfix">&nbsp;</div>
+<div class="clearfix">&nbsp;</div>
 </div>
 <div class="clearfix">&nbsp;</div>
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="footer">
-                <strong>For help and support contact
-                    <a href="mailto:funrun@lrespto.org">funrun@lrespto.org</a>
-                </strong>
-            </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="footer">
+            <strong>For help and support contact
+                <a href="mailto:funrun@lrespto.org">funrun@lrespto.org</a>
+            </strong>
         </div>
     </div>
-    <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left">
-        <span class="glyphicon glyphicon-chevron-up"></span>
-    </a>
+</div>
+<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left">
+    <span class="glyphicon glyphicon-chevron-up"></span>
+</a>
 
 </div>
-{% block javascripts %}{% endblock %}
-</body>
 
 <script type='application/javascript' src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
 <script type='application/javascript' src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-<script type='application/javascript' src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
+
 <script type='application/javascript' src="{{ asset('assets/vendor/fastclick/lib/fastclick.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/moment/min/moment.min.js') }}"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/matchheight/dist/jquery.matchHeight-min.js') }}"></script>
+<script type='application/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+<script type="application/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/fh-3.1.2/r-2.1.0/sc-1.4.2/datatables.min.js"></script>
+<script type='application/javascript' src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
+{% block javascripts %}{% endblock %}
+
 <!-- IE 10 Viewport Bug Fix -->
 <script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
-
-    $('[data-countdown]').each(function() {
-        var $this = $(this),
-            finalDate = $(this).data('countdown');
-        $this.countdown(finalDate, function(event) {
-            $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> min &nbsp;&nbsp;<span class="label label-info">%S</span> sec'));
-        });
-    });
 
     $(".alert-success").fadeTo(2000, 1000).slideUp(1000, function() {
         $(".alert-success").slideUp(1000);
@@ -200,6 +196,8 @@ $(document).ready(function() {
         FastClick.attach(document.body);
     });
 });
-
 </script>
+
+</body>
+
 </html>

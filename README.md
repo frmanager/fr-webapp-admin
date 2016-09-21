@@ -35,7 +35,7 @@ This project requires configuration files (See below) and data files (pulled fro
 
 ##Run locally
 
-  php bin/console server:run
+  php bin/console cache:clear --no-debug;php bin/console server:run
 
 URL:[http://localhost:8000/](http://localhost:8000/)
 
@@ -98,3 +98,8 @@ The Phing configuration is dynamic and will support any amount of environments. 
 ### Create new User via FOSUserBundle CLI
 
     php bin/console fos:user:create testuser test@example.com p@ssword
+
+
+## TODO: TimeZone
+
+Need to set default timezone as date.timezone = "America/New_York"

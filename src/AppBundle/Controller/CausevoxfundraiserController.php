@@ -163,7 +163,7 @@ class CausevoxfundraiserController extends Controller
         $logger = $this->get('logger');
         $entity = 'Causevoxfundraiser';
         $mode = 'update';
-        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity));
+        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -355,16 +355,12 @@ class CausevoxfundraiserController extends Controller
                     'File was not a .csv'
                 );
             }
-
-            return $this->render('crud/upload.html.twig', array(
-                'form' => $form->createView(),
-                'entity' => $entity,
-            ));
         }
 
         return $this->render('crud/upload.html.twig', array(
             'form' => $form->createView(),
             'entity' => $entity,
+            'file_type' => $entity,
         ));
     }
 }

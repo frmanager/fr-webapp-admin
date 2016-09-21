@@ -16,15 +16,15 @@ class UploadType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-        ->add('entity', ChoiceType::class, array(
+        ->add('file_type', ChoiceType::class, array(
           'choices' => array(
               'Students' => 'Student',
               'Teachers' => 'Teacher',
               'Grades' => 'Grade',
-              'Cause Vox Teams' => 'Causevoxteam',
-              'Cause Vox Fundraisers' => 'Causevoxfundraiser',
-              'Cause Vox Donations' => 'Causevoxdonation',
-              'Offline Donations' => 'Offlinedonation',
+              'CauseVox Teams' => 'Causevoxteam',
+              'CauseVox Fundraisers' => 'Causevoxfundraiser',
+              'CauseVox Donations' => 'Causevoxdonation',
+              'Fun Run Ledger' => 'Offlinedonation',
             ),
             'disabled' => true,
           )

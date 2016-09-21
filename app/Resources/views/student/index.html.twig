@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-10 col-md-offset-1">
             <div style="text-align:right;">
                 <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-plus"></i>
@@ -54,4 +54,13 @@
             </table>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+<script>
+$(document).ready(function(){
+    $('.table').DataTable();
+});
+
+
+</script>
 {% endblock %}
