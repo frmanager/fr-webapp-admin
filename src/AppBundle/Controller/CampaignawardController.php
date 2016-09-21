@@ -152,7 +152,7 @@ class CampaignawardController extends Controller
                 $campaignawardCheck = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
           array('campaignawardtype' => $campaignaward->getCampaignawardtype(), 'campaignawardstyle' => $campaignaward->getCampaignawardstyle(), 'amount' => $campaignaward->getAmount(), 'place' => $campaignaward->getPlace())
           );
-                if (!empty($campaignawardCheck)) {
+                if (!empty($campaignawardCheck) && $campaignawardCheck->getId() !== $campaignaward->getId()) {
                     $failure = true;
                     $this->addFlash(
                             'danger',
@@ -268,7 +268,7 @@ class CampaignawardController extends Controller
                 $campaignawardCheck = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
           array('campaignawardtype' => $campaignaward->getCampaignawardtype(), 'campaignawardstyle' => $campaignaward->getCampaignawardstyle(), 'amount' => $campaignaward->getAmount(), 'place' => $campaignaward->getPlace())
           );
-                if (!empty($campaignawardCheck)) {
+                if (!empty($campaignawardCheck) && $campaignawardCheck->getId() !== $campaignaward->getId()) {
                     $failure = true;
                     $this->addFlash(
                             'danger',

@@ -103,7 +103,7 @@ class DonationController extends Controller
             $em->persist($donation);
             $em->flush();
 
-            return $this->redirectToRoute(strtolower($entity).'_edit', array('id' => $donation->getId()));
+            return $this->redirectToRoute(strtolower($entity).'_index', array('id' => $donation->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(
