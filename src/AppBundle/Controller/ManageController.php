@@ -28,6 +28,11 @@ class ManageController extends Controller
         $campaignawardstyle = $em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
         //$teacherCampaignawards = $em->getRepository('AppBundle:Campaignawardtype')->findAllBy(array('campaignawardstyle' => $campaignawardstyle->getId(), 'campaignawardtype' => $campaignawardtype));
 
+
+        $tempDate = new DateTime();
+        $dateString = $tempDate->format('Y-m-d').' 00:00:00';
+        $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
+
         // replace this example code with whatever you need
         return $this->render('manage/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),
@@ -264,8 +269,10 @@ class ManageController extends Controller
               }
 
               //NOW Separate todays awards with the last award
-              $tempDate = new DateTime();
-            $todaysDate = new DateTime($tempDate->format('Y-m-d'));
+            $date = new DateTime();
+            $dateString = $date->format('Y-m-d').' 00:00:00';
+            $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
+
             $todaysTeachersWithAwards = [];
             $yesterdaysTeachersWithAwards = [];
             foreach ($teacherDonationAmountsByDay as $outerLoop) {
@@ -291,11 +298,11 @@ class ManageController extends Controller
                 }
             }
 
-              //NOW TAKE THAT NEW LIST
 
+              //NOW TAKE THAT NEW LIST
               foreach ($todaysTeachersWithAwards as $key => $outerLoop) {
                   foreach ($yesterdaysTeachersWithAwards as $innerLoop) {
-                      if ($outerLoop['campaignaward_amount'] <= $innerLoop['campaignaward_amount']) {
+                      if ($outerLoop['teacher_id'] == $innerLoop['teacher_id'] && $outerLoop['campaignaward_amount'] <= $innerLoop['campaignaward_amount']) {
                           unset($todaysTeachersWithAwards[$key]);
                       }
                   }
