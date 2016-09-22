@@ -1,5 +1,6 @@
 {
     "name": "moment",
+    "license": "MIT",
     "main": "moment.js",
     "ignore": [
         "**/.*",
@@ -19,5 +20,5 @@
         "package.js",
         "package.json"
     ],
-    "version": "2.15.0"
+    "version": "2.15.1"
 }

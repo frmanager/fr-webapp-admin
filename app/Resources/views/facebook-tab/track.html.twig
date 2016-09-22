@@ -40,7 +40,7 @@
                   <div class="panel-body" ng-cloak>
                        <div class="progress">
                         <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ data.total_donations / data.campaign_funding_goal * 100}}" aria-valuemin="0" aria-valuemax="100" style="width:{{ data.total_donations / data.campaign_funding_goal * 100}}%">
-                        <span>{{ data.total_donations / data.campaign_funding_goal * 100}}% Complete</span>
+                        <span>{{ (data.total_donations / data.campaign_funding_goal * 100)|number_format(2, '.', ',') }}% Complete</span>
                         </div>
                         </div>
                      <hr/>

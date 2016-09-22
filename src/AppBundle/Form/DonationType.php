@@ -10,6 +10,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use AppBundle\Entity\Student;
 use AppBundle\Entity\Teacher;
+use Doctrine\ORM\EntityRepository;
+use DateTime;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class DonationType extends AbstractType
 {
@@ -22,18 +25,13 @@ class DonationType extends AbstractType
         $builder
             ->add('student', EntityType::class, array(
               'class' => 'AppBundle:Student',
-              'choice_label' => 'name',
-              ))
-            ->add('teacher', EntityType::class, array(
-              'class' => 'AppBundle:Teacher',
-              'choice_label' => 'teachername',
+              'query_builder' => function (EntityRepository $er) {
+                  return $er->createQueryBuilder('u')->orderBy('u.teacher', 'ASC');
+              },
+              'choice_label' => 'getStudentAndTeacher',
               ))
             ->add('amount', MoneyType::class, array('required' => true, 'currency' => 'USD'))
-            ->add('donated_at', DateType::class, array(
-              'placeholder' => array('year' => date('Y'), 'month' => date('m'), 'day' => date('d')),
-            ))
-            ->add('donor_email')
-            ->add('type')
+            ->add('donated_at', DateType::class)
         ;
     }
 

@@ -11,9 +11,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * donation.
  *
  * @ORM\Entity
- * @ORM\Table(name="donation",uniqueConstraints={@ORM\UniqueConstraint(columns={"donated_at", "student_id", "donated_at"})})
+ * @ORM\Table(name="donation",uniqueConstraints={@ORM\UniqueConstraint(columns={"donated_at", "student_id", "donor_email"})})
  * @UniqueEntity(
- *     fields={"student", "donatedAt"},
+ *     fields={"student", "donatedAt", "donorEmail"},
  *     errorPath="student",
  *     message="Already received a donation from this student on this day...."
  * )
