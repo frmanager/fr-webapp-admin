@@ -232,18 +232,18 @@ class DonationController extends Controller
                   'students_name', );
                 }
 
-                $csvHelper = new csvHelper();
-                $csvHelper->setHeaderRowIndex($fileIndexOffset);
-                $csvHelper->processFile('temp/', strtolower($entity).'.csv');
+                $CSVHelper = new CSVHelper();
+                $CSVHelper->setHeaderRowIndex($fileIndexOffset);
+                $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
 
                 if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                    $csvHelper->getGradefromTeacherName();
-                    $csvHelper->cleanTeacherNames();
+                    $CSVHelper->getGradefromTeacherName();
+                    $CSVHelper->cleanTeacherNames();
                 }
 
-                $csvHelper->cleanAmounts();
+                $CSVHelper->cleanAmounts();
 
-                if ($csvHelper->validateHeaders($templateFields)) {
+                if ($CSVHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
 
                     if (strcmp($mode, 'truncate') == 0) {
@@ -281,7 +281,7 @@ class DonationController extends Controller
                     $errorMessages = [];
                     $errorMessage;
 
-                    foreach ($csvHelper->getData() as $i => $item) {
+                    foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
                         unset($errorMessage);
 
