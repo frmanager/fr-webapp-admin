@@ -33,7 +33,7 @@ class CampaignawardType extends AbstractType
                 'placeholder' => 'Choose an option',
                 ))
             ->add('amount', MoneyType::class, array('required' => false, 'currency' => 'USD'))
-            ->add('place', IntegerType::class, array('required' => false))
+            ->add('place', IntegerType::class, array('required' => false, 'label' => 'Rank'))
             ->add('description', TextType::class, array('required' => false))
         ;
     }
