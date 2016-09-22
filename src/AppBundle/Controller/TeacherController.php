@@ -273,11 +273,11 @@ class TeacherController extends Controller
 
                 $uploadFile->move('temp/', strtolower($entity).'.csv');
 
-                $csvHelper = new csvHelper();
-                $csvHelper->processFile('temp/', strtolower($entity).'.csv');
+                $CSVHelper = new CSVHelper();
+                $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
                 $templateFields = array('teachers_name', 'grade');
 
-                if ($csvHelper->validateHeaders($templateFields)) {
+                if ($CSVHelper->validateHeaders($templateFields)) {
                     $logger->info('Making changes to database');
 
                     $em = $this->getDoctrine()->getManager();
@@ -304,7 +304,7 @@ class TeacherController extends Controller
                     $errorMessages = [];
                     $errorMessage;
 
-                    foreach ($csvHelper->getData() as $i => $item) {
+                    foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
                         unset($errorMessage);
 

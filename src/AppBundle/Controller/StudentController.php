@@ -10,6 +10,7 @@ use AppBundle\Entity\Student;
 use AppBundle\Entity\Campaignsetting;
 use AppBundle\Utils\ValidationHelper;
 use AppBundle\Utils\CampaignHelper;
+use AppBundle\Utils\CSVHelper;
 /**
  * Student controller.
  *
@@ -367,11 +368,11 @@ SELECT s.id as student_id,
 
                 $uploadFile->move('temp/', strtolower($entity).'.csv');
 
-                $csvHelper = new csvHelper();
-                $csvHelper->processFile('temp/', strtolower($entity).'.csv');
+                $CSVHelper = new CSVHelper();
+                $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
                 $templateFields = array('students_name', 'grade', 'teachers_name');
 
-                if ($csvHelper->validateHeaders($templateFields)) {
+                if ($CSVHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
 
                     if (strcmp($mode, 'truncate') == 0) {
@@ -395,7 +396,7 @@ SELECT s.id as student_id,
                     $em = $this->getDoctrine()->getManager();
                     $errorMessages = [];
                     $errorMessage;
-                    foreach ($csvHelper->getData() as $i => $item) {
+                    foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
                         unset($errorMessage);
 

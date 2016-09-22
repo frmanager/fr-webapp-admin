@@ -177,13 +177,13 @@ class CausevoxteamController extends Controller
             if (strpos($uploadFile->getClientOriginalName(), '.csv') !== false) {
                 $logger->info('File was a .csv, attempting to load');
                 $uploadFile->move('temp/', strtolower($entity).'.csv');
-                $csvHelper = new csvHelper();
-                $csvHelper->processFile('temp/', strtolower($entity).'.csv');
-                $csvHelper->cleanTeacherNames();
+                $CSVHelper = new CSVHelper();
+                $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
+                $CSVHelper->cleanTeacherNames();
 
                 $templateFields = array('name', 'grade', 'url', 'funds_needed', 'funds_raised', 'teachers_name', 'members', 'admins');
 
-                if ($csvHelper->validateHeaders($templateFields)) {
+                if ($CSVHelper->validateHeaders($templateFields)) {
                     $logger->debug('Making changes to database');
                     $em = $this->getDoctrine()->getManager();
 
@@ -208,7 +208,7 @@ class CausevoxteamController extends Controller
                     $em = $this->getDoctrine()->getManager();
                     $errorMessages = [];
                     $errorMessage;
-                    foreach ($csvHelper->getData() as $i => $item) {
+                    foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
                         unset($errorMessage);
 
