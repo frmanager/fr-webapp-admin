@@ -50,8 +50,15 @@ class DonationController extends Controller
         $entity = 'Donation';
         $donation = new Donation();
         $date = new DateTime();
+        $dateString = $date->format('Y-m-d').' 00:00:00';
+        $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
         $donation->setDonatedAt(new DateTime($date->format('Y-m-d')));
+
+
         $donation->setType('manual');
+
+
+
 
         $form = $this->createForm('AppBundle\Form\DonationType', $donation);
         $form->handleRequest($request);
@@ -104,7 +111,13 @@ class DonationController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $date = new DateTime($donation->getDonatedAt()->format('Y-m-d'));
+            $dateString = $donation->getDonatedAt()->format('Y-m-d').' 00:00:00';
+            $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
+
+
+
+
+
             $donation->setDonatedAt($date);
             $em->persist($donation);
             $em->flush();
@@ -378,7 +391,9 @@ class DonationController extends Controller
                           } else {
                               $tempDate = new DateTime($item['date']);
                           }
-                            $date = new DateTime($tempDate->format('Y-m-d'));
+
+                          $dateString =$tempDate->format('Y-m-d').' 00:00:00';
+                          $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
 
                             if (strcmp($fileType, 'Causevoxdonation') == 0) {
                                 $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
