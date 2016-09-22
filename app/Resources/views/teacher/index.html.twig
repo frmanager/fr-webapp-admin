@@ -47,11 +47,11 @@
                                     <span class="hidden-xs hidden-sm">
                                         View</span>
                                 </a>
-                                <a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.teacher_id }) }}" class="btn btn-xs btn-warning">
+                                {% if is_granted('ROLE_ADMIN') %}<a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.student_id }) }}" class="btn btn-sm btn-warning">
                                     <i class="glyphicon glyphicon-edit"></i>
                                     <span class="hidden-xs hidden-sm">
                                         Edit</span>
-                                </a>
+                                </a>{% endif %}
                             </td>
                         </tr>
                     {% endfor %}

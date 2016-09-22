@@ -49,6 +49,10 @@ class DonationController extends Controller
     {
         $entity = 'Donation';
         $donation = new Donation();
+        $date = new DateTime();
+        $donation->setDonatedAt(new DateTime($date->format('Y-m-d')));
+        $donation->setType('manual');
+
         $form = $this->createForm('AppBundle\Form\DonationType', $donation);
         $form->handleRequest($request);
 
@@ -100,6 +104,8 @@ class DonationController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $date = new DateTime($donation->getDonatedAt()->format('Y-m-d'));
+            $donation->setDonatedAt($date);
             $em->persist($donation);
             $em->flush();
 
@@ -247,7 +253,7 @@ class DonationController extends Controller
 
                         if (strcmp($fileType, 'Offlinedonation') == 0) {
                             $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where('s.type = "manual"');
+                            $qb->where("s.type = 'manual'");
                             $query = $qb->getQuery();
                             $query->getResult();
                             $em->flush();
@@ -258,7 +264,7 @@ class DonationController extends Controller
                           );
                         } else {
                             $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where('s.type != "manual"');
+                            $qb->where("s.type != 'manual'");
                             $query = $qb->getQuery();
                             $query->getResult();
                             $em->flush();
@@ -283,6 +289,8 @@ class DonationController extends Controller
                             if (strcmp($fileType, 'Causevoxdonation') == 0 && strcmp($item['type'], 'manual') == 0) {
                                 $failure = true;
                               //We do not process "manual" causevox donations as they are offline donations we collect elsewhere
+                            } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
+                                $item['type'] = 'manual';
                             }
                         }
 
@@ -366,14 +374,22 @@ class DonationController extends Controller
 
                           //Example: 2016-08-25 16:35:54
                           if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                              $date = new DateTime($item['donated_at']);
+                              $tempDate = new DateTime($item['donated_at']);
                           } else {
-                              $date = new DateTime($item['date']);
+                              $tempDate = new DateTime($item['date']);
                           }
+                            $date = new DateTime($tempDate->format('Y-m-d'));
 
-                            $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                            if (strcmp($fileType, 'Causevoxdonation') == 0) {
+                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                          array('student' => $student, 'donatedAt' => $date, 'donorEmail' => $item['donor_email'])
+                          );
+                            } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
+                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
                           array('student' => $student, 'donatedAt' => $date)
                           );
+                            }
+
                           //Going to perform "Insert" vs "Update"
                           if (empty($donation)) {
                               $logger->debug($entity.' not found....creating new record');
@@ -396,16 +412,15 @@ class DonationController extends Controller
                                 $donation->setTip($item['tip']);
                                 $donation->setEstimatedCcFee($item['est_cc_fee']);
                                 $donation->setCausevoxFee($item['causevox_fee']);
-                                $donation->setType($item['type']);
+
                                 $donation->setDonorFirstName($item['donor_first_name']);
                                 $donation->setDonorLastName($item['donor_last_name']);
                                 $donation->setDonorEmail($item['donor_email']);
                                 $donation->setDonorComment($item['donor_comment']);
                                 $donation->setDonationPage($item['donation_page']);
-                            } else {
-                                $donation->setType('manual');
                             }
 
+                            $donation->setType($item['type']);
                             $donation->setAmount($item['amount']);
                             $donation->setDonatedAt($date);
                             $donation->setStudent($student);

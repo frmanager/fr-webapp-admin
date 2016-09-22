@@ -13,10 +13,10 @@
         {% endfor %}
     {% endif %}
     <div class="row" style="">
-        <div class="col-md-4">
+        <div class="col-sm-4">
             <h1>{{ student.name }}</h1>
         </div>
-        <div class="col-md-8" style="text-align:right;">
+        <div class="col-sm-8" style="text-align:right;">
             <div style="">
                 <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-user"></i>
@@ -33,7 +33,7 @@
                 {% if campaign_award.place == teacher_rank %}
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="well" style="text-align:center;">
+                            <div class="well" style="text-align:center;background-color: #dff0d8;">
                                 <h5>This student's class is currently rank
                                     <span class="label label-success">{{ teacher_rank }}</span>, which means he/she could get the ''{{campaign_award.name}}' Prize!!</h5>
                             </div>
@@ -49,7 +49,7 @@
                 {% if campaign_award.place == student_rank %}
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="well" style="text-align:center;">
+                            <div class="well" style="text-align:center;background-color: #dff0d8;">
                                 <h5>This student's is currently rank
                                     <span class="label label-success">{{ teacher_rank }}</span>
                                     for individual donations, which means he/she could get the ''{{campaign_award.name}}' Prize!!</h5>
@@ -61,7 +61,7 @@
         {% endif %}
     {% endfor %}
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-sm-4">
             <div class="panel panel-default">
                 <div class="panel-heading">Student Info</div>
                 <table class="table table-bordered dt-responsive table-condensed">
@@ -97,18 +97,19 @@
                             </tr>
                         </tbody>
                     </table>
-
+                                    {% if is_granted('ROLE_ADMIN') %}
                     <div class="panel-body" style="font-size:16px;">
                         <div style="text-align:center;">
                             {{ form_start(delete_form) }}
-                            <a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-primary">Edit</a>
+                            <a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-warning">Edit</a>
                             <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{student.id}}?')" class="btn btn-danger">
                             {{ form_end(delete_form) }}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-sm-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">Class Awards Achieved</div>
                     {% if total_class_donations > 0 %}

@@ -31,11 +31,7 @@ class DonationType extends AbstractType
               'choice_label' => 'getStudentAndTeacher',
               ))
             ->add('amount', MoneyType::class, array('required' => true, 'currency' => 'USD'))
-            ->add('donated_at', DateType::class, array(
-              'data' => new DateTime(),
-            ))
-            ->add('donor_email')
-            ->add('type', TextType::class, array('disabled' => true, 'data' => 'manual'))
+            ->add('donated_at', DateType::class)
         ;
     }
 
