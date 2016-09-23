@@ -48,6 +48,6 @@ body {
 
 }
 
-.dashboard .panel-heading {
+#content .panel-heading {
     padding: 5px 5px;
 }
