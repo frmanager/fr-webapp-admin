@@ -43,7 +43,7 @@
         {% endif %}
     {% endfor %}
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <div class="panel panel-default" data-mh="row-1">
                 <div class="panel-heading">Teacher Info</div>
                 <table class="table table-bordered dt-responsive table-condensed">
@@ -58,6 +58,12 @@
                             <th style="text-align:right;">Name</th>
                             <td>
                                 {{ teacher.teachername }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th style="text-align:right;">Email</th>
+                            <td>
+                                {{ teacher.email }}
                             </td>
                         </tr>
                         <tr>
@@ -94,7 +100,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-sm-9">
+        <div class="col-sm-8">
             <div class="panel panel-default" data-mh="row-1">
                 <div class="panel-heading">Class Awards Achieved</div>
                 {% if number_of_donations > 0 %}

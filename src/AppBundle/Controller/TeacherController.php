@@ -166,7 +166,6 @@ class TeacherController extends Controller
             $amount = $item['donation_amount'];
         }
 
-
         return $this->render(strtolower($entity).'/show.html.twig', array(
             'teacher' => $teacher,
             'teacher_rank' => $teacherRank,
@@ -275,7 +274,7 @@ class TeacherController extends Controller
 
                 $CSVHelper = new CSVHelper();
                 $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
-                $templateFields = array('teachers_name', 'grade');
+                $templateFields = array('teachers_name', 'grade', 'email');
 
                 if ($CSVHelper->validateHeaders($templateFields)) {
                     $logger->info('Making changes to database');
@@ -332,35 +331,41 @@ class TeacherController extends Controller
                             $teacher = new Teacher();
                         } else {
                             $logger->debug($entity.' found....updating existing record');
-                            $errorMessage = new ValidationHelper(array(
+                            if (strcmp($mode, 'truncate') == 0) {
+                                //This means there is a duplicate in the file...
+                            $failure = true;
+                                $errorMessage = new ValidationHelper(array(
                               'entity' => $entity,
                               'row_index' => ($i + 2),
                               'error_field' => 'teachers_name',
                               'error_field_value' => $item['teachers_name'],
                               'error_message' => 'Duplicate with '.$entity.' #'.$teacher->getId(),
                               'error_level' => ValidationHelper::$level_warning, ));
+                            }
                         }
+                            if (!$failure) {
+                                $teacher->setTeacherName($item['teachers_name']);
+                                $teacher->setGrade($grade);
+                                $teacher->setEmail($item['email']);
 
-                            $teacher->setTeacherName($item['teachers_name']);
-                            $teacher->setGrade($grade);
+                                $validator = $this->get('validator');
+                                $errors = $validator->validate($teacher);
 
-                            $validator = $this->get('validator');
-                            $errors = $validator->validate($teacher);
-
-                            if (strcmp($mode, 'validate') !== 0) {
-                                if (count($errors) > 0) {
-                                    $errorsString = (string) $errors;
-                                    $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
-                                    $this->addFlash(
-                                      'danger',
-                                      '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
-                                  );
-                                } else {
-                                    $em->persist($teacher);
-                                    $em->flush();
-                                    $em->clear();
-                                }
-                            } //Otherwise we do Nothing....
+                                if (strcmp($mode, 'validate') !== 0) {
+                                    if (count($errors) > 0) {
+                                        $errorsString = (string) $errors;
+                                        $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
+                                        $this->addFlash(
+                                    'danger',
+                                    '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
+                                );
+                                    } else {
+                                        $em->persist($teacher);
+                                        $em->flush();
+                                        $em->clear();
+                                    }
+                                } //Otherwise we do Nothing....
+                            }
                         }
                         if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {
                             $this->addFlash(

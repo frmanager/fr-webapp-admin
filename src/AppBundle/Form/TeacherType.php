@@ -22,6 +22,7 @@ class TeacherType extends AbstractType
               'choice_label' => 'name',
               ))
             ->add('teacherName')
+            ->add('email')
         ;
     }
 

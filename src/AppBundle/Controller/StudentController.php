@@ -437,7 +437,8 @@ SELECT s.id as student_id,
                               $logger->debug($entity.' not found....creating new record');
                               $student = new Student();
                           } else {
-                              $logger->debug($entity.' found....updating existing record');
+                            $logger->debug($entity.' found....updating existing record');
+                            if (strcmp($mode, 'truncate') == 0) {
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
                                 'row_index' => ($i + 2),
@@ -445,8 +446,9 @@ SELECT s.id as student_id,
                                 'error_field_value' => $item['students_name'],
                                 'error_message' => 'Duplicate with Student #'.$student->getId(),
                                 'error_level' => ValidationHelper::$level_warning, ));
+                            }
                           }
-
+                          if(!$failure){
                             $student->setName($item['students_name']);
                             $student->setTeacher($teacher);
 
@@ -467,6 +469,7 @@ SELECT s.id as student_id,
                                     $em->clear();
                                 }
                             } //Otherwise we do Nothing....
+                          }
                         }
 
                         if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {

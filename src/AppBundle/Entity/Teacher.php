@@ -44,6 +44,15 @@ class Teacher
     private $teacherName;
 
     /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email.",
+     *     checkMX = true
+     * )
+     */
+    private $email;
+
+    /**
      * Get id.
      *
      * @return int
@@ -180,5 +189,29 @@ class Teacher
     public function getTeacherAndGrade()
     {
         return sprintf('%s - %s', $this->grade->getName(), $this->teacherName);
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return Teacher
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }

@@ -86,7 +86,7 @@ The Phing configuration is dynamic and will support any amount of environments. 
 
 ### Update entity getters and setters from database
 
-  php bin/console doctrine:generate:entities AppBundle:Causevoxfundraiser
+  php bin/console doctrine:generate:entities AppBundle:Donation
 
 
 ### Update database from entities
