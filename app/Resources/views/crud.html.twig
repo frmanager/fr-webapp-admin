@@ -1,5 +1,6 @@
 <html>
     <head>
+        <base target="_parent" />
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -142,6 +143,10 @@
       <li><p class="navbar-text" style="margin-left: 2px;margin-right: 2px;color:#333;">OR</p></li>
       <li>
           <a href="{{campaign_settings.campaign_url}}/signup" role="button">Create your own!</a>
+      </li>
+      {% else %}
+      <li>
+          <a href="{{campaign_settings.campaign_url}}/signup" role="button">Create your own Fundraiser Page!</a>
       </li>
         {% endif %}
     {% endif %}
