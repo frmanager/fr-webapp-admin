@@ -1,5 +1,6 @@
 <html>
     <head>
+        <base target="_parent" />
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,6 +16,21 @@
         <link rel="stylesheet" href="{{ asset('assets/css/crud.css') }}">
 
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+
+
+        <script src="//connect.facebook.net/en_US/all.js"></script>
+        <script type="text/javascript" charset="utf-8">
+        window.fbAsyncInit = function()
+        {
+            FB.init({ appId: 'appid',
+            status: true,
+            cookie: true,
+            xfbml: true,
+            oauth: true});
+
+            FB.Canvas.setAutoGrow();
+        }
+        </script>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->
@@ -127,6 +143,10 @@
       <li><p class="navbar-text" style="margin-left: 2px;margin-right: 2px;color:#333;">OR</p></li>
       <li>
           <a href="{{campaign_settings.campaign_url}}/signup" role="button">Create your own!</a>
+      </li>
+      {% else %}
+      <li>
+          <a href="{{campaign_settings.campaign_url}}/signup" role="button">Create your own Fundraiser Page!</a>
       </li>
         {% endif %}
     {% endif %}
