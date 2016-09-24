@@ -1,27 +1,177 @@
-{% extends 'home.html.twig' %}
+{% extends 'crud.html.twig' %}
 
 {% block body %}
-    <div class="container" style="text-align:center;color: white;">
-        <div class="clearfix" >&nbsp;</div>
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3 transparent-container">
-                <div>
-                    <h1>LRES PTO FUN RUN</h1>
-                    <br/>
-
-                    <p>
-                        <a href="{{ path('login_check') }}" class="btn btn-primary btn-lg">Management Portal Login</a>
-                    </p>
-                    <hr/>
-                    <p class="lead">Public Pages</p>
-                    <p>
-                        <a href="{{ path('facebook-tab') }}" class="btn btn-info">FACEBOOK APP (TAB)</a>
-                        <a href="#" class="btn btn-info disabled">FACEBOOK APP (CANVAS)</a>
-                    </p>
+    <div class="row dashboard">
+        <div class="col-sm-12">
+            <div class="panel panel-info" data-mh="row-1" style="text-align:center;vertical-align: middle;">
+                <div class="panel-heading">Overall Campaign Progress</div>
+                <div class="panel-body dashboard-ticker">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="progress">
+                                <div
+                                    class="progress-bar progress-bar-warning"
+                                    role="progressbar"
+                                    aria-valuenow="{{ total_donation_amount / campaign_settings.campaign_funding_goal * 100}}"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    style="width:{{ total_donation_amount / campaign_settings.campaign_funding_goal * 100}}%">
+                                    <span>{{ (total_donation_amount / campaign_settings.campaign_funding_goal * 100)|number_format(2, '.', ',')}}% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4" style="text-align:center;vertical-align: middle;"><strong>
+                            ${{ total_donation_amount|number_format(2, '.', ',') }}
+                            / ${{ campaign_settings.campaign_funding_goal|number_format(2, '.', ',') }}</strong>
+                        </div>
+                        <div class="col-sm-4" style="text-align:center;vertical-align: middle;">
+                            <div id="track" data-countdown="{{ campaign_settings.campaign_end_date|date('Y/m/d') }}"></div>
+                        </div>
+                    </div>
                 </div>
-        <div class="clearfix" >&nbsp;</div>
             </div>
         </div>
-
     </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">New Class Awards for -
+                    {{ report_date|date("l, F d, Y") }}</div>
+                {% if new_teacher_awards | length > 0 %}
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Teacher</th>
+                                <th>Total Donations</th>
+                                <th>Award Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for teacher in new_teacher_awards %}
+                                <tr>
+                                    <td>
+                                        {% if is_granted('ROLE_USER') %}
+                                            <a href="{{ path('teacher_show', { 'id': teacher.id }) }}">{{ teacher.grade_name }}
+                                                -
+                                                {{ teacher.teacher_name }}</a>{% else %}{{ teacher.grade_name }}
+                                            -
+                                            {{ teacher.teacher_name }}}{% endif %}
+                                    </td>
+                                    <td>${{ teacher.cumulative_donation_amount|number_format(2, '.', ',') }}
+                                        <small>(<span style="color:#5cb85c;">+{{ teacher.donation_amount|number_format(2, '.', ',') }}</span>)</small>
+                                    </td>
+                                    <td>${{ teacher.campaignaward_amount }}
+                                        -
+                                        {{ teacher.campaignaward_name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="panel-body" style="font-size:120%;">
+                        <div style="text-align:center">
+                            <span class="lead">No new awards were reached yesterday. Lets try harder today!</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">Top 10 Class Rankings</div>
+                {% if teacher_rankings | length > 0 %}
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Teacher</th>
+                                <th>Amount</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for teacher_ranking in teacher_rankings %}
+                                <tr>
+                                    <td style="text-align:center;vertical-align: middle;">
+                                        <span class="label label-{% if teacher_ranking.rank == 1 %}success{% elseif teacher_ranking.rank == 2 %}warning{% elseif teacher_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ teacher_ranking.rank }}</span>
+                                    </td>
+                                    <td>  {% if is_granted('ROLE_USER') %}
+                                        <a href="{{ path('teacher_show', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
+                                            -
+                                            {{ teacher_ranking.teacher_name }}</a>{% else %}{{ teacher_ranking.grade_name }}
+                                                -
+                                                {{ teacher_ranking.teacher_name }}{% endif %}
+                                    </td>
+                                    <td style="text-align:right;">${{ teacher_ranking.donation_amount|number_format(2, '.', ',') }}</td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="panel-body" style="font-size:120%;">
+                        <div style="text-align:center">
+                            <span class="lead">Not enough data to calculate teacher rankings</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">Top 10 Student Rankings</div>
+                {% if student_rankings | length > 0 %}
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Teacher</th>
+                                <th>Student</th>
+                                <th>Amount</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student_ranking in student_rankings %}
+                                <tr>
+                                    <td style="text-align:center;vertical-align: middle;">
+                                        <span class="label label-{% if student_ranking.rank == 1 %}success{% elseif student_ranking.rank == 2 %}warning{% elseif student_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ student_ranking.rank }}</span>
+                                    </td>
+                                    <td>{% if is_granted('ROLE_USER') %}
+                                        <a href="{{ path('teacher_show', { 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>{% else %}{{ student_ranking.teacher_name }}{% endif  %}
+                                    </td>
+                                    <td>{% if is_granted('ROLE_USER') %}
+                                        <a href="{{ path('student_show', { 'id': student_ranking.id }) }}"></a>{% else %}{{ student_ranking.student_name }}{% endif  %}
+                                    </td>
+                                    <td style="text-align:right;">${{ student_ranking.donation_amount|number_format(2, '.', ',') }}</td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="panel-body" style="font-size:120%;">
+                        <div style="text-align:center">
+                            <span class="lead">Not enough data to calculate teacher rankings</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('[data-countdown]').each(function() {
+            var $this = $(this),
+                finalDate = $(this).data('countdown');
+            $this.countdown(finalDate, function(event) {
+                $this.html(event.strftime('<span class="label label-danger">%D</span> day%!D &nbsp;&nbsp;<span class="label label-danger">%H</span> hours &nbsp;&nbsp;<span class="label label-danger">%M</span> min<span class="hidden-sm"> &nbsp;&nbsp;<span class="label label-danger">%S</span> sec</span>'));
+            });
+        });
+    </script>
 {% endblock %}

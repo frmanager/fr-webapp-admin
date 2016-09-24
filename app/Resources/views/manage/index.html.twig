@@ -34,13 +34,16 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <nav class="navbar navbar-default panel-success">
+            <nav class="navbar navbar-default">
                 <div class="container-fluid">
-                  <div class="text-align:center">
-                    <button type="button" class="btn btn-default navbar-btn">Button 1 </button>
-                    <button type="button" class="btn btn-default navbar-btn">Button 2 </button>
-                    <button type="button" class="btn btn-default navbar-btn">Button 3 </button>
-                  </div>
+                    <div style="text-align:center">
+                        <button type="button" class="btn btn-default navbar-btn">Button 1
+                        </button>
+                        <button type="button" class="btn btn-default navbar-btn">Button 2
+                        </button>
+                        <button type="button" class="btn btn-default navbar-btn">Button 3
+                        </button>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -63,9 +66,12 @@
                             {% for teacher in new_teacher_awards %}
                                 <tr>
                                     <td>
-                                        <a href="{{ path('teacher_show', { 'id': teacher.teacher_id }) }}">{{ teacher.grade_name }}
+                                        {% if is_granted('ROLE_USER') %}
+                                            <a href="{{ path('teacher_show', { 'id': teacher.id }) }}">{{ teacher.grade_name }}
+                                                -
+                                                {{ teacher.teacher_name }}</a>{% else %}{{ teacher.grade_name }}
                                             -
-                                            {{ teacher.teacher_name }}</a>
+                                            {{ teacher.teacher_name }}}{% endif %}
                                     </td>
                                     <td>${{ teacher.cumulative_donation_amount|number_format(2, '.', ',') }}
                                         <small>(<span style="color:#5cb85c;">+{{ teacher.donation_amount|number_format(2, '.', ',') }}</span>)</small>
@@ -80,7 +86,7 @@
                 {% else %}
                     <div class="panel-body" style="font-size:120%;">
                         <div style="text-align:center">
-                            <span class="lead">No new awards levels reached yet!</span>
+                            <span class="lead">No classes have received new awards today......YET!</span>
                         </div>
                     </div>
                 {% endif %}
@@ -107,10 +113,12 @@
                                     <td style="text-align:center;vertical-align: middle;">
                                         <span class="label label-{% if teacher_ranking.rank == 1 %}success{% elseif teacher_ranking.rank == 2 %}warning{% elseif teacher_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ teacher_ranking.rank }}</span>
                                     </td>
-                                    <td>
-                                        <a href="{{ path('teacher_show', { 'id': teacher_ranking.teacher_id }) }}">{{ teacher_ranking.grade_name }}
+                                    <td>  {% if is_granted('ROLE_USER') %}
+                                        <a href="{{ path('teacher_show', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
                                             -
-                                            {{ teacher_ranking.teacher_name }}</a>
+                                            {{ teacher_ranking.teacher_name }}</a>{% else %}{{ teacher_ranking.grade_name }}
+                                                -
+                                                {{ teacher_ranking.teacher_name }}{% endif %}
                                     </td>
                                     <td style="text-align:right;">${{ teacher_ranking.donation_amount|number_format(2, '.', ',') }}</td>
 
@@ -147,11 +155,11 @@
                                     <td style="text-align:center;vertical-align: middle;">
                                         <span class="label label-{% if student_ranking.rank == 1 %}success{% elseif student_ranking.rank == 2 %}warning{% elseif student_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ student_ranking.rank }}</span>
                                     </td>
-                                    <td>
-                                        <a href="{{ path('teacher_show', { 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>
+                                    <td>{% if is_granted('ROLE_USER') %}
+                                        <a href="{{ path('teacher_show', { 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>{% else %}{{ student_ranking.teacher_name }}{% endif  %}
                                     </td>
-                                    <td>
-                                        <a href="{{ path('student_show', { 'id': student_ranking.student_id }) }}">{{ student_ranking.student_name }}</a>
+                                    <td>{% if is_granted('ROLE_USER') %}
+                                        <a href="{{ path('student_show', { 'id': student_ranking.id }) }}"></a>{% else %}{{ student_ranking.student_name }}{% endif  %}
                                     </td>
                                     <td style="text-align:right;">${{ student_ranking.donation_amount|number_format(2, '.', ',') }}</td>
 

@@ -22,3 +22,16 @@ services:
         class: AppBundle\Form\DataTransformer\InvitationToCodeTransformer
         arguments: ['@doctrine.orm.entity_manager']
         public: false
+
+    app.CSVHelper:
+        class: AppBundle\Utils\CSVHelper
+
+    app.QueryHelper:
+        class: AppBundle\Utils\QueryHelper
+        arguments: ['@doctrine.orm.default_entity_manager', '@logger']
+
+    app.ValidationHelper:
+        class: AppBundle\Utils\ValidationHelper
+
+    app.CampaignHelper:
+        class: AppBundle\Utils\CampaignHelper

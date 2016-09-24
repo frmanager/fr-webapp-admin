@@ -9,6 +9,8 @@
         "bootstrap": "*",
         "jquery": "*",
         "moment": "*",
-        "matchheight": "*"
+        "matchheight": "*",
+        "fastclick": "*",
+        "jquery.countdown": "*"
     }
 }

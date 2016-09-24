@@ -11,6 +11,7 @@ use AppBundle\Entity\Campaignsetting;
 use AppBundle\Utils\ValidationHelper;
 use AppBundle\Utils\CampaignHelper;
 use AppBundle\Utils\CSVHelper;
+
 /**
  * Student controller.
  *
@@ -75,9 +76,6 @@ SELECT s.id as student_id,
 
         $students = $query->getResult();
 
-
-
-
         //sorting by amount for rank....
         $query = $em->createQuery('SELECT s.id as student_id,
                                           sum(d.amount) as donation_amount,
@@ -108,9 +106,6 @@ SELECT s.id as student_id,
             }
             $amount = $studentSort['donation_amount'];
         }
-
-
-
 
         return $this->render(strtolower($entity).'/index.html.twig', array(
             'students' => $students,
@@ -160,10 +155,9 @@ SELECT s.id as student_id,
         $student = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($student->getId());
         //$logger->debug(print_r($student->getDonations()));
 
-
           $em = $this->getDoctrine()->getManager();
 
-          $qb = $em->createQueryBuilder()->select('u')
+        $qb = $em->createQueryBuilder()->select('u')
                ->from('AppBundle:Campaignaward', 'u')
                ->orderBy('u.amount', 'DESC');
 
@@ -188,7 +182,6 @@ SELECT s.id as student_id,
         $results = $query->getResult();
 
         $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
-
 
         $query = $em->createQuery('SELECT s.id as student_id,
                                           sum(d.amount) as donation_amount
@@ -215,12 +208,6 @@ SELECT s.id as student_id,
 
             $amount = $item['donation_amount'];
         }
-
-
-
-
-
-
 
         $query = $em->createQuery('SELECT t.id as teacher_id,
                                           t.teacherName as teacher_name,
@@ -249,15 +236,6 @@ SELECT s.id as student_id,
 
             $amount = $item['donation_amount'];
         }
-
-
-
-
-
-
-
-
-
 
         return $this->render(strtolower($entity).'/show.html.twig', array(
             'total_class_donation_amount' => $results[0]['donation_amount'],
@@ -437,39 +415,39 @@ SELECT s.id as student_id,
                               $logger->debug($entity.' not found....creating new record');
                               $student = new Student();
                           } else {
-                            $logger->debug($entity.' found....updating existing record');
-                            if (strcmp($mode, 'truncate') == 0) {
-                              $errorMessage = new ValidationHelper(array(
+                              $logger->debug($entity.' found....updating existing record');
+                              if (strcmp($mode, 'truncate') == 0) {
+                                  $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
                                 'row_index' => ($i + 2),
                                 'error_field' => 'students_name',
                                 'error_field_value' => $item['students_name'],
                                 'error_message' => 'Duplicate with Student #'.$student->getId(),
                                 'error_level' => ValidationHelper::$level_warning, ));
-                            }
+                              }
                           }
-                          if(!$failure){
-                            $student->setName($item['students_name']);
-                            $student->setTeacher($teacher);
+                            if (!$failure) {
+                                $student->setName($item['students_name']);
+                                $student->setTeacher($teacher);
 
-                            $validator = $this->get('validator');
-                            $errors = $validator->validate($student);
+                                $validator = $this->get('validator');
+                                $errors = $validator->validate($student);
 
-                            if (strcmp($mode, 'validate') !== 0) {
-                                if (count($errors) > 0) {
-                                    $errorsString = (string) $errors;
-                                    $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
-                                    $this->addFlash(
+                                if (strcmp($mode, 'validate') !== 0) {
+                                    if (count($errors) > 0) {
+                                        $errorsString = (string) $errors;
+                                        $logger->error('[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString);
+                                        $this->addFlash(
                                         'danger',
                                         '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
                                     );
-                                } else {
-                                    $em->persist($student);
-                                    $em->flush();
-                                    $em->clear();
-                                }
-                            } //Otherwise we do Nothing....
-                          }
+                                    } else {
+                                        $em->persist($student);
+                                        $em->flush();
+                                        $em->clear();
+                                    }
+                                } //Otherwise we do Nothing....
+                            }
                         }
 
                         if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {
