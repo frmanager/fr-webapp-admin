@@ -76,7 +76,7 @@ class Causevoxfundraiser
      * @var Student
      *
      * @ORM\ManyToOne(targetEntity="Student", inversedBy="causevoxfundraisers")
-     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE", nullable=true)
      * @Assert\NotBlank()
      */
     private $student;
@@ -85,7 +85,7 @@ class Causevoxfundraiser
      * @var Teacher
      *
      * @ORM\ManyToOne(targetEntity="Teacher", inversedBy="causevoxfundraisers")
-     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE", nullable=true)
      * @Assert\NotBlank()
      */
     private $teacher;

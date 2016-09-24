@@ -6,7 +6,7 @@
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
         <title>
-            {% block title %}Welcome!{% endblock %}
+            {% block title %}{% endblock %}
         </title>
         <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
 
@@ -32,8 +32,8 @@
                     </button>
                     <a href="{{ path('homepage') }}" class="navbar-brand">FUN RUN</a>
                 </div>
-                    <div class="collapse navbar-collapse navbar-x-collapse">
-                        <ul class="nav navbar-nav">
+                <div class="collapse navbar-collapse navbar-x-collapse">
+                    <ul class="nav navbar-nav">
                         {% if is_granted('ROLE_USER') %}
                             <li class="dropdown {% if app.request.attributes.get('_route') in ['manage_index', 'campaignsetting_index', 'campaignaward_index', 'donation_index', 'causevoxfundraiser_index','causevoxteam_index']%}active{% endif %}">
                                 <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -108,42 +108,63 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% else %}
-                <li>
-                  <a href="http://funrun.lrespto.org" target="_blank" >DONATE NOW!!!</a>
-                </li>
-                {% endif %}
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                      {% if is_granted('ROLE_USER') %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="glyphicon glyphicon-user"></i>&nbsp;
-                        {{ app.user.username }}&nbsp;
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="drop3">
-                        <li>
-                            <a href="/logout">Logout</a>
-                        </li>
-                    </ul>
-                </li>
-        {% else %}
-                <li>
-                    <a href="{{ path('login_check') }}" role="button" >Login</a></li>
-
+            {% elseif app.request.attributes.get('_route') == 'homepage' %}
+          {% if causevoxfundraisers|length > 0 %}
+              <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                      Dontate to a Fundraiser Page</span>
+              </strong>
+              <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="drop5">
+              {% for causevoxfundraiser in causevoxfundraisers %}
+                  <li role="menuitem">
+                      <a href="{{campaign_settings.campaign_url}}/{{causevoxfundraiser.url}}">{{ causevoxfundraiser.student.teacher.grade.name }} - {{causevoxfundraiser.firstName}} {{causevoxfundraiser.lastName}}</a>
+                  </li>
+              {% endfor %}
+          </ul>
+      </li>
+      <li><p class="navbar-text" style="margin-left: 2px;margin-right: 2px;color:#333;">OR</p></li>
+      <li>
+          <a href="{{campaign_settings.campaign_url}}/signup" role="button">Create your own!</a>
+      </li>
         {% endif %}
-      </ul>
-    </div>
+    {% endif %}
+</ul>
+<ul class="nav navbar-nav navbar-right">
+    {% if is_granted('ROLE_USER') %}
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <i class="glyphicon glyphicon-user"></i>&nbsp;
+                {{ app.user.username }}&nbsp;
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="drop3">
+                <li>
+                    <a href="/logout">Logout</a>
+                </li>
+            </ul>
+        </li>
+    {% else %}
+        <li>
+            <a href="{{ path('login_check') }}" role="button">FAQs</a>
+        </li>
+        <li>
+            <a href="{{ path('login_check') }}" role="button">Login to PTO Portal</a>
+        </li>
+
+    {% endif %}
+</ul>
+</div>
 </div>
 </nav>
 <div class="clearfix">&nbsp;</div>
 <div class="clearfix">&nbsp;</div>
 {% if app.request.attributes.get('_route') == 'homepage'%}
 <div class="container">
-  <div class="row">
-    <div class="col-md-12">
-  <img class="img img-responsive center-block" src="/assets/img/FunRun2016-FBbanner.png"/>
+<div class="row">
+<div class="col-md-12">
+    <img class="img img-responsive center-block" src="/assets/img/FunRun2016-FBbanner.png"/>
 </div>
 </div>
 </div>
@@ -155,22 +176,22 @@
 {% endif %}
 <div class="clearfix">&nbsp;</div>
 {% for type, messages in app.session.flashBag.all() %}
-    {% for message in messages %}
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="alert alert-{{type}} alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <strong>{{ type|capitalize }}!</strong>
-                    {{message}}
-                </div>
-            </div>
+{% for message in messages %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="alert alert-{{type}} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>{{ type|capitalize }}!</strong>
+            {{message}}
         </div>
-    {% endfor %}
+    </div>
+</div>
+{% endfor %}
 {% endfor %}
 <div id="content">
-    {% block body %}{% endblock %}
+{% block body %}{% endblock %}
 </div>
 <div class="clearfix">&nbsp;</div>
 <div class="clearfix">&nbsp;</div>
@@ -178,16 +199,16 @@
 <div class="clearfix">&nbsp;</div>
 <div class="container">
 <div class="row">
-    <div class="col-md-12">
-        <div class="footer">
-            <strong>For help and support contact
-                <a href="mailto:funrun@lrespto.org">funrun@lrespto.org</a>
-            </strong>
-        </div>
-    </div>
+<div class="col-md-12">
+<div class="footer">
+    <strong>For help and support contact
+        <a href="mailto:funrun@lrespto.org">funrun@lrespto.org</a>
+    </strong>
+</div>
+</div>
 </div>
 <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" data-toggle="tooltip" data-placement="left">
-    <span class="glyphicon glyphicon-chevron-up"></span>
+<span class="glyphicon glyphicon-chevron-up"></span>
 </a>
 
 </div>

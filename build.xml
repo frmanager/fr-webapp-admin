@@ -97,7 +97,7 @@
 
       <echo msg="Running configuration commands on ${environment}" />
 
-      <exec command="ssh ${${environment}.username}@${${environment}.hostname} 'cd ${${environment}.documentroot}; git pull; sh scripts/deploy.sh ${githubApiKey}' >> config/${environment}-deploy.log" dir="./" level="debug" />
+      <exec command="ssh ${${environment}.username}@${${environment}.hostname} 'cd ${${environment}.documentroot}; git stash; git pull; sh scripts/deploy.sh ${githubApiKey}' >> config/${environment}-deploy.log" dir="./" level="debug" />
 
     </target>
 

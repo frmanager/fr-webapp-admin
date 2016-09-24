@@ -12,12 +12,9 @@ body {
     background: #fff;
     background-color: white;
     color: black;
-    -webkit-border-bottom-right-radius: 3px;
-    -webkit-border-bottom-left-radius: 3px;
-    -moz-border-radius-bottomright: 3px;
-    -moz-border-radius-bottomleft: 3px;
-    border-bottom-right-radius: 3px;
-    border-bottom-left-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
     -webkit-box-shadow: 1px 1px 3px 1px rgba(50, 50, 50, 0.50);
     -moz-box-shadow: 1px 1px 3px 1px rgba(50, 50, 50, 0.50);
     box-shadow: 1px 1px 3px 1px rgba(50, 50, 50, 0.50);

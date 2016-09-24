@@ -9,6 +9,8 @@ export PATH=/home/$USER/.php/composer:$PATH
 export SYMFONY_ENV=prod
 
 # Just in Case
+git stash
+
 git pull
 
 composer self-update
