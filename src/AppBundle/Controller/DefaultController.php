@@ -33,7 +33,7 @@ class DefaultController extends Controller
           'teacher_rankings' => $queryHelper->getTeacherRanks(10),
           'report_date' => $reportDate,
           'causevoxteams' => $causevoxteams,
-          'causevoxfundraisers' => $causevoxfundraisers,          
+          'causevoxfundraisers' => $causevoxfundraisers,
           'student_rankings' => $queryHelper->getStudentRanks(10),
           'total_donation_amount' => $queryHelper->getTotalDonationAmount(),
           'total_number_of_donations' => $queryHelper->getTotalNumberOfDonations(),
@@ -57,4 +57,26 @@ class DefaultController extends Controller
             return $this->redirectToRoute('fos_user_security_login');
         }
     }
+
+
+    /**
+     * @Route("/faq", name="faq")
+     */
+    public function faqAction(Request $request)
+    {
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
+      $queryHelper = new QueryHelper($em, $logger);
+      $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
+      $causevoxteams = $em->getRepository('AppBundle:Causevoxteam')->findAll();
+      $causevoxfundraisers = $em->getRepository('AppBundle:Causevoxfundraiser')->findAll();
+
+      return $this->render('default/faq.html.twig', array(
+        'campaign_settings' => $campaignSettings->getCampaignSettings(),
+        'causevoxteams' => $causevoxteams,
+        'causevoxfundraisers' => $causevoxfundraisers,
+      ));
+    }
+
+
 }

@@ -108,7 +108,7 @@
                         </ul>
                     </li>
                 {% endif %}
-            {% elseif app.request.attributes.get('_route') == 'homepage' %}
+            {% elseif app.request.attributes.get('_route') in ['homepage', 'faq'] %}
           {% if causevoxfundraisers|length > 0 %}
               <li class="dropdown">
                   <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -147,7 +147,7 @@
         </li>
     {% else %}
         <li>
-            <a href="{{ path('login_check') }}" role="button">FAQs</a>
+            <a href="{{ path('faq') }}" role="button">FAQs</a>
         </li>
         <li>
             <a href="{{ path('login_check') }}" role="button">Login to PTO Portal</a>
@@ -160,7 +160,7 @@
 </nav>
 <div class="clearfix">&nbsp;</div>
 <div class="clearfix">&nbsp;</div>
-{% if app.request.attributes.get('_route') == 'homepage'%}
+{% if app.request.attributes.get('_route') in ['homepage'] %}
 <div class="container">
 <div class="row">
 <div class="col-md-12">
@@ -170,7 +170,7 @@
 </div>
 {% endif %}
 <div class="container body-container">
-{% if not app.request.attributes.get('_route') == 'homepage'%}
+{% if not app.request.attributes.get('_route') in ['homepage', 'faq'] %}
 <div class="clearfix">&nbsp;</div>
 <div class="clearfix">&nbsp;</div>
 {% endif %}
