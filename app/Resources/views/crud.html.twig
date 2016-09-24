@@ -32,9 +32,9 @@
                     </button>
                     <a href="{{ path('homepage') }}" class="navbar-brand">FUN RUN</a>
                 </div>
-                {% if is_granted('ROLE_USER') %}
                     <div class="collapse navbar-collapse navbar-x-collapse">
                         <ul class="nav navbar-nav">
+                        {% if is_granted('ROLE_USER') %}
                             <li class="dropdown {% if app.request.attributes.get('_route') in ['manage_index', 'campaignsetting_index', 'campaignaward_index', 'donation_index', 'causevoxfundraiser_index','causevoxteam_index']%}active{% endif %}">
                                 <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                     Manage Campaign</span>
@@ -108,15 +108,14 @@
                         </ul>
                     </li>
                 {% endif %}
+                {% else %}
+                <li>
+                  <a href="http://funrun.lrespto.org" target="_blank" >DONATE NOW!!!</a>
+                </li>
+                {% endif %}
             </ul>
-        {% else %}
-        <div class="nav navbar-nav">
-          <a href="http://funrun.lrespto.org" target="_blank" class="btn btn-sm btn-default navbar-btn">DONATE NOW!!!</a>
-        </div>
-        {% endif %}
-
-        {% if is_granted('ROLE_USER') %}
             <ul class="nav navbar-nav navbar-right">
+                      {% if is_granted('ROLE_USER') %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <i class="glyphicon glyphicon-user"></i>&nbsp;
@@ -129,19 +128,25 @@
                         </li>
                     </ul>
                 </li>
-            </ul>
         {% else %}
-            <div class="nav navbar-nav navbar-right" style="margin-right:10px;">
-                <a href="{{ path('login_check') }}" class="btn btn-sm btn-default navbar-btn">Login</a>
-            </div>
+                <li>
+                    <a href="{{ path('login_check') }}" role="button" >Login</a></li>
+
         {% endif %}
+      </ul>
     </div>
 </div>
 </nav>
 <div class="clearfix">&nbsp;</div>
 <div class="clearfix">&nbsp;</div>
 {% if app.request.attributes.get('_route') == 'homepage'%}
-<div style="text-align:center;"><img src="/assets/img/FunRun2016-FBbanner.png"/></div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+  <img class="img img-responsive center-block" src="/assets/img/FunRun2016-FBbanner.png"/>
+</div>
+</div>
+</div>
 {% endif %}
 <div class="container body-container">
 {% if not app.request.attributes.get('_route') == 'homepage'%}
