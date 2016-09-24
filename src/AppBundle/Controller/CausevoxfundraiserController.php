@@ -294,6 +294,8 @@ class CausevoxfundraiserController extends Controller
                             $causevoxfundraiser->setFundsRaised($item['funds_raised']);
                             $causevoxfundraiser->setStudent($student);
                             $causevoxfundraiser->setTeacher($teacher);
+                            $causevoxfundraiser->setFirstName($item['first_name']);
+                            $causevoxfundraiser->setLastName($item['last_name']);                            
                             $validator = $this->get('validator');
                             $errors = $validator->validate($causevoxfundraiser);
 
@@ -338,6 +340,7 @@ class CausevoxfundraiserController extends Controller
                         return $this->render('crud/validate.html.twig', array(
                           'error_messages' => $errorMessages,
                           'entity' => $entity,
+                          'file_type' => $entity
                       ));
                     }
                 } else {

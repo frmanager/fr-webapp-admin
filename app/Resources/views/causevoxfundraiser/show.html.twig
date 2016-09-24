@@ -13,16 +13,18 @@
           <dl class="dl-horizontal">
               <dt>ID</dt>
               <dd>{{ causevoxfundraiser.id }}</dd>
+              <dt>Contact Email</dt>
+              <dd>{{ causevoxfundraiser.email }}</dd>
+              <dt>Name</dt>
+              <dd>{{ causevoxfundraiser.firstName }} {{ causevoxfundraiser.lastName }}</dd>                                     
               <dt>Teacher</dt>
               <dd>{{ causevoxfundraiser.student.teacher.grade.name }} - {{ causevoxfundraiser.student.teacher.teachername }}</dd>
               <dt>Student</dt>
               <dd>{{ causevoxfundraiser.student.name }}</dd>
               <dt>URL</dt>
               <dd>{{ causevoxfundraiser.url }}</dd>
-              <dt>Contact Email</dt>
-              <dd>{{ causevoxfundraiser.email }}</dd>
           </dl>
-        
+
             {{ form_start(delete_form) }}
             <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
             <a href="{{ path(entity|lower ~ '_edit', { 'id': causevoxfundraiser.id }) }}" class="btn btn-primary">Edit</a>

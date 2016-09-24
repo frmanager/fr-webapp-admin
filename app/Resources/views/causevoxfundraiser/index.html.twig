@@ -22,8 +22,7 @@
             <table class="table table-bordered table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th>Id</th>
-                        <th>Grade</th>
+                        <th>URL</th>
                         <th>Teacher</th>
                         <th>Student</th>
                         <th span class="hidden-xs hidden-sm">email</th>
@@ -34,12 +33,11 @@
                     {% for causevoxfundraiser in causevoxfundraisers %}
                         <tr>
                             <td>
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}">{{ causevoxfundraiser.id }}</a>
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': causevoxfundraiser.id }) }}">{{ causevoxfundraiser.url }}</a>
                             </td>
-                            <td>{{ causevoxfundraiser.teacher.grade.name }}</td>
-                            <td>{{ causevoxfundraiser.teacher.teachername }}</td>
+                            <td><a href="{{ path('teacher_show', { 'id': causevoxfundraiser.student.teacher.id }) }}">{{ causevoxfundraiser.teacher.grade.name }} - {{ causevoxfundraiser.teacher.teachername }}</a></td>
                             <td>
-                                {% if causevoxfundraiser.student is not null %}{{ causevoxfundraiser.student.name }}{% endif %}
+                                {% if causevoxfundraiser.student is not null %}<a href="{{ path('student_show', { 'id': causevoxfundraiser.student.id }) }}">{{ causevoxfundraiser.student.name }}</a>{% endif %}
                             </td>
                             <td span class="hidden-xs hidden-sm">{{ causevoxfundraiser.email }}</td>
                             <td style="text-align:center;">
