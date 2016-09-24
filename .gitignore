@@ -16,5 +16,5 @@
 /vendor/
 /web/bundles/
 .DS_Store
-
+/web/assets/vendor/
 build.properties
