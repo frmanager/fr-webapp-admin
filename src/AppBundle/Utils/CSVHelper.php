@@ -283,4 +283,23 @@ class CSVHelper
 
         $this->setData($thisData);
     }
+
+    public function getFirstNameFromFullName()
+    {
+        $thisData = $this->getData();
+        foreach ($thisData as $rowIndex => $rowData) {
+            foreach ($rowData as $key => $value) {
+                if (strcmp($key, 'students_name') == 0) {
+                  if(strpos(trim($value), ' ')){
+                    $string = substr(trim($value), 0, strpos(trim($value), ' '));
+                    $thisData[$rowIndex]['students_first_name'] = $string;
+                  }else{
+                    $thisData[$rowIndex]['students_first_name'] = $value;
+                  }
+                }
+            }
+        }
+
+        $this->setData($thisData);
+    }
 }

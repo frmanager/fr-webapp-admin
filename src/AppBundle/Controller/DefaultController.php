@@ -30,13 +30,12 @@ class DefaultController extends Controller
         return $this->render('default/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),
           'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array('day_modifier' => '-1 day')),
-          'teacher_rankings' => $queryHelper->getTeacherRanks(10),
+          'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> 10, 'day_modifier' => '-1 day')),
           'report_date' => $reportDate,
           'causevoxteams' => $causevoxteams,
           'causevoxfundraisers' => $causevoxfundraisers,
-          'student_rankings' => $queryHelper->getStudentRanks(10),
-          'total_donation_amount' => $queryHelper->getTotalDonationAmount(),
-          'total_number_of_donations' => $queryHelper->getTotalNumberOfDonations(),
+          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> 10, 'day_modifier' => '-1 day')),
+          'totals' => $queryHelper->getTotalDonations(array('day_modifier' => '-1 day')),
         ));
     }
 
