@@ -12,16 +12,16 @@
                                 <div
                                     class="progress-bar progress-bar-warning"
                                     role="progressbar"
-                                    aria-valuenow="{{ total_donation_amount / campaign_settings.campaign_funding_goal * 100}}"
+                                    aria-valuenow="{{ totals.donation_amount / campaign_settings.campaign_funding_goal * 100}}"
                                     aria-valuemin="0"
                                     aria-valuemax="100"
-                                    style="width:{{ total_donation_amount / campaign_settings.campaign_funding_goal * 100}}%">
-                                    <span>{{ (total_donation_amount / campaign_settings.campaign_funding_goal * 100)|number_format(2, '.', ',')}}% Complete</span>
+                                    style="width:{{ totals.donation_amount / campaign_settings.campaign_funding_goal * 100}}%">
+                                    <span>{{ (totals.donation_amount / campaign_settings.campaign_funding_goal * 100)|number_format(2, '.', ',')}}% Complete</span>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-4" style="text-align:center;vertical-align: middle;">
-                            ${{ total_donation_amount|number_format(2, '.', ',') }}
+                            ${{ totals.donation_amount|number_format(2, '.', ',') }}
                             / ${{ campaign_settings.campaign_funding_goal|number_format(2, '.', ',') }}
                         </div>
                         <div class="col-sm-4" style="text-align:center;vertical-align: middle;">

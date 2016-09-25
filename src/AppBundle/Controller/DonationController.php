@@ -12,7 +12,7 @@ use AppBundle\Utils\CSVHelper;
 use AppBundle\Entity\Donation;
 use AppBundle\Utils\ValidationHelper;
 use DateTime;
-
+use DateTimeZone;
 /**
  * Donation controller.
  *
@@ -252,6 +252,7 @@ class DonationController extends Controller
                 if (strcmp($fileType, 'Causevoxdonation') == 0) {
                     $CSVHelper->getGradefromTeacherName();
                     $CSVHelper->cleanTeacherNames();
+                    $CSVHelper->getFirstNameFromFullName();
                 }
 
                 $CSVHelper->cleanAmounts();
@@ -284,7 +285,7 @@ class DonationController extends Controller
 
                             $this->addFlash(
                               'info',
-                              'The Causevox donations have been deleted'
+                              'Existing Causevox donations were deleted'
                           );
                         }
                     }
@@ -371,37 +372,51 @@ class DonationController extends Controller
                             $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
                           array('teacher' => $teacher, 'name' => $item['students_name'])
                         );
+                           //SECONDARY CHECK ADDED TO HANDLE THE FACT THAT PARENTS PUT IN FULL NAME
                             if (empty($student)) {
-                                $failure = true;
-                                $errorMessage = new ValidationHelper(array(
-                              'entity' => $entity,
-                              'row_index' => ($i + 1 + $fileIndexOffset),
-                              'error_field' => 'students_name',
-                              'error_field_value' => $item['students_name'],
-                              'error_message' => 'Could not find student',
-                              'error_level' => ValidationHelper::$level_error, ));
-                            }
+                                  $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
+                                array('teacher' => $teacher, 'name' => $item['students_first_name'])
+                              );
+                                  if (empty($student)) {
+                                      $failure = true;
+                                      $errorMessage = new ValidationHelper(array(
+                                    'entity' => $entity,
+                                    'row_index' => ($i + 1 + $fileIndexOffset),
+                                    'error_field' => 'students_name',
+                                    'error_field_value' => $item['students_first_name'],
+                                    'error_message' => 'Could not find student',
+                                    'error_level' => ValidationHelper::$level_error, ));
+                                  }
+                              }
                         }
+
 
                         if (!$failure) {
 
                           //Example: 2016-08-25 16:35:54
+                          //Causevox donations are given to us as UTC...which we need to convert back to EST
                           if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                              $tempDate = new DateTime($item['donated_at']);
+                              $tempDate = new DateTime($item['donated_at'],  new DateTimeZone('UTC'));
+                              $tempDate->setTimezone(new DateTimeZone('America/New_York'));
+                              $dateString = $tempDate->format('Y-m-d').' 00:00:00';
+                              $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString,  new DateTimeZone('America/New_York'));
                           } else {
                               $tempDate = new DateTime($item['date']);
+                              $dateString = $tempDate->format('Y-m-d').' 00:00:00';
+                              $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
                           }
 
-                          $dateString =$tempDate->format('Y-m-d').' 00:00:00';
-                          $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
 
                             if (strcmp($fileType, 'Causevoxdonation') == 0) {
+
+
                                 $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
                           array('student' => $student, 'donatedAt' => $date, 'donorEmail' => $item['donor_email'])
                           );
                             } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
                                 $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
                           array('student' => $student, 'donatedAt' => $date)
+
                           );
                             }
 

@@ -33,11 +33,10 @@ class ManageController extends Controller
         // replace this example code with whatever you need
         return $this->render('manage/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),
-          'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array('day_modifier' => '-1 day')),
-          'teacher_rankings' => $queryHelper->getTeacherRanks(10),
-          'student_rankings' => $queryHelper->getStudentRanks(10),
-          'total_donation_amount' => $queryHelper->getTotalDonationAmount(),
-          'total_number_of_donations' => $queryHelper->getTotalNumberOfDonations(),
+          'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array()),
+          'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> 10)),
+          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> 10)),
+          'totals' => $queryHelper->getTotalDonations(array()),
         ));
     }
 
