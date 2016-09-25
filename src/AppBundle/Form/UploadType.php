@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-
+use Symfony\Component\OptionsResolver\OptionsResolver;
 class UploadType extends AbstractType
 {
     /**
@@ -15,6 +15,7 @@ class UploadType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $data = $builder->getData();
         $builder
         ->add('file_type', ChoiceType::class, array(
           'choices' => array(
@@ -39,5 +40,31 @@ class UploadType extends AbstractType
                   ),
               'data' => 'update',
                ));
+
+             // dump($options['roles']);
+          if (in_array('ROLE_SUPER_ADMIN', $data['role'])) {
+              // do as you want if admin
+              $builder
+              ->add('upload_mode', ChoiceType::class, array(
+                    'expanded' => true,
+                    'choices' => array(
+                            'Insert/Update (Default)' => 'update',
+                            'Truncate (Delete All First)' => 'truncate',
+                            'Validate Only (No Database Changes)' => 'validate',
+                        ),
+                    'data' => 'update',
+                     ));
+          } else {
+              $builder
+               ->add('upload_mode', ChoiceType::class, array(
+                    'expanded' => true,
+                    'choices' => array(
+                            'Insert/Update (Default)' => 'update',
+                            'Validate Only (No Database Changes)' => 'validate',
+                        ),
+                    'data' => 'update',
+                     ));
+          }
     }
+
 }

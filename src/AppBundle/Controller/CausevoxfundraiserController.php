@@ -163,7 +163,7 @@ class CausevoxfundraiserController extends Controller
         $logger = $this->get('logger');
         $entity = 'Causevoxfundraiser';
         $mode = 'update';
-        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity));
+        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity, 'role' => $this->getUser()->getRoles()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -295,7 +295,7 @@ class CausevoxfundraiserController extends Controller
                             $causevoxfundraiser->setStudent($student);
                             $causevoxfundraiser->setTeacher($teacher);
                             $causevoxfundraiser->setFirstName($item['first_name']);
-                            $causevoxfundraiser->setLastName($item['last_name']);                            
+                            $causevoxfundraiser->setLastName($item['last_name']);
                             $validator = $this->get('validator');
                             $errors = $validator->validate($causevoxfundraiser);
 

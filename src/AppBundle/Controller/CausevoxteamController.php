@@ -162,7 +162,8 @@ class CausevoxteamController extends Controller
         $logger = $this->get('logger');
         $entity = 'Causevoxteam';
         $mode = 'update';
-        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity));
+        $logger->debug("My Role: ".print_r($this->getUser()->getRoles(), true));
+        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity, 'role' => $this->getUser()->getRoles()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

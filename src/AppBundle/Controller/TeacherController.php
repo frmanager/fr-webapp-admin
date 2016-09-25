@@ -255,7 +255,7 @@ class TeacherController extends Controller
         $logger = $this->get('logger');
         $entity = 'Teacher';
         $mode = 'update';
-        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity));
+        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity, 'role' => $this->getUser()->getRoles()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
