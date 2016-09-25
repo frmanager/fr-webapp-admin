@@ -79,9 +79,9 @@ class QueryHelper
                  WITH t.id = s.teacher
       LEFT OUTER JOIN AppBundle:Donation d
                  WITH s.id = d.student
+                  AND d.donatedAt <= '%s'
       LEFT OUTER JOIN AppBundle:Grade g
                  WITH g.id = t.grade
-                WHERE d.donatedAt <= '%s'
              GROUP BY s.id
              ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'));
 
@@ -138,21 +138,21 @@ class QueryHelper
         }
 
         $queryString = sprintf("SELECT t.id as id,
-                       t.teacherName as teacher_name,
-                       g.id as grade_id,
-                       g.name as grade_name,
-                       sum(d.amount) as donation_amount,
-                       count(d.amount) as total_donations
-                  FROM AppBundle:Teacher t
-       LEFT OUTER JOIN AppBundle:Student s
-                  WITH t.id = s.teacher
-       LEFT OUTER JOIN AppBundle:Donation d
-                  WITH s.id = d.student
-       LEFT OUTER JOIN AppBundle:Grade g
-                  WITH g.id = t.grade
-                 WHERE d.donatedAt <= '%s'
-              GROUP BY t.id
-              ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'));
+                                       t.teacherName as teacher_name,
+                                       g.id as grade_id,
+                                       g.name as grade_name,
+                                       sum(d.amount) as donation_amount,
+                                       count(d.amount) as total_donations
+                                  FROM AppBundle:Teacher t
+                       LEFT OUTER JOIN AppBundle:Student s
+                                  WITH t.id = s.teacher
+                       LEFT OUTER JOIN AppBundle:Donation d
+                                  WITH s.id = d.student
+                                   AND d.donatedAt <= '%s'
+                       LEFT OUTER JOIN AppBundle:Grade g
+                                  WITH g.id = t.grade
+                              GROUP BY t.id
+                              ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'));
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -190,9 +190,9 @@ class QueryHelper
                    WITH t.id = s.teacher
                    JOIN AppBundle:Donation d
                    WITH s.id = d.student
+                    AND d.donatedAt <= '%s'
                    JOIN AppBundle:Grade g
                    WITH g.id = t.grade
-                  WHERE d.donatedAt <= '%s'
                GROUP BY d.donatedAt, t.id
                ORDER BY t.id ASC, d.donatedAt ASC", $todaysDate->format('Y-m-d H:i:s'));
 
@@ -211,12 +211,14 @@ class QueryHelper
 
         $listOfAmounts = [];
         foreach ($objects as $key => $value) {
+            $this->logger->debug('Before sortObjectbyAmount: row ['.$key.'] - '.print_r($value, true));
             $listOfAmounts[$key] = $value[$amountField];
         }
         arsort($listOfAmounts);
 
         $newObjectArray = [];
         foreach ($listOfAmounts as $key => $value) {
+            $this->logger->debug('After sortObjectbyAmount: row ['.$key.'] - '.print_r($value, true));
             array_push($newObjectArray, $objects[$key]);
         }
 
@@ -225,6 +227,11 @@ class QueryHelper
 
     public function getRanks(array $objects, array $settings)
     {
+
+        foreach ($objects as $object) {
+            $this->logger->debug('getRanks Input Data: '.print_r($object, true));
+        }
+
         if (isset($settings['amount_field'])) {
             $amountField = $settings['amount_field'];
         } else {
@@ -237,6 +244,7 @@ class QueryHelper
             $limit = 0;
         }
 
+        //Sorting DESC
         $sortedObjects = $this->sortObjectbyAmount($objects, $settings);
 
         $rank = 0;
@@ -256,7 +264,7 @@ class QueryHelper
         }
 
         if ($limit > 0) {
-            $counter = 1;
+            $counter = 0;
             $newArray = [];
             foreach ($objects as $object) {
                 if ($counter < $limit) {
