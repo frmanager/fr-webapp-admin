@@ -193,7 +193,7 @@ class DonationController extends Controller
 
             return $this->redirectToRoute(strtolower($entity).'_index');
         }
-        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $fileType));
+        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $fileType, 'role' => $this->getUser()->getRoles()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
