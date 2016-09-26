@@ -1,0 +1,151 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+// DON'T forget this use statement!!!
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+/**
+ * donation.
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="donation",uniqueConstraints={@ORM\UniqueConstraint(columns={"donated_at", "student_id", "transaction_id", "source"})})
+ * @UniqueEntity(
+ *     fields={"student", "donatedAt", "transactionId", "source"},
+ *     errorPath="student",
+ *     message="Already received a donation from this student on this day...."
+ * )
+ */
+class Donation
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var Student
+     *
+     * @ORM\ManyToOne(targetEntity="Student", inversedBy="donations")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
+     */
+    private $student;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="amount", type="float", precision=10, scale=2, nullable=false)
+     * @Assert\Type(
+     *     type="float",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\NotNull()
+     */
+    private $amount;
+
+    /**
+     * @var datetime
+     *
+     * @ORM\Column(name="donated_at", type="datetime", nullable=false)
+     * @Assert\Date()
+     * @Assert\NotNull()
+     */
+    private $donatedAt;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="tip", type="float", precision=10, scale=2, nullable=true)
+     */
+    private $tip;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="estimated_cc_fee", type="float", precision=10, scale=2, nullable=true)
+     */
+    private $estimatedCcFee;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="causevox_fee", type="float", precision=10, scale=2, nullable=true)
+     */
+    private $causevoxFee;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="donation_page", type="string", length=100, nullable=true)
+     */
+    private $donationPage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=100, nullable=true)
+     */
+    private $type;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="donor_email", type="string", length=100, nullable=true)
+     */
+    private $donorEmail;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="donor_comment", type="string", length=255, nullable=true)
+     */
+    private $donorComment;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="donor_first_name", type="string", length=100, nullable=true)
+     */
+    private $donorFirstName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="donor_last_name", type="string", length=100, nullable=true)
+     */
+    private $donorLastName;
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="transaction_id", type="string", nullable=true)
+     *
+     */
+    private $transactionId;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="source", type="string", nullable=false)
+     *
+     */
+    private $source;
+}
