@@ -267,7 +267,7 @@ class DonationController extends Controller
 
                         if (strcmp($fileType, 'Offlinedonation') == 0) {
                             $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where("s.type = 'manual'");
+                            $qb->where("s.source = 'Offlinedonation'");
                             $query = $qb->getQuery();
                             $query->getResult();
                             $em->flush();
@@ -276,9 +276,9 @@ class DonationController extends Controller
                               'info',
                               'The Manual donations have been deleted'
                           );
-                        } else {
+                        } else if (strcmp($fileType, 'Causevoxdonation') == 0) {
                             $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where("s.type != 'manual'");
+                            $qb->where("s.type = 'Causevoxdonation'");
                             $query = $qb->getQuery();
                             $query->getResult();
                             $em->flush();
@@ -320,7 +320,7 @@ class DonationController extends Controller
                                     $failure = true;
                                     $errorMessage = new ValidationHelper(array(
                                   'entity' => $entity,
-                                  'row_index' => ($i + 1 + $fileIndexOffset),
+                                  'row_index' => ($i + 2 + $fileIndexOffset),
                                   'error_field' => 'date',
                                   'error_field_value' => $item['date'],
                                   'error_message' => 'Date cannot be null',
@@ -331,7 +331,7 @@ class DonationController extends Controller
                                     $failure = true;
                                     $errorMessage = new ValidationHelper(array(
                                   'entity' => $entity,
-                                  'row_index' => ($i + 1 + $fileIndexOffset),
+                                  'row_index' => ($i + 2 + $fileIndexOffset),
                                   'error_field' => 'date',
                                   'error_field_value' => $item['date'],
                                   'error_message' => 'Date cannot be null',
@@ -346,7 +346,7 @@ class DonationController extends Controller
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
-                                'row_index' => ($i + 1 + $fileIndexOffset),
+                                'row_index' => ($i + 2 + $fileIndexOffset),
                                 'error_field' => 'grade',
                                 'error_field_value' => $item['grade'],
                                 'error_message' => 'Could not find grade',
@@ -360,7 +360,7 @@ class DonationController extends Controller
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
-                                'row_index' => ($i + 1 + $fileIndexOffset),
+                                'row_index' => ($i + 2 + $fileIndexOffset),
                                 'error_field' => 'teachers_name',
                                 'error_field_value' => $item['teachers_name'],
                                 'error_message' => 'Could not find teacher',
@@ -381,7 +381,7 @@ class DonationController extends Controller
                                       $failure = true;
                                       $errorMessage = new ValidationHelper(array(
                                     'entity' => $entity,
-                                    'row_index' => ($i + 1 + $fileIndexOffset),
+                                    'row_index' => ($i + 2 + $fileIndexOffset),
                                     'error_field' => 'students_name',
                                     'error_field_value' => $item['students_first_name'],
                                     'error_message' => 'Could not find student',
@@ -424,7 +424,7 @@ class DonationController extends Controller
                               $failure = true;
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
-                                'row_index' => ($i + 1 + $fileIndexOffset),
+                                'row_index' => ($i + 2 + $fileIndexOffset),
                                 'error_field' => 'N/A',
                                 'error_field_value' => 'N/A',
                                 'error_message' => 'A donation for this student and date already exists #'.$donation->getId(),
@@ -459,10 +459,10 @@ class DonationController extends Controller
                             if (strcmp($mode, 'validate') !== 0) {
                                 if (count($errors) > 0) {
                                     $errorsString = (string) $errors;
-                                    $logger->error('[ROW #'.($i + 1 + $fileIndexOffset).'] Could not add ['.$entity.']: '.$errorsString);
+                                    $logger->error('[ROW #'.($i + 2 + $fileIndexOffset).'] Could not add ['.$entity.']: '.$errorsString);
                                     $this->addFlash(
                                         'danger',
-                                        '[ROW #'.($i + 1 + $fileIndexOffset).'] Could not add ['.$entity.']: '.$errorsString
+                                        '[ROW #'.($i + 2 + $fileIndexOffset).'] Could not add ['.$entity.']: '.$errorsString
                                     );
                                 } else {
                                     $em->persist($donation);
