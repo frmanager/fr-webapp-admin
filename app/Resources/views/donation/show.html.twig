@@ -15,10 +15,16 @@
             <dd>{{ donation.id }}</dd>
             <dt>Donated At</dt>
             <dd>{{ donation.donatedAt|date("m/d/Y") }}</dd>
+            <dt>Source</dt>
+            <dd>{{ donation.source }}</dd>            
             <dt>Teacher</dt>
             <dd>{% if donation.student is defined %}{{ donation.student.teacher.grade.name }} - {{ donation.student.teacher.teachername }}{% endif %}</dd>
             <dt>Student</dt>
             <dd>{{ donation.student.name }}</dd>
+            <dt>Type</dt>
+            <dd>{{ donation.type }}</dd>
+            <dt>Transaction Id</dt>
+            <dd>{{ donation.transactionId }}</dd>
             <dt>Amount</dt>
             <dd>${{ donation.amount|number_format(2, '.', ',') }}</dd>
           </dl>

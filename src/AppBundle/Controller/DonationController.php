@@ -407,25 +407,20 @@ class DonationController extends Controller
                           }
 
 
-                            if (strcmp($fileType, 'Causevoxdonation') == 0) {
-
-
-                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                          array('student' => $student, 'donatedAt' => $date, 'donorEmail' => $item['donor_email'])
-                          );
-                            } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
-                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                          array('student' => $student, 'donatedAt' => $date)
-
-                          );
-                            }
+                          if (strcmp($fileType, 'Causevoxdonation') == 0) {
+                              $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                                array('student' => $student, 'donatedAt' => $date, 'transactionId' => $item['transaction_id'], 'source' => $fileType));
+                          } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
+                              $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                                array('student' => $student, 'donatedAt' => $date, 'source' => $fileType));
+                          }
 
                           //Going to perform "Insert" vs "Update"
                           if (empty($donation)) {
                               $logger->debug($entity.' not found....creating new record');
                               $donation = new Donation();
                           } else {
-                              $logger->debug($entity.' found....cannot update.');
+                              $logger->debug($entity.' found....updating.');
                               $failure = true;
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
@@ -448,8 +443,11 @@ class DonationController extends Controller
                                 $donation->setDonorEmail($item['donor_email']);
                                 $donation->setDonorComment($item['donor_comment']);
                                 $donation->setDonationPage($item['donation_page']);
+                                $donation->setTransactionId($item['transaction_id']);
+
                             }
 
+                            $donation->setSource($fileType);
                             $donation->setType($item['type']);
                             $donation->setAmount($item['amount']);
                             $donation->setDonatedAt($date);

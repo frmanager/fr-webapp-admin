@@ -11,9 +11,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * donation.
  *
  * @ORM\Entity
- * @ORM\Table(name="donation",uniqueConstraints={@ORM\UniqueConstraint(columns={"donated_at", "student_id", "donor_email"})})
+ * @ORM\Table(name="donation",uniqueConstraints={@ORM\UniqueConstraint(columns={"donated_at", "student_id", "transaction_id", "source"})})
  * @UniqueEntity(
- *     fields={"student", "donatedAt", "donorEmail"},
+ *     fields={"student", "donatedAt", "transactionId", "source"},
  *     errorPath="student",
  *     message="Already received a donation from this student on this day...."
  * )
@@ -133,7 +133,24 @@ class Donation
     }
 
     /**
-     * Set amount.
+     * @var string
+     *
+     * @ORM\Column(name="transaction_id", type="string", nullable=true)
+     *
+     */
+    private $transactionId;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="source", type="string", nullable=false)
+     *
+     */
+    private $source;
+
+    /**
+     * Set amount
      *
      * @param float $amount
      *
@@ -147,7 +164,7 @@ class Donation
     }
 
     /**
-     * Get amount.
+     * Get amount
      *
      * @return float
      */
@@ -157,7 +174,7 @@ class Donation
     }
 
     /**
-     * Set donatedAt.
+     * Set donatedAt
      *
      * @param \DateTime $donatedAt
      *
@@ -171,7 +188,7 @@ class Donation
     }
 
     /**
-     * Get donatedAt.
+     * Get donatedAt
      *
      * @return \DateTime
      */
@@ -181,7 +198,7 @@ class Donation
     }
 
     /**
-     * Set tip.
+     * Set tip
      *
      * @param float $tip
      *
@@ -195,7 +212,7 @@ class Donation
     }
 
     /**
-     * Get tip.
+     * Get tip
      *
      * @return float
      */
@@ -205,7 +222,7 @@ class Donation
     }
 
     /**
-     * Set estimatedCcFee.
+     * Set estimatedCcFee
      *
      * @param float $estimatedCcFee
      *
@@ -219,7 +236,7 @@ class Donation
     }
 
     /**
-     * Get estimatedCcFee.
+     * Get estimatedCcFee
      *
      * @return float
      */
@@ -229,7 +246,7 @@ class Donation
     }
 
     /**
-     * Set causevoxFee.
+     * Set causevoxFee
      *
      * @param float $causevoxFee
      *
@@ -243,7 +260,7 @@ class Donation
     }
 
     /**
-     * Get causevoxFee.
+     * Get causevoxFee
      *
      * @return float
      */
@@ -253,7 +270,7 @@ class Donation
     }
 
     /**
-     * Set donationPage.
+     * Set donationPage
      *
      * @param string $donationPage
      *
@@ -267,7 +284,7 @@ class Donation
     }
 
     /**
-     * Get donationPage.
+     * Get donationPage
      *
      * @return string
      */
@@ -277,7 +294,7 @@ class Donation
     }
 
     /**
-     * Set type.
+     * Set type
      *
      * @param string $type
      *
@@ -291,7 +308,7 @@ class Donation
     }
 
     /**
-     * Get type.
+     * Get type
      *
      * @return string
      */
@@ -301,7 +318,7 @@ class Donation
     }
 
     /**
-     * Set donorEmail.
+     * Set donorEmail
      *
      * @param string $donorEmail
      *
@@ -315,7 +332,7 @@ class Donation
     }
 
     /**
-     * Get donorEmail.
+     * Get donorEmail
      *
      * @return string
      */
@@ -325,7 +342,7 @@ class Donation
     }
 
     /**
-     * Set donorComment.
+     * Set donorComment
      *
      * @param string $donorComment
      *
@@ -339,7 +356,7 @@ class Donation
     }
 
     /**
-     * Get donorComment.
+     * Get donorComment
      *
      * @return string
      */
@@ -349,7 +366,7 @@ class Donation
     }
 
     /**
-     * Set donorFirstName.
+     * Set donorFirstName
      *
      * @param string $donorFirstName
      *
@@ -363,7 +380,7 @@ class Donation
     }
 
     /**
-     * Get donorFirstName.
+     * Get donorFirstName
      *
      * @return string
      */
@@ -373,7 +390,7 @@ class Donation
     }
 
     /**
-     * Set donorLastName.
+     * Set donorLastName
      *
      * @param string $donorLastName
      *
@@ -387,7 +404,7 @@ class Donation
     }
 
     /**
-     * Get donorLastName.
+     * Get donorLastName
      *
      * @return string
      */
@@ -397,7 +414,55 @@ class Donation
     }
 
     /**
-     * Set student.
+     * Set transactionId
+     *
+     * @param string $transactionId
+     *
+     * @return Donation
+     */
+    public function setTransactionId($transactionId)
+    {
+        $this->transactionId = $transactionId;
+
+        return $this;
+    }
+
+    /**
+     * Get transactionId
+     *
+     * @return string
+     */
+    public function getTransactionId()
+    {
+        return $this->transactionId;
+    }
+
+    /**
+     * Set source
+     *
+     * @param string $source
+     *
+     * @return Donation
+     */
+    public function setSource($source)
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    /**
+     * Get source
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->source;
+    }
+
+    /**
+     * Set student
      *
      * @param \AppBundle\Entity\Student $student
      *
@@ -411,7 +476,7 @@ class Donation
     }
 
     /**
-     * Get student.
+     * Get student
      *
      * @return \AppBundle\Entity\Student
      */
