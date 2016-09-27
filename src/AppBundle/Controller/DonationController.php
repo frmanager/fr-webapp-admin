@@ -13,6 +13,7 @@ use AppBundle\Entity\Donation;
 use AppBundle\Utils\ValidationHelper;
 use DateTime;
 use DateTimeZone;
+
 /**
  * Donation controller.
  *
@@ -51,14 +52,10 @@ class DonationController extends Controller
         $donation = new Donation();
         $date = new DateTime();
         $dateString = $date->format('Y-m-d').' 00:00:00';
-        $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
+        $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
         $donation->setDonatedAt(new DateTime($date->format('Y-m-d')));
 
-
         $donation->setType('manual');
-
-
-
 
         $form = $this->createForm('AppBundle\Form\DonationType', $donation);
         $form->handleRequest($request);
@@ -112,11 +109,7 @@ class DonationController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $dateString = $donation->getDonatedAt()->format('Y-m-d').' 00:00:00';
-            $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
-
-
-
-
+            $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
 
             $donation->setDonatedAt($date);
             $em->persist($donation);
@@ -276,9 +269,9 @@ class DonationController extends Controller
                               'info',
                               'The Manual donations have been deleted'
                           );
-                        } else if (strcmp($fileType, 'Causevoxdonation') == 0) {
+                        } elseif (strcmp($fileType, 'Causevoxdonation') == 0) {
                             $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where("s.type = 'Causevoxdonation'");
+                            $qb->where("s.source = 'Causevoxdonation'");
                             $query = $qb->getQuery();
                             $query->getResult();
                             $em->flush();
@@ -369,51 +362,58 @@ class DonationController extends Controller
                         }
 
                         if (!$failure) {
-                            $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                          array('teacher' => $teacher, 'name' => $item['students_name'])
-                        );
+                            $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
+                            $studentId = $em->createQuery($queryString)->getResult();
                            //SECONDARY CHECK ADDED TO HANDLE THE FACT THAT PARENTS PUT IN FULL NAME
-                            if (empty($student)) {
-                                  $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                                array('teacher' => $teacher, 'name' => $item['students_first_name'])
-                              );
-                                  if (empty($student)) {
-                                      $failure = true;
-                                      $errorMessage = new ValidationHelper(array(
-                                    'entity' => $entity,
-                                    'row_index' => ($i + 2 + $fileIndexOffset),
-                                    'error_field' => 'students_name',
-                                    'error_field_value' => $item['students_first_name'],
-                                    'error_message' => 'Could not find student',
-                                    'error_level' => ValidationHelper::$level_error, ));
-                                  }
-                              }
+                            if (empty($studentId)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
+                                $studentId = $em->createQuery($queryString)->getResult();
+                                //TERTIARY CHECK ADDED TO IN CASE MULTIPLE STUDENTS WITH FIRST NAME
+                                if (empty($studentId)) {
+                                    $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
+                                    $studentId = $em->createQuery($queryString)->getResult();
+                                    if (empty($studentId)) {
+                                        $failure = true;
+                                        $errorMessage = new ValidationHelper(array(
+                                            'entity' => $entity,
+                                            'row_index' => ($i + 2 + $fileIndexOffset),
+                                            'error_field' => 'students_name',
+                                            'error_field_value' => $item['students_first_name'],
+                                            'error_message' => 'Could not find student',
+                                            'error_level' => ValidationHelper::$level_error, ));
+                                    } else {
+                                        $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId[0]['id'].'] using first name fuzzy match "'.$item['students_name_with_initial'].'"');
+                                    }
+                                } else {
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId[0]['id'].'] using first name fuzzy match "'.$item['students_first_name'].'"');
+                                }
+                            } else {
+                                $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId[0]['id'].'] using provided name');
+                            }
                         }
 
-
                         if (!$failure) {
-
+                            $student =  $em->find('AppBundle:Student', $studentId[0]['id']);
                           //Example: 2016-08-25 16:35:54
                           //Causevox donations are given to us as UTC...which we need to convert back to EST
                           if (strcmp($fileType, 'Causevoxdonation') == 0) {
                               $tempDate = new DateTime($item['donated_at'],  new DateTimeZone('UTC'));
                               $tempDate->setTimezone(new DateTimeZone('America/New_York'));
                               $dateString = $tempDate->format('Y-m-d').' 00:00:00';
-                              $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString,  new DateTimeZone('America/New_York'));
+                              $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString,  new DateTimeZone('America/New_York'));
                           } else {
                               $tempDate = new DateTime($item['date']);
                               $dateString = $tempDate->format('Y-m-d').' 00:00:00';
-                              $date = DateTime::createFromFormat('Y-m-d H:i:s',$dateString);
+                              $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
                           }
 
-
-                          if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                              $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                            if (strcmp($fileType, 'Causevoxdonation') == 0) {
+                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
                                 array('student' => $student, 'donatedAt' => $date, 'transactionId' => $item['transaction_id'], 'source' => $fileType));
-                          } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
-                              $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                            } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
+                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
                                 array('student' => $student, 'donatedAt' => $date, 'source' => $fileType));
-                          }
+                            }
 
                           //Going to perform "Insert" vs "Update"
                           if (empty($donation)) {
@@ -444,7 +444,6 @@ class DonationController extends Controller
                                 $donation->setDonorComment($item['donor_comment']);
                                 $donation->setDonationPage($item['donation_page']);
                                 $donation->setTransactionId($item['transaction_id']);
-
                             }
 
                             $donation->setSource($fileType);

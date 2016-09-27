@@ -22,24 +22,24 @@ This project requires configuration files (See below) and data files (pulled fro
 
 
 ##Dependencies
+For the most part, development runs on vagrant homestead, which reduces a lot of the project dependencies. However, if you wish to do some CI, you need some additional tools/libraries:
 
-1. PHP 5.6 or greater
-2. Git
-3. phing
-4. Composer
-5. Symfony2
-5. pear (Net_FTP)
-6. bowerphp
+1. Git
+2. phing
+3. pear (Net_FTP)
+4. Vagrant Homestead
 
+
+###Vagrant Homestead Setup
+
+If you want a pretty url locally, you need to update your local hostsfile, otherwise you can use '192.168.10.10/'
 
 
 ##Run locally
 
-  php bin/console cache:clear --no-debug;php bin/console server:run
+  Vagrant Up
 
-URL:[http://localhost:8000/](http://localhost:8000/)
-
-
+URL:[192.168.10.10/](192.168.10.10/)
 
 
 ##CI/CD (Phing) Configuration
@@ -70,8 +70,6 @@ The Phing configuration is dynamic and will support any amount of environments. 
 
 
 
-
-
 ### .bash_profile on dreamhost
 
 
@@ -93,11 +91,6 @@ The Phing configuration is dynamic and will support any amount of environments. 
 
   php bin/console doctrine:schema:update --force
 
-
-
-### Create new User via FOSUserBundle CLI
-
-    php bin/console fos:user:create testuser test@example.com p@ssword
 
 
 ## TODO: TimeZone

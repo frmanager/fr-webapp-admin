@@ -52,7 +52,6 @@ class Teacher
      * @ORM\Column(type="string", length=100, nullable=true)
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email.",
-     *     checkMX = true
      * )
      */
     private $email;

@@ -306,7 +306,7 @@ class TeacherController extends Controller
                     foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
                         unset($errorMessage);
-
+                        $logger->debug('Row ['.$i.'] data: '.print_r($item, true));
                         if (!$failure) {
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
                             if (empty($grade)) {
