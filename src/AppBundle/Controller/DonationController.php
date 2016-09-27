@@ -278,7 +278,7 @@ class DonationController extends Controller
                           );
                         } else if (strcmp($fileType, 'Causevoxdonation') == 0) {
                             $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where("s.type = 'Causevoxdonation'");
+                            $qb->where("s.source = 'Causevoxdonation'");
                             $query = $qb->getQuery();
                             $query->getResult();
                             $em->flush();
@@ -367,7 +367,8 @@ class DonationController extends Controller
                                 'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
-
+                        $logger->debug('students_first_name: '.$item['students_first_name']);
+                        $logger->debug('students_name_with_initial: '.$item['students_name_with_initial']);
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
                           array('teacher' => $teacher, 'name' => $item['students_name'])
