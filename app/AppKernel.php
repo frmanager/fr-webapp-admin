@@ -5,10 +5,9 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
-
     public function __construct($environment, $debug)
     {
-        date_default_timezone_set( 'America/New_York' );
+        date_default_timezone_set('America/New_York');
         parent::__construct($environment, $debug);
     }
 
@@ -43,11 +42,20 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
+
+        if (in_array($this->environment, array('dev', 'test'))) {
+            return '/dev/shm/appname/cache/'.$this->environment;
+        }
+
         return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
     }
 
     public function getLogDir()
     {
+        //if (in_array($this->environment, array('dev', 'test'))) {
+        //    return '/dev/shm/appname/logs';
+        //}
+        
         return dirname(__DIR__).'/var/logs';
     }
 
