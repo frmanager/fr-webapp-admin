@@ -251,6 +251,7 @@ class CausevoxteamController extends Controller
                                 $causevoxteam = new Causevoxteam();
                             } else {
                                 $logger->debug($entity.' found....updating existing record');
+                                /*
                                 $errorMessage = new ValidationHelper(array(
                                   'entity' => $entity,
                                   'row_index' => ($i + 2),
@@ -258,12 +259,13 @@ class CausevoxteamController extends Controller
                                   'error_field_value' => 'N/A',
                                   'error_message' => 'Duplicate with Causvox Team #'.$causevoxteam->getId(),
                                   'error_level' => ValidationHelper::$level_warning, ));
+                                */
                             }
 
                             $causevoxteam->setName($item['name']);
-                            $causevoxteam->setFundsNeeded($item['funds_needed']);
+                            $causevoxteam->setFundsNeeded(intval($item['funds_needed']));
                             $causevoxteam->setUrl($item['url']);
-                            $causevoxteam->setFundsRaised($item['funds_raised']);
+                            $causevoxteam->setFundsRaised(intval($item['funds_raised']));
                             $causevoxteam->setTeacher($teacher);
 
                             $validator = $this->get('validator');
