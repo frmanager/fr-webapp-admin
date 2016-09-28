@@ -361,39 +361,67 @@ class DonationController extends Controller
                             }
                         }
 
+                        //Here is our find student logic. We try a lot of different methods to try and find it....
                         if (!$failure) {
-                            $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
-                            $studentId = $em->createQuery($queryString)->getResult();
-                           //SECONDARY CHECK ADDED TO HANDLE THE FACT THAT PARENTS PUT IN FULL NAME
-                            if (empty($studentId)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
-                                $studentId = $em->createQuery($queryString)->getResult();
-                                //TERTIARY CHECK ADDED TO IN CASE MULTIPLE STUDENTS WITH FIRST NAME
-                                if (empty($studentId)) {
-                                    $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
-                                    $studentId = $em->createQuery($queryString)->getResult();
-                                    if (empty($studentId)) {
-                                        $failure = true;
-                                        $errorMessage = new ValidationHelper(array(
-                                            'entity' => $entity,
-                                            'row_index' => ($i + 2 + $fileIndexOffset),
-                                            'error_field' => 'students_name',
-                                            'error_field_value' => $item['students_first_name'],
-                                            'error_message' => 'Could not find student',
-                                            'error_level' => ValidationHelper::$level_error, ));
-                                    } else {
-                                        $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId[0]['id'].'] using first name fuzzy match "'.$item['students_name_with_initial'].'"');
-                                    }
-                                } else {
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId[0]['id'].'] using first name fuzzy match "'.$item['students_first_name'].'"');
+
+                          //NOW WE ARE TRYING TO USE THE ASSOCIATED DONATION PAGE
+                          if (isset($item['donation_page'])) {
+                              //GETTING URL STRING TO FIND FROM TABLE
+                              $urlString = substr($item['donation_page'], 1, strlen($item['donation_page'])); // Chopping off the '/'
+                              //$lastinitial = substr($lastname,0,1).'.';
+                              $queryString = sprintf("SELECT IDENTITY(u.student, 'id') as student_id FROM AppBundle:Causevoxfundraiser u WHERE u.url = '%s'", $urlString);
+                              $logger->debug("QueryString: ".$queryString);
+                              $result = $em->createQuery($queryString)->getResult();
+                              $logger->debug("Found Causevoxfundraiser: ".print_r($result, true));
+                              if (!empty($result)) {
+                                  $studentId = $result[0]['student_id'];
+                                  $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using associated Causevoxfundraiser URL "'.$item['donation_page'].'"');
+                              }
+                          }
+
+                            if (!isset($studentId)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
+                                $result = $em->createQuery($queryString)->getResult();
+
+                                if (!empty($result)) {
+                                    $studentId = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using provided name');
                                 }
-                            } else {
-                                $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId[0]['id'].'] using provided name');
                             }
-                        }
+                            if (!isset($studentId)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
+                                $result = $em->createQuery($queryString)->getResult();
+                                if (!empty($result)) {
+                                    $studentId = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using first name fuzzy match "'.$item['students_first_name'].'"');
+                                }
+                            }
+
+                            if (!isset($studentId)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
+                                $result = $em->createQuery($queryString)->getResult();
+
+                                if (!empty($result)) {
+                                    $studentId = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using first name + last initial fuzzy match "'.$item['students_name_with_initial'].'"');
+                                }
+                            }
+
+                          //IF ALL ELSE FAILES, ITS A FAILURE
+                          if (!isset($studentId)) {
+                              $failure = true;
+                              $errorMessage = new ValidationHelper(array(
+                                  'entity' => $entity,
+                                  'row_index' => ($i + 2 + $fileIndexOffset),
+                                  'error_field' => 'students_name, teacher, grade',
+                                  'error_field_value' => $item['students_name'].', '.$item['teachers_name'].', '.$item['grade'],
+                                  'error_message' => 'Could not find student',
+                                  'error_level' => ValidationHelper::$level_error, ));
+                          }
+                        } //END STUDENT FIND LOGIC
 
                         if (!$failure) {
-                            $student =  $em->find('AppBundle:Student', $studentId[0]['id']);
+                            $student = $em->find('AppBundle:Student', $studentId);
                           //Example: 2016-08-25 16:35:54
                           //Causevox donations are given to us as UTC...which we need to convert back to EST
                           if (strcmp($fileType, 'Causevoxdonation') == 0) {
@@ -422,6 +450,7 @@ class DonationController extends Controller
                           } else {
                               $logger->debug($entity.' found....updating.');
                               $failure = true;
+                              /*
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
                                 'row_index' => ($i + 2 + $fileIndexOffset),
@@ -429,6 +458,7 @@ class DonationController extends Controller
                                 'error_field_value' => 'N/A',
                                 'error_message' => 'A donation for this student and date already exists #'.$donation->getId(),
                                 'error_level' => ValidationHelper::$level_error, ));
+                              */
                           }
                         }
                         if (!$failure) {

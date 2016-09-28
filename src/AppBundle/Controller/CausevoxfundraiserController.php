@@ -279,6 +279,7 @@ class CausevoxfundraiserController extends Controller
                               $causevoxfundraiser = new Causevoxfundraiser();
                           } else {
                               $logger->debug($entity.' not found....updating existing record');
+                              /*
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
                                 'row_index' => ($i + 2),
@@ -286,12 +287,13 @@ class CausevoxfundraiserController extends Controller
                                 'error_field_value' => 'N/A',
                                 'error_message' => 'Duplicate with Causvox Donation #'.$causevoxfundraiser->getId(),
                                 'error_level' => ValidationHelper::$level_warning, ));
+                              */
                           }
 
                             $causevoxfundraiser->setEmail($item['email']);
-                            $causevoxfundraiser->setFundsNeeded($item['funds_needed']);
+                            $causevoxfundraiser->setFundsNeeded(intval($item['funds_needed']));
                             $causevoxfundraiser->setUrl($item['stub']);
-                            $causevoxfundraiser->setFundsRaised($item['funds_raised']);
+                            $causevoxfundraiser->setFundsRaised(intval($item['funds_raised']));
                             $causevoxfundraiser->setStudent($student);
                             $causevoxfundraiser->setTeacher($teacher);
                             $causevoxfundraiser->setFirstName($item['first_name']);
