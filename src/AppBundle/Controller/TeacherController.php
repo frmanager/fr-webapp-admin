@@ -11,6 +11,8 @@ use AppBundle\Entity\Grade;
 use AppBundle\Utils\ValidationHelper;
 use AppBundle\Utils\CSVHelper;
 use AppBundle\Utils\CampaignHelper;
+use AppBundle\Utils\QueryHelper;
+use DateTime;
 
 /**
  * Teacher controller.
@@ -29,62 +31,18 @@ class TeacherController extends Controller
     {
         $logger = $this->get('logger');
         $entity = 'Teacher';
+
         $em = $this->getDoctrine()->getManager();
-
-        $query = $em->createQuery('SELECT t.id as teacher_id,
-                                          t.teacherName as teacher_name,
-                                          g.id as grade_id,
-                                          g.name as grade_name,
-                                          sum(d.amount) as donation_amount,
-                                          count(d.amount) as total_donations
-                                     FROM AppBundle:Teacher t
-                          LEFT OUTER JOIN AppBundle:Student s
-                                     WITH t.id = s.teacher
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                          LEFT OUTER JOIN AppBundle:Grade g
-                                     WITH g.id = t.grade
-                                 GROUP BY t.id
-                                 ORDER BY g.name,
-                                          t.teacherName');
-
-        $teachers = $query->getResult();
-
-        //sorting by amount for rank....
-        $query = $em->createQuery('SELECT t.id as teacher_id,
-                                          sum(d.amount) as donation_amount,
-                                          count(d.amount) as total_donations
-                                     FROM AppBundle:Teacher t
-                          LEFT OUTER JOIN AppBundle:Student s
-                                     WITH t.id = s.teacher
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                                 GROUP BY t.id
-                                 ORDER BY donation_amount DESC');
-
-        $teachersorts = $query->getResult();
-
-        $teacherRank = 0;
-        $amount = 9999999999999999999; //some astronomical number
-        foreach ($teachersorts as $teachersort) {
-            $logger->debug('Current Rank: '.$teacherRank.' Current Donation Amount: '.$teachersort['donation_amount'].' amount to beat: '.$amount);
-            if ($teachersort['donation_amount'] < $amount) {
-                ++$teacherRank;
-            }
-
-            foreach ($teachers as &$teacher) {
-                if ($teacher['teacher_id'] == $teachersort['teacher_id']) {
-                    $teacher['rank'] = $teacherRank;
-                    break;
-                }
-            }
-            $amount = $teachersort['donation_amount'];
-        }
-
+        $queryHelper = new QueryHelper($em, $logger);
+        $tempDate = new DateTime();
+        $dateString = $tempDate->format('Y-m-d').' 00:00:00';
+        $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
+        // replace this example code with whatever you need
         return $this->render(strtolower($entity).'/index.html.twig', array(
-            'teachers' => $teachers,
-            'entity' => $entity,
+          'teachers' => $queryHelper->getTeacherRanks(array('limit'=> 0)),
+          'entity' => strtolower($entity)
         ));
+
     }
 
     /**
@@ -128,47 +86,20 @@ class TeacherController extends Controller
         $deleteForm = $this->createDeleteForm($teacher);
         $teacher = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($teacher->getId());
         //$logger->debug(print_r($student->getDonations()));
-          $em = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
 
         $qb = $em->createQueryBuilder()->select('u')
                ->from('AppBundle:Campaignaward', 'u')
                ->orderBy('u.amount', 'DESC');
 
         $campaignAwards = $qb->getQuery()->getResult();
-
         $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
-        $query = $em->createQuery('SELECT t.id as teacher_id,
-                                          t.teacherName as teacher_name,
-                                          sum(d.amount) as donation_amount
-                                     FROM AppBundle:Teacher t
-                          LEFT OUTER JOIN AppBundle:Student s
-                                     WITH t.id = s.teacher
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                                 GROUP BY t.teacherName
-                                 ORDER BY donation_amount DESC');
-
-        $items = $query->getResult();
-
-        $teacherRank = 0;
-        $amount = 9999999999999999999; //some astronomical number
-        foreach ($items as $item) {
-            $logger->debug('Current Rank: '.$teacherRank.' Current Donation Amount: '.$item['donation_amount'].' amount to beat: '.$amount);
-            if ($item['donation_amount'] < $amount) {
-                ++$teacherRank;
-            }
-
-            if ($teacher->getId() == $item['teacher_id']) {
-                break;
-            }
-
-            $amount = $item['donation_amount'];
-        }
+        $queryHelper = new QueryHelper($em, $logger);
 
         return $this->render(strtolower($entity).'/show.html.twig', array(
             'teacher' => $teacher,
-            'teacher_rank' => $teacherRank,
+            'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('limit' => 0)),
             'campaign_awards' => $campaignAwards,
             'campaignsettings' => $campaignSettings->getCampaignSettings(),
             'delete_form' => $deleteForm->createView(),

@@ -11,6 +11,8 @@ use AppBundle\Entity\Campaignsetting;
 use AppBundle\Utils\ValidationHelper;
 use AppBundle\Utils\CampaignHelper;
 use AppBundle\Utils\CSVHelper;
+use AppBundle\Utils\QueryHelper;
+use DateTime;
 
 /**
  * Student controller.
@@ -29,86 +31,16 @@ class StudentController extends Controller
     {
         $logger = $this->get('logger');
         $entity = 'Student';
+
         $em = $this->getDoctrine()->getManager();
-
-/* WORKING query
-
-SELECT s.id as student_id,
-       s.name as student_name,
-       t.id as teacher_id,
-       t.teacher_name as teacher_name,
-       g.id as grade_id,
-       g.name as grade_name,
-       sum(d.amount) as donation_amount,
-       count(d.amount) as total_donations
-  FROM student s
-  LEFT OUTER JOIN teacher t
-    ON t.id = s.teacher_id
-  LEFT OUTER JOIN donation d
-    ON s.id = d.student_id
-  LEFT OUTER JOIN grade g
-    ON g.id = t.grade_id
- GROUP BY t.teacher_name
- ORDER BY g.name,
-          t.teacher_name
-
-*/
-
-        $query = $em->createQuery('SELECT s.id as student_id,
-                                          s.name as student_name,
-                                          t.id as teacher_id,
-                                          t.teacherName as teacher_name,
-                                          g.id as grade_id,
-                                          g.name as grade_name,
-                                          sum(d.amount) as donation_amount,
-                                          count(d.amount) as total_donations
-                                     FROM AppBundle:Student s
-                          LEFT OUTER JOIN AppBundle:Teacher t
-                                     WITH t.id = s.teacher
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                          LEFT OUTER JOIN AppBundle:Grade g
-                                     WITH g.id = t.grade
-                                 GROUP BY s.id
-                                 ORDER BY g.name,
-                                          t.teacherName,
-                                          s.name');
-
-        $students = $query->getResult();
-
-        //sorting by amount for rank....
-        $query = $em->createQuery('SELECT s.id as student_id,
-                                          sum(d.amount) as donation_amount,
-                                          count(d.amount) as total_donations
-                                     FROM AppBundle:Student s
-                          LEFT OUTER JOIN AppBundle:Teacher t
-                                     WITH t.id = s.teacher
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                                 GROUP BY s.id
-                                 ORDER BY donation_amount DESC');
-
-        $studentSorts = $query->getResult();
-
-        $studentRank = 0;
-        $amount = 9999999999999999999; //some astronomical number
-        foreach ($studentSorts as $studentSort) {
-            $logger->debug('Current Rank: '.$studentRank.' Current Donation Amount: '.$studentSort['donation_amount'].' amount to beat: '.$amount);
-            if ($studentSort['donation_amount'] < $amount) {
-                ++$studentRank;
-            }
-
-            foreach ($students as &$student) {
-                if ($student['student_id'] == $studentSort['student_id']) {
-                    $student['rank'] = $studentRank;
-                    break;
-                }
-            }
-            $amount = $studentSort['donation_amount'];
-        }
+        $queryHelper = new QueryHelper($em, $logger);
+        $tempDate = new DateTime();
+        $dateString = $tempDate->format('Y-m-d').' 00:00:00';
+        $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
+        // replace this example code with whatever you need
 
         return $this->render(strtolower($entity).'/index.html.twig', array(
-            'students' => $students,
+            'students' => $queryHelper->getStudentRanks(array('limit'=> 0)),
             'entity' => $entity,
         ));
     }
@@ -162,87 +94,15 @@ SELECT s.id as student_id,
                ->orderBy('u.amount', 'DESC');
 
         $campaignAwards = $qb->getQuery()->getResult();
-
-        $data['total_class_donation_amount'] = 0;
-        $data['total_class_donations'] = 0;
-
-        $query = $em->createQuery('SELECT sum(d.amount) as donation_amount,
-                                          count(d.amount) as total_donations
-                                     FROM AppBundle:Teacher t
-                          LEFT OUTER JOIN AppBundle:Student s
-                                     WITH t.id = s.teacher
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                          LEFT OUTER JOIN AppBundle:Grade g
-                                     WITH g.id = t.grade
-                                    WHERE t.id = '.$student->getTeacher()->getId().'
-                                 GROUP BY t.id
-                                 ORDER BY t.teacherName');
-
-        $results = $query->getResult();
-
         $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
-        $query = $em->createQuery('SELECT s.id as student_id,
-                                          sum(d.amount) as donation_amount
-                                     FROM AppBundle:Student s
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                                 GROUP BY s.id
-                                 ORDER BY donation_amount DESC');
-
-        $items = $query->getResult();
-
-        $studentRank = 0;
-        $amount = 9999999999999999999; //some astronomical number
-
-        foreach ($items as $item) {
-            $logger->debug('Current Rank: '.$studentRank.' Current Donation Amount: '.$item['donation_amount'].' amount to beat: '.$amount);
-            if ($item['donation_amount'] < $amount) {
-                ++$studentRank;
-            }
-
-            if ($student->getId() == $item['student_id']) {
-                break;
-            }
-
-            $amount = $item['donation_amount'];
-        }
-
-        $query = $em->createQuery('SELECT t.id as teacher_id,
-                                          t.teacherName as teacher_name,
-                                          sum(d.amount) as donation_amount
-                                     FROM AppBundle:Teacher t
-                          LEFT OUTER JOIN AppBundle:Student s
-                                     WITH t.id = s.teacher
-                          LEFT OUTER JOIN AppBundle:Donation d
-                                     WITH s.id = d.student
-                                 GROUP BY t.teacherName
-                                 ORDER BY donation_amount DESC');
-
-        $items = $query->getResult();
-
-        $teacherRank = 0;
-        $amount = 9999999999999999999; //some astronomical number
-        foreach ($items as $item) {
-            $logger->debug('Current Rank: '.$teacherRank.' Current Donation Amount: '.$item['donation_amount'].' amount to beat: '.$amount);
-            if ($item['donation_amount'] < $amount) {
-                ++$teacherRank;
-            }
-
-            if ($student->getTeacher()->getId() == $item['teacher_id']) {
-                break;
-            }
-
-            $amount = $item['donation_amount'];
-        }
+        $queryHelper = new QueryHelper($em, $logger);
 
         return $this->render(strtolower($entity).'/show.html.twig', array(
-            'total_class_donation_amount' => $results[0]['donation_amount'],
-            'total_class_donations' => $results[0]['total_donations'],
             'student' => $student,
-            'student_rank' => $studentRank,
-            'teacher_rank' => $teacherRank,
+            'teacher' => $queryHelper->getTeachersData(array('id' => $student->getTeacher()->getId())),            
+            'student_rank' => $queryHelper->getStudentRank($student->getId(),array('limit' => 0)),
+            'teacher_rank' => $queryHelper->getTeacherRank($student->getTeacher()->getId(),array('limit' => 0)),
             'campaign_awards' => $campaignAwards,
             'campaignsettings' => $campaignSettings->getCampaignSettings(),
             'delete_form' => $deleteForm->createView(),

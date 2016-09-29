@@ -55,6 +55,14 @@ class QueryHelper
         } else {
             $dayModifier = false;
         }
+
+
+        if (isset($options['id'])) {
+            $whereId = 'WHERE s.id = '.$options['id'];
+        } else {
+            $whereId = '';
+        }
+
                 //NOW Separate todays awards with the last award...We also kick out any future awards
               $date = new DateTime();
         $dateString = $date->format('Y-m-d').' 00:00:00';
@@ -82,8 +90,9 @@ class QueryHelper
                   AND d.donatedAt <= '%s'
       LEFT OUTER JOIN AppBundle:Grade g
                  WITH g.id = t.grade
+                   %s
              GROUP BY s.id
-             ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'));
+             ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'), $whereId);
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -126,6 +135,14 @@ class QueryHelper
         } else {
             $dayModifier = false;
         }
+
+
+        if (isset($options['id'])) {
+            $whereId = 'WHERE t.id = '.$options['id'];
+        } else {
+            $whereId = '';
+        }
+
           //NOW Separate todays awards with the last award...We also kick out any future awards
         $date = new DateTime();
         $dateString = $date->format('Y-m-d').' 00:00:00';
@@ -151,8 +168,9 @@ class QueryHelper
                                    AND d.donatedAt <= '%s'
                        LEFT OUTER JOIN AppBundle:Grade g
                                   WITH g.id = t.grade
+                                    %s
                               GROUP BY t.id
-                              ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'));
+                              ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'), $whereId);
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -279,6 +297,51 @@ class QueryHelper
     }
 
 
+
+    public function getRank(array $objects, $id, array $settings)
+    {
+
+        foreach ($objects as $object) {
+            $this->logger->debug('getRanks Input Data: '.print_r($object, true));
+        }
+
+        if (isset($settings['amount_field'])) {
+            $amountField = $settings['amount_field'];
+        } else {
+            $amountField = 'donation_amount';
+        }
+
+        if (isset($settings['limit'])) {
+            $limit = $settings['limit'];
+        } else {
+            $limit = 0;
+        }
+
+        //Sorting DESC
+        $sortedObjects = $this->sortObjectbyAmount($objects, $settings);
+
+        $rank = 0;
+        $amount = 9999999999999999999; //some astronomical number
+        foreach ($sortedObjects as $sortedObject) {
+            if ($sortedObject[$amountField] < $amount) {
+                ++$rank;
+            }
+
+            foreach ($objects as $object) {
+                if ($object['id'] == $sortedObject['id'] && $sortedObject['id'] == $id) {
+                    return $rank;
+                    break;
+                }
+            }
+            $amount = $sortedObject[$amountField];
+        }
+
+        return false;
+    }
+
+
+
+
     public function getCampaignAwards($type, $style)
     {
         $campaignawardtype = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
@@ -299,10 +362,22 @@ class QueryHelper
         return $this->getRanks($this->getTeachersData($options), $options);
     }
 
+    public function getTeacherRank($id, array $options)
+    {
+        return $this->getRank($this->getTeachersData($options), $id, $options);
+    }
+
+
     public function getStudentRanks(array $options)
     {
         return $this->getRanks($this->getStudentsData($options), $options);
     }
+
+    public function getStudentRank($id, array $options)
+    {
+        return $this->getRank($this->getStudentsData($options), $id, $options);
+    }
+
 
     /**
      * Gets teacher ID and donation amounts by Dat
