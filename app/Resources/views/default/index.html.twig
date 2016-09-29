@@ -55,7 +55,7 @@
                                                 -
                                                 {{ teacher.teacher_name }}</a>{% else %}{{ teacher.grade_name }}
                                             -
-                                            {{ teacher.teacher_name }}}{% endif %}
+                                            {{ teacher.teacher_name }}{% endif %}
                                     </td>
                                     <td>${{ teacher.cumulative_donation_amount|number_format(2, '.', ',') }}
                                         <small>(<span style="color:#5cb85c;">+{{ teacher.donation_amount|number_format(2, '.', ',') }}</span>)</small>

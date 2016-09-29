@@ -27,19 +27,18 @@ For the most part, development runs on vagrant homestead, which reduces a lot of
 1. Git
 2. phing
 3. pear (Net_FTP)
-4. Vagrant Homestead
+4. MySQL
 
 
-###Vagrant Homestead Setup
 
-If you want a pretty url locally, you need to update your local hostsfile, otherwise you can use '192.168.10.10/'
 
 
 ##Run locally
 
-  Vagrant Up
 
-URL:[192.168.10.10/](192.168.10.10/)
+  php bin/console server:start
+
+URL:[localhost:8000](localhost:8000)
 
 
 ##CI/CD (Phing) Configuration
