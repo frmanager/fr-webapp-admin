@@ -38,16 +38,16 @@
                             <td><a href="{{ path('teacher_show', { 'id': student.teacher_id }) }}">{{ student.grade_name }}
                                 -
                                 {{ student.teacher_name }}</a></td>
-                            <td><a href="{{ path(entity|lower ~ '_show', { 'id': student.student_id }) }}">{{ student.student_name }}</a></td>
+                            <td><a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}">{{ student.student_name }}</a></td>
                             <td style="text-align:right;">{% if not student.donation_amount == 0 %}${{ student.donation_amount|number_format(2, '.', ',')}}{% endif %}</td>
                             <td style="text-align:center;vertical-align: middle;"><span class="label label-{% if student.rank == 1 %}success{% elseif student.rank == 2 %}warning{% elseif student.rank == 3 %}primary{% else %}default{% endif %}">{{ student.rank }}</span></td>
                             <td style="text-align:center;vertical-align: middle;">
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': student.student_id }) }}" class="btn btn-xs btn-info">
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': student.id }) }}" class="btn btn-xs btn-info">
                                     <i class="glyphicon glyphicon-eye-open"></i>
                                     <span class="hidden-xs hidden-sm">
                                         View</span>
                                 </a>
-                                {% if is_granted('ROLE_ADMIN') %}<a href="{{ path(entity|lower ~ '_edit', { 'id': student.student_id }) }}" class="btn btn-xs btn-warning">
+                                {% if is_granted('ROLE_ADMIN') %}<a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-xs btn-warning">
                                     <i class="glyphicon glyphicon-edit"></i>
                                     <span class="hidden-xs hidden-sm">
                                         Edit</span>
@@ -63,7 +63,7 @@
 {% block javascripts %}
     <script>
         $(document).ready(function() {
-            $('.table').DataTable({ "pageLength": 50});
+            $('.table').DataTable({ "pageLength": 50, "order": [[ 4, "desc" ]]});
         });
     </script>
 {% endblock %}
