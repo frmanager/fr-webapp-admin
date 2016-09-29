@@ -17,6 +17,7 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $logger = $this->get('logger');
+        $limit = 3;
         $em = $this->getDoctrine()->getManager();
         $queryHelper = new QueryHelper($em, $logger);
         $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
@@ -30,11 +31,12 @@ class DefaultController extends Controller
         return $this->render('default/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),
           'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array('day_modifier' => '-1 day')),
-          'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> 10, 'day_modifier' => '-1 day')),
+          'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> $limit, 'day_modifier' => '-1 day')),
           'report_date' => $reportDate,
+          'ranking_limit' => $limit,
           'causevoxteams' => $causevoxteams,
           'causevoxfundraisers' => $causevoxfundraisers,
-          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> 10, 'day_modifier' => '-1 day')),
+          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> $limit, 'day_modifier' => '-1 day')),
           'totals' => $queryHelper->getTotalDonations(array('day_modifier' => '-1 day')),
         ));
     }
