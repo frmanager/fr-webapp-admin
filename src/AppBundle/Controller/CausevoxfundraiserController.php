@@ -102,7 +102,7 @@ class CausevoxfundraiserController extends Controller
             $em->persist($causevoxfundraiser);
             $em->flush();
 
-            return $this->redirectToRoute(strtolower($entity).'_edit', array('id' => $causevoxfundraiser->getId()));
+            return $this->redirectToRoute(strtolower($entity).'_index', array('id' => $causevoxfundraiser->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(
@@ -181,6 +181,7 @@ class CausevoxfundraiserController extends Controller
                 $CSVHelper = new CSVHelper();
                 $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
                 $CSVHelper->cleanTeacherNames();
+                $CSVHelper->getFirstNameFromFullName();
 
                 $templateFields = array(
                   'stub',
@@ -223,6 +224,7 @@ class CausevoxfundraiserController extends Controller
                     $errorMessage;
                     foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
+                        unset($studentId);
                         unset($errorMessage);
 
                         if (!$failure) {
@@ -234,7 +236,7 @@ class CausevoxfundraiserController extends Controller
                               'row_index' => ($i + 2),
                               'error_field' => 'grade',
                               'error_field_value' => $item['grade'],
-                              'error_message' => 'Could not find grade',
+                              'error_message' => 'Could not find grade for fundraiser: '.$item['email'],
                               'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
@@ -253,32 +255,64 @@ class CausevoxfundraiserController extends Controller
                             }
                         }
 
+                        //Here is our find student logic. We try a lot of different methods to try and find it....
                         if (!$failure) {
-                            $student = $this->getDoctrine()->getRepository('AppBundle:Student')->findOneBy(
-                          array('teacher' => $teacher, 'name' => $item['students_name'])
-                        );
-                            if (empty($student)) {
-                                $failure = true;
-                                $errorMessage = new ValidationHelper(array(
-                              'entity' => $entity,
-                              'row_index' => ($i + 2),
-                              'error_field' => 'students_name',
-                              'error_field_value' => $item['students_name'],
-                              'error_message' => 'Could not find student',
-                              'error_level' => ValidationHelper::$level_error, ));
+
+                            if (!isset($studentId)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
+                                $result = $em->createQuery($queryString)->getResult();
+
+                                if (!empty($result)) {
+                                    $studentId = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using provided name');
+                                }
                             }
-                        }
+
+                            if (!isset($studentId)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
+                                $result = $em->createQuery($queryString)->getResult();
+                                if (!empty($result)) {
+                                    $studentId = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using first name fuzzy match "'.$item['students_first_name'].'"');
+                                }
+                            }
+
+                            if (!isset($studentId)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
+                                $result = $em->createQuery($queryString)->getResult();
+
+                                if (!empty($result)) {
+                                    $studentId = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using first name + last initial fuzzy match "'.$item['students_name_with_initial'].'"');
+                                }
+                            }
+
+                          //IF ALL ELSE FAILES, ITS A FAILURE
+                          if (!isset($studentId)) {
+                              $failure = true;
+                              $errorMessage = new ValidationHelper(array(
+                                  'entity' => $entity,
+                                  'row_index' => ($i + 2),
+                                  'error_field' => 'students_name, teacher, grade',
+                                  'error_field_value' => $item['students_name'].', '.$item['teachers_name'].', '.$item['grade'],
+                                  'error_message' => 'Could not find student',
+                                  'error_level' => ValidationHelper::$level_error, ));
+                          }
+                        } //END STUDENT FIND LOGIC
+
 
                         if (!$failure) {
+                            $student = $em->find('AppBundle:Student', $studentId);
                             $causevoxfundraiser = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
                         array('email' => $item['email'], 'student' => $student, 'teacher' => $teacher)
                         );
                         //Going to perform "Insert" vs "Update"
                           if (empty($causevoxfundraiser)) {
-                              $logger->debug($entity.' not found....creating new record');
+                              $logger->debug($entity.' not found. ['.$item['email'].' - '.$student->getName().' - '.$teacher->getTeacherName().'] .creating new record');
                               $causevoxfundraiser = new Causevoxfundraiser();
+                              $causevoxfundraiser->setEmail($item['email']);
                           } else {
-                              $logger->debug($entity.' not found....updating existing record');
+                              $logger->debug($entity.' found....updating existing record');
                               /*
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
@@ -290,7 +324,6 @@ class CausevoxfundraiserController extends Controller
                               */
                           }
 
-                            $causevoxfundraiser->setEmail($item['email']);
                             $causevoxfundraiser->setFundsNeeded(intval($item['funds_needed']));
                             $causevoxfundraiser->setUrl($item['stub']);
                             $causevoxfundraiser->setFundsRaised(intval($item['funds_raised']));
@@ -298,8 +331,6 @@ class CausevoxfundraiserController extends Controller
                             $causevoxfundraiser->setTeacher($teacher);
                             $causevoxfundraiser->setFirstName($item['first_name']);
                             $causevoxfundraiser->setLastName($item['last_name']);
-                            $validator = $this->get('validator');
-                            $errors = $validator->validate($causevoxfundraiser);
 
                             $validator = $this->get('validator');
                             $errors = $validator->validate($causevoxfundraiser);

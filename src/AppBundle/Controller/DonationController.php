@@ -290,7 +290,26 @@ class DonationController extends Controller
 
                     foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
+                        unset($studentId);
                         unset($errorMessage);
+                        unset($student);
+                        unset($grade);
+                        unset($teacher);
+                        
+                        if (strcmp($fileType, 'Causevoxdonation') == 0 && isset($item['donation_page'])) {
+                          //GETTING URL STRING TO FIND FROM TABLE
+                          $urlString = substr($item['donation_page'], 1, strlen($item['donation_page'])); // Chopping off the '/'
+                          //$lastinitial = substr($lastname,0,1).'.';
+                          $queryString = sprintf("SELECT IDENTITY(u.student, 'id') as student_id FROM AppBundle:Causevoxfundraiser u WHERE u.url = '%s'", $urlString);
+                          $logger->debug("QueryString: ".$queryString);
+                          $result = $em->createQuery($queryString)->getResult();
+                          if (!empty($result)) {
+                              $studentId = $result[0]['student_id'];
+                              $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using associated Causevoxfundraiser URL "'.$item['donation_page'].'"');
+                          }
+                        }
+
+
 
                         if (!$failure) {
                             if (strcmp($fileType, 'Causevoxdonation') == 0 && strcmp($item['type'], 'manual') == 0) {
@@ -307,6 +326,7 @@ class DonationController extends Controller
                               //We do not notify if amount is empty.....we just ignore it.
                             }
                         }
+
                         if (!$failure) {
                             if (strcmp($fileType, 'Causevoxdonation') == 0) {
                                 if (!isset($item['donated_at']) || empty($item['donated_at']) || strcmp('none', $item['donated_at']) == 0) {
@@ -333,8 +353,9 @@ class DonationController extends Controller
                             }
                         }
 
-                        if (!$failure) {
+                        if (!$failure && !isset($studentId)) {
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
+
                             if (empty($grade)) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
@@ -347,7 +368,7 @@ class DonationController extends Controller
                             }
                         }
 
-                        if (!$failure) {
+                        if (!$failure && !isset($studentId)) {
                             $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
                             if (empty($teacher)) {
                                 $failure = true;
@@ -362,22 +383,7 @@ class DonationController extends Controller
                         }
 
                         //Here is our find student logic. We try a lot of different methods to try and find it....
-                        if (!$failure) {
-
-                          //NOW WE ARE TRYING TO USE THE ASSOCIATED DONATION PAGE
-                          if (isset($item['donation_page'])) {
-                              //GETTING URL STRING TO FIND FROM TABLE
-                              $urlString = substr($item['donation_page'], 1, strlen($item['donation_page'])); // Chopping off the '/'
-                              //$lastinitial = substr($lastname,0,1).'.';
-                              $queryString = sprintf("SELECT IDENTITY(u.student, 'id') as student_id FROM AppBundle:Causevoxfundraiser u WHERE u.url = '%s'", $urlString);
-                              $logger->debug("QueryString: ".$queryString);
-                              $result = $em->createQuery($queryString)->getResult();
-                              $logger->debug("Found Causevoxfundraiser: ".print_r($result, true));
-                              if (!empty($result)) {
-                                  $studentId = $result[0]['student_id'];
-                                  $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using associated Causevoxfundraiser URL "'.$item['donation_page'].'"');
-                              }
-                          }
+                        if (!$failure && !isset($studentId)) {
 
                             if (!isset($studentId)) {
                                 $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
@@ -388,6 +394,7 @@ class DonationController extends Controller
                                     $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using provided name');
                                 }
                             }
+
                             if (!isset($studentId)) {
                                 $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
                                 $result = $em->createQuery($queryString)->getResult();
