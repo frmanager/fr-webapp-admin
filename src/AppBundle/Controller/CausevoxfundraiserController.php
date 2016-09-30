@@ -226,6 +226,9 @@ class CausevoxfundraiserController extends Controller
                         $failure = false;
                         unset($studentId);
                         unset($errorMessage);
+                        unset($student);
+                        unset($grade);
+                        unset($teacher);
 
                         if (!$failure) {
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
@@ -238,6 +241,8 @@ class CausevoxfundraiserController extends Controller
                               'error_field_value' => $item['grade'],
                               'error_message' => 'Could not find grade for fundraiser: '.$item['email'],
                               'error_level' => ValidationHelper::$level_error, ));
+                            }else{
+                              $logger->debug("Found Grade #".$grade->getId().": ".$grade->getName());
                             }
                         }
 
@@ -252,6 +257,8 @@ class CausevoxfundraiserController extends Controller
                               'error_field_value' => $item['teachers_name'],
                               'error_message' => 'Could not find teacher',
                               'error_level' => ValidationHelper::$level_error, ));
+                            }else{
+                              $logger->debug("Found Teacher #".$teacher->getId().": ".$teacher->getTeacherName());
                             }
                         }
 
@@ -259,7 +266,7 @@ class CausevoxfundraiserController extends Controller
                         if (!$failure) {
 
                             if (!isset($studentId)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
@@ -269,7 +276,7 @@ class CausevoxfundraiserController extends Controller
                             }
 
                             if (!isset($studentId)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
                                 $result = $em->createQuery($queryString)->getResult();
                                 if (!empty($result)) {
                                     $studentId = $result[0]['id'];
@@ -278,7 +285,7 @@ class CausevoxfundraiserController extends Controller
                             }
 
                             if (!isset($studentId)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
@@ -303,6 +310,7 @@ class CausevoxfundraiserController extends Controller
 
                         if (!$failure) {
                             $student = $em->find('AppBundle:Student', $studentId);
+                            $logger->debug("Found Student #".$student->getId().": ".$student->getName());
                             $causevoxfundraiser = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
                         array('email' => $item['email'], 'student' => $student, 'teacher' => $teacher)
                         );
