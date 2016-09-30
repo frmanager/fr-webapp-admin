@@ -295,7 +295,7 @@ class DonationController extends Controller
                         unset($student);
                         unset($grade);
                         unset($teacher);
-                        
+
                         if (strcmp($fileType, 'Causevoxdonation') == 0 && isset($item['donation_page'])) {
                           //GETTING URL STRING TO FIND FROM TABLE
                           $urlString = substr($item['donation_page'], 1, strlen($item['donation_page'])); // Chopping off the '/'
@@ -386,7 +386,7 @@ class DonationController extends Controller
                         if (!$failure && !isset($studentId)) {
 
                             if (!isset($studentId)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
@@ -396,7 +396,7 @@ class DonationController extends Controller
                             }
 
                             if (!isset($studentId)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacher->getId(), $item['students_first_name']);
                                 $result = $em->createQuery($queryString)->getResult();
                                 if (!empty($result)) {
                                     $studentId = $result[0]['id'];
@@ -405,7 +405,7 @@ class DonationController extends Controller
                             }
 
                             if (!isset($studentId)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher <= '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacher->getId(), $item['students_name_with_initial']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
