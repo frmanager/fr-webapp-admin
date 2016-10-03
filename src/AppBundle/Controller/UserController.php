@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\User;
-
+use AppBundle\Entity\Invitation;
 /**
  * User controller.
  *
@@ -23,12 +23,14 @@ class UserController extends Controller
      */
     public function indexAction()
     {
+        $entity = 'User';
         $em = $this->getDoctrine()->getManager();
 
         $users = $em->getRepository('AppBundle:User')->findAll();
 
         return $this->render('user/index.html.twig', array(
             'users' => $users,
+            'entity' => $entity
         ));
     }
 
@@ -40,6 +42,7 @@ class UserController extends Controller
      */
     public function newAction(Request $request)
     {
+        $entity = 'User';
         $user = new User();
         $form = $this->createForm('AppBundle\Form\UserType', $user);
         $form->handleRequest($request);
@@ -52,9 +55,10 @@ class UserController extends Controller
             return $this->redirectToRoute('manage', array('id' => $user->getId()));
         }
 
-        return $this->render('user/new.html.twig', array(
+        return $this->render('crud/new.html.twig', array(
             'user' => $user,
             'form' => $form->createView(),
+            'entity' => $entity
         ));
     }
 
@@ -66,11 +70,13 @@ class UserController extends Controller
      */
     public function showAction(User $user)
     {
+        $entity = 'User';
         $deleteForm = $this->createDeleteForm($user);
 
         return $this->render('user/show.html.twig', array(
             'user' => $user,
             'delete_form' => $deleteForm->createView(),
+            'entity' => $entity
         ));
     }
 
@@ -82,6 +88,7 @@ class UserController extends Controller
      */
     public function editAction(Request $request, User $user)
     {
+        $entity = 'User';
         $deleteForm = $this->createDeleteForm($user);
         $editForm = $this->createForm('AppBundle\Form\UserType', $user);
         $editForm->handleRequest($request);
@@ -94,10 +101,11 @@ class UserController extends Controller
             return $this->redirectToRoute('user_edit', array('id' => $user->getId()));
         }
 
-        return $this->render('user/edit.html.twig', array(
+        return $this->render('crud/edit.html.twig', array(
             'user' => $user,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'entity' => $entity
         ));
     }
 
@@ -109,6 +117,7 @@ class UserController extends Controller
      */
     public function deleteAction(Request $request, User $user)
     {
+        $entity = 'User';
         $form = $this->createDeleteForm($user);
         $form->handleRequest($request);
 
@@ -136,4 +145,5 @@ class UserController extends Controller
             ->getForm()
         ;
     }
+
 }

@@ -35,3 +35,4 @@ security:
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/manage, role: ROLE_USER }
         - { path: ^/manage/user, role: ROLE_ADMIN }
+        - { path: ^/manage/invitation, role: ROLE_ADMIN }

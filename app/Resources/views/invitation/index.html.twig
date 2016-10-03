@@ -1,0 +1,49 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Invitations</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div style="text-align:right;">
+                <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    Add New</a>
+            </div>
+            <br/>
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Email</th>
+                        <th>Sent</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invitation in invitations %}
+                        <tr>
+                            <td>
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': invitation.code }) }}">{{ invitation.code }}</a>
+                            </td>
+                            <td>{{ invitation.email }}</td>
+                            <td>{% if invitation.sent == 1 %} Yes {% else %} No {% endif %}</td>
+                            <td style="text-align:center;">
+                                <a href="{{ path(entity|lower ~ '_show', { 'id': invitation.code }) }}" class="btn btn-sm btn-info">
+                                    <i class="glyphicon glyphicon-eye-open"></i>
+                                    <span class="hidden-xs hidden-sm">
+                                        View</span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

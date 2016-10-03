@@ -10,9 +10,9 @@ parameters:
 
 framework:
     #esi:             ~
-    #translator:      { fallbacks: ["%locale%"] }
-    translator:
-        enabled: false    
+    translator:      { fallbacks: ["%locale%"] }
+    #translator:
+        #enabled: false
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -48,7 +48,7 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver:   pdo_mysql
+        driver:   "%database_driver%"
         host:     "%database_host%"
         port:     "%database_port%"
         dbname:   "%database_name%"

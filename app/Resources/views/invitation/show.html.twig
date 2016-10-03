@@ -1,0 +1,27 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>View Invitation</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <dl class="dl-horizontal">
+                <dt>Code</dt>
+                <dd>{{ invitation.code }}</dd>
+                <dt>Email</dt>
+                <dd>{{ invitation.email }}</dd>
+                <dt>Invitation Sent?</dt>
+                <dd>{% if invitation.sent == 1 %} Yes {% else %} No {% endif %}</dd>
+            </dl>
+            {{ form_start(delete_form) }}
+            <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
+            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{invitation.code}}?')" class="btn btn-danger">
+            {{ form_end(delete_form) }}
+        </div>
+    </div>
+{% endblock %}
