@@ -28,7 +28,7 @@
           ga('send', 'pageview');
 
         </script>
-        
+
         <!-- FACEBOOK TAB -->
         <script src="//connect.facebook.net/en_US/all.js"></script>
         <script type="text/javascript" charset="utf-8">
@@ -132,6 +132,13 @@
                             <li class="dropdown-header">Core Data</li>
                             <li {% if app.request.attributes.get('_route') == 'grade_index'%} class="active" {% endif %}>
                                 <a href="{{ path('grade_index') }}">Manage Grades</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li {% if app.request.attributes.get('_route') == 'user_index'%} class="active" {% endif %}>
+                                <a href="{{ path('user_index') }}">Manage Users</a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'invitation_index'%} class="active" {% endif %}>
+                                <a href="{{ path('invitation_index') }}">Manage Invitations</a>
                             </li>
                         </ul>
                     </li>
