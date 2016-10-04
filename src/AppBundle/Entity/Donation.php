@@ -33,10 +33,19 @@ class Donation
      * @var Student
      *
      * @ORM\ManyToOne(targetEntity="Student", inversedBy="donations")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE", nullable=true)
+     */
+    private $student;
+
+    /**
+     * @var Teacher
+     *
+     * @ORM\ManyToOne(targetEntity="Teacher", inversedBy="donations")
      * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
-    private $student;
+    private $teacher;
+
 
     /**
      * @var float
@@ -483,5 +492,29 @@ class Donation
     public function getStudent()
     {
         return $this->student;
+    }
+
+    /**
+     * Set teacher
+     *
+     * @param \AppBundle\Entity\Teacher $teacher
+     *
+     * @return Donation
+     */
+    public function setTeacher(\AppBundle\Entity\Teacher $teacher = null)
+    {
+        $this->teacher = $teacher;
+
+        return $this;
+    }
+
+    /**
+     * Get teacher
+     *
+     * @return \AppBundle\Entity\Teacher
+     */
+    public function getTeacher()
+    {
+        return $this->teacher;
     }
 }

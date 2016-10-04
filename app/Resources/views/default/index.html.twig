@@ -51,7 +51,7 @@
                                 <tr>
                                     <td>
 
-                                            <a href="{{ path('teacher_show', { 'id': teacher.id }) }}">{{ teacher.grade_name }}
+                                            <a href="{{ path('public_teacher_show', { 'id': teacher.id }) }}">{{ teacher.grade_name }}
                                                 -
                                                 {{ teacher.teacher_name }}</a>
                                     </td>
@@ -79,7 +79,7 @@
         <div class="col-sm-6">
             <div class="panel panel-info" data-mh="row-2">
                 <div class="panel-heading">Top {{ ranking_limit }} Class Rankings -
-                    <a href="{{ path('teacher_index') }}"><small>(click here to view all)</small>
+                    <a href="{{ path('public_teacher_index') }}"><small>(click here to view all)</small>
                 </a></div>
                 {% if teacher_rankings | length > 0 %}
                     <table class="table table-striped table-condensed">
@@ -98,7 +98,7 @@
                                         <span class="label label-{% if teacher_ranking.rank == 1 %}success{% elseif teacher_ranking.rank == 2 %}warning{% elseif teacher_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ teacher_ranking.rank }}</span>
                                     </td>
                                     <td>
-                                        <a href="{{ path('teacher_show', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
+                                        <a href="{{ path('public_teacher_index', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
                                             -
                                             {{ teacher_ranking.teacher_name }}</a>
                                     </td>

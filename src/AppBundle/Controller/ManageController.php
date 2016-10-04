@@ -26,10 +26,6 @@ class ManageController extends Controller
         $queryHelper = new QueryHelper($em, $logger);
         $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
-        $tempDate = new DateTime();
-        $dateString = $tempDate->format('Y-m-d').' 00:00:00';
-        $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-
         // replace this example code with whatever you need
         return $this->render('manage/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),

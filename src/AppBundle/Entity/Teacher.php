@@ -27,6 +27,12 @@ class Teacher
     private $causevoxfundraisers;
 
     /**
+     * @ORM\OneToMany(targetEntity="Donation", mappedBy="teacher", cascade={"remove"})
+     */
+    private $donations;
+
+
+    /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -217,5 +223,73 @@ class Teacher
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * Add causevoxfundraiser
+     *
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     *
+     * @return Teacher
+     */
+    public function addCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    {
+        $this->causevoxfundraisers[] = $causevoxfundraiser;
+
+        return $this;
+    }
+
+    /**
+     * Remove causevoxfundraiser
+     *
+     * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
+     */
+    public function removeCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
+    {
+        $this->causevoxfundraisers->removeElement($causevoxfundraiser);
+    }
+
+    /**
+     * Get causevoxfundraisers
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCausevoxfundraisers()
+    {
+        return $this->causevoxfundraisers;
+    }
+
+    /**
+     * Add donation
+     *
+     * @param \AppBundle\Entity\Donation $donation
+     *
+     * @return Teacher
+     */
+    public function addDonation(\AppBundle\Entity\Donation $donation)
+    {
+        $this->donations[] = $donation;
+
+        return $this;
+    }
+
+    /**
+     * Remove donation
+     *
+     * @param \AppBundle\Entity\Donation $donation
+     */
+    public function removeDonation(\AppBundle\Entity\Donation $donation)
+    {
+        $this->donations->removeElement($donation);
+    }
+
+    /**
+     * Get donations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDonations()
+    {
+        return $this->donations;
     }
 }

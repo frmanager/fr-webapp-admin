@@ -40,38 +40,25 @@ class QueryHelper
         return $this->getData($this->getTeacherDonationsByDayQuery($options));
     }
 
-
     public function getTotalDonations(array $options)
     {
         $data = $this->getData($this->getTotalDonationsQuery($options));
+
         return $data[0];
     }
 
-
     public function getStudentsDataQuery(array $options)
     {
-        if (isset($options['day_modifier'])) {
-            $dayModifier = $options['day_modifier'];
-        } else {
-            $dayModifier = false;
-        }
-
+      if (isset($options['before_date'])) {
+          $date = "WHERE d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
+      } else {
+          $date = '';
+      }
 
         if (isset($options['id'])) {
             $whereId = 'WHERE s.id = '.$options['id'];
         } else {
             $whereId = '';
-        }
-
-                //NOW Separate todays awards with the last award...We also kick out any future awards
-              $date = new DateTime();
-        $dateString = $date->format('Y-m-d').' 00:00:00';
-        $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-        $this->logger->debug('Date Before: '.$todaysDate->format('Y-m-d H:i:s'));
-
-        if ($dayModifier !== false) {
-            $todaysDate->modify($dayModifier);
-            $this->logger->debug('Date After: '.$todaysDate->format('Y-m-d H:i:s'));
         }
 
         $queryString = sprintf("SELECT s.id as id,
@@ -87,12 +74,12 @@ class QueryHelper
                  WITH t.id = s.teacher
       LEFT OUTER JOIN AppBundle:Donation d
                  WITH s.id = d.student
-                  AND d.donatedAt <= '%s'
+                   %s
       LEFT OUTER JOIN AppBundle:Grade g
                  WITH g.id = t.grade
                    %s
              GROUP BY s.id
-             ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'), $whereId);
+             ORDER BY donation_amount DESC", $date, $whereId);
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -101,57 +88,34 @@ class QueryHelper
 
     public function getTotalDonationsQuery(array $options)
     {
-        if (isset($options['day_modifier'])) {
-            $dayModifier = $options['day_modifier'];
-        } else {
-            $dayModifier = false;
-        }
-        //NOW Separate todays awards with the last award...We also kick out any future awards
-        $date = new DateTime();
-        $dateString = $date->format('Y-m-d').' 00:00:00';
-        $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-        $this->logger->debug('Date Before: '.$todaysDate->format('Y-m-d H:i:s'));
-
-        if ($dayModifier !== false) {
-            $todaysDate->modify($dayModifier);
-            $this->logger->debug('Date After: '.$todaysDate->format('Y-m-d H:i:s'));
-        }
+      if (isset($options['before_date'])) {
+          $date = "WHERE d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
+      } else {
+          $date = '';
+      }
 
         $queryString = sprintf("SELECT sum(d.amount) as donation_amount,
                                        count(d.amount) as total_donations
                                   FROM AppBundle:Donation d
-                                 WHERE d.donatedAt <= '%s'", $todaysDate->format('Y-m-d H:i:s'));
+                                  %s", $date);
 
         $this->logger->debug('Query : '.$queryString);
 
         return $queryString;
     }
 
-
     public function getTeachersDataQuery(array $options)
     {
-        if (isset($options['day_modifier'])) {
-            $dayModifier = $options['day_modifier'];
+        if (isset($options['before_date'])) {
+            $date = "WHERE d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
         } else {
-            $dayModifier = false;
+            $date = '';
         }
-
 
         if (isset($options['id'])) {
             $whereId = 'WHERE t.id = '.$options['id'];
         } else {
             $whereId = '';
-        }
-
-          //NOW Separate todays awards with the last award...We also kick out any future awards
-        $date = new DateTime();
-        $dateString = $date->format('Y-m-d').' 00:00:00';
-        $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-        $this->logger->debug('Date Before: '.$todaysDate->format('Y-m-d H:i:s'));
-
-        if ($dayModifier !== false) {
-            $todaysDate->modify($dayModifier);
-            $this->logger->debug('Date After: '.$todaysDate->format('Y-m-d H:i:s'));
         }
 
         $queryString = sprintf("SELECT t.id as id,
@@ -161,16 +125,14 @@ class QueryHelper
                                        sum(d.amount) as donation_amount,
                                        count(d.amount) as total_donations
                                   FROM AppBundle:Teacher t
-                       LEFT OUTER JOIN AppBundle:Student s
-                                  WITH t.id = s.teacher
                        LEFT OUTER JOIN AppBundle:Donation d
-                                  WITH s.id = d.student
-                                   AND d.donatedAt <= '%s'
-                       LEFT OUTER JOIN AppBundle:Grade g
+                                  WITH t.id = d.teacher
+                                   %s
+                                  JOIN AppBundle:Grade g
                                   WITH g.id = t.grade
                                     %s
                               GROUP BY t.id
-                              ORDER BY donation_amount DESC", $todaysDate->format('Y-m-d H:i:s'), $whereId);
+                              ORDER BY donation_amount DESC", $date, $whereId);
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -179,21 +141,10 @@ class QueryHelper
 
     public function getTeacherDonationsByDayQuery(array $options)
     {
-
-      if (isset($options['day_modifier'])) {
-          $dayModifier = $options['day_modifier'];
+      if (isset($options['before_date'])) {
+          $date = "AND d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
       } else {
-          $dayModifier = false;
-      }
-        //NOW Separate todays awards with the last award...We also kick out any future awards
-      $date = new DateTime();
-      $dateString = $date->format('Y-m-d').' 00:00:00';
-      $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-      $this->logger->debug('Date Before: '.$todaysDate->format('Y-m-d H:i:s'));
-
-      if ($dayModifier !== false) {
-          $todaysDate->modify($dayModifier);
-          $this->logger->debug('Date After: '.$todaysDate->format('Y-m-d H:i:s'));
+          $date = '';
       }
 
         $queryString = sprintf("SELECT t.id as id,
@@ -204,19 +155,17 @@ class QueryHelper
                         sum(d.amount) as donation_amount,
                         count(d.amount) as total_donations
                    FROM AppBundle:Teacher t
-                   JOIN AppBundle:Student s
-                   WITH t.id = s.teacher
                    JOIN AppBundle:Donation d
-                   WITH s.id = d.student
-                    AND d.donatedAt <= '%s'
+                   WITH t.id = d.teacher
+                      %s
                    JOIN AppBundle:Grade g
                    WITH g.id = t.grade
                GROUP BY d.donatedAt, t.id
-               ORDER BY t.id ASC, d.donatedAt ASC", $todaysDate->format('Y-m-d H:i:s'));
+               ORDER BY t.id ASC, d.donatedAt ASC", $date);
 
-         $this->logger->debug('Query : '.$queryString);
+        $this->logger->debug('Query : '.$queryString);
 
-         return $queryString;
+        return $queryString;
     }
 
     public function sortObjectbyAmount(array $objects, array $settings)
@@ -245,7 +194,6 @@ class QueryHelper
 
     public function getRanks(array $objects, array $settings)
     {
-
         foreach ($objects as $object) {
             $this->logger->debug('getRanks Input Data: '.print_r($object, true));
         }
@@ -296,11 +244,8 @@ class QueryHelper
         return $objects;
     }
 
-
-
     public function getRank(array $objects, $id, array $settings)
     {
-
         foreach ($objects as $object) {
             $this->logger->debug('getRanks Input Data: '.print_r($object, true));
         }
@@ -339,9 +284,6 @@ class QueryHelper
         return false;
     }
 
-
-
-
     public function getCampaignAwards($type, $style)
     {
         $campaignawardtype = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
@@ -367,7 +309,6 @@ class QueryHelper
         return $this->getRank($this->getTeachersData($options), $id, $options);
     }
 
-
     public function getStudentRanks(array $options)
     {
         return $this->getRanks($this->getStudentsData($options), $options);
@@ -378,18 +319,18 @@ class QueryHelper
         return $this->getRank($this->getStudentsData($options), $id, $options);
     }
 
-
     /**
      * Gets teacher ID and donation amounts by Dat
      * returns object.
      */
     public function getNewTeacherAwards(array $options)
     {
-        if (isset($options['day_modifier'])) {
-            $dayModifier = $options['day_modifier'];
+        if (isset($options['before_date'])) {
+            $todaysDate = $this->convertToDay($options['before_date']);
         } else {
-            $dayModifier = false;
+            $todaysDate = $this->convertToDay(new DateTime());
         }
+
 
         $teacherDonationAmountsByDay = $this->getTeacherDonationsByDay($options);
         $teacherCampaignawards = $this->getCampaignAwards('teacher', 'level');
@@ -414,16 +355,6 @@ class QueryHelper
               $teacher['cumulative_donation_amount'] = $sumAmount;
               $this->logger->debug(print_r($teacher, true));
           }
-
-          //NOW Separate todays awards with the last award...We also kick out any future awards
-        $date = new DateTime();
-        $dateString = $date->format('Y-m-d').' 00:00:00';
-        $todaysDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-        $this->logger->debug('Date Before: '.print_r($todaysDate, true));
-
-        if ($dayModifier !== false) {
-            $todaysDate->modify($dayModifier);
-        }
 
         $todaysTeachersWithAwards = [];
         $yesterdaysTeachersWithAwards = [];
@@ -466,5 +397,10 @@ class QueryHelper
         $this->logger->debug(print_r($todaysTeachersWithAwards, true));
 
         return $todaysTeachersWithAwards;
+    }
+
+    public function convertToDay($inDate){
+      $dateString = $inDate->format('Y-m-d').' 00:00:00';
+      return DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
     }
 }
