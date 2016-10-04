@@ -6,16 +6,6 @@
         <div class="col-md-4">
             <h1>Teachers</h1>
         </div>
-        <div class="col-md-8" style="text-align:right;">
-            <div style="">
-                <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-success">
-                    <i class="glyphicon glyphicon-plus"></i>
-                    Add New</a>
-                <a href="{{ path(entity|lower ~ '_upload') }}" class="btn btn-danger">
-                    <i class="glyphicon glyphicon-upload"></i>
-                    Upload CSV</a>
-            </div>
-        </div>
         <br/>
     </div>
 
@@ -31,30 +21,16 @@
                         <th>Teacher's Name</th>
                         <th>Donations</th>
                         <th>Rank</th>
-                        {% if is_granted('ROLE_USER') %}<th class="col-md-2 col-sm-1">Actions</th>{% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for teacher in teachers %}
                         <tr>
                             <td>{% if is_granted('ROLE_USER') %}<a href="{{ path('grade_show', { 'id': teacher.grade_id }) }}">{{ teacher.grade_name}}</a>{% else %}{{ teacher.grade_name}}{% endif %}</td>
-                            <td><a href="{{ path(entity|lower ~ '_show', { 'id': teacher.id }) }}">{{ teacher.teacher_name }}</a></td>
+                            <td><a href="{{ path('public_teacher_show', { 'id': teacher.id }) }}">{{ teacher.teacher_name }}</a></td>
                             <td style="text-align:right;">{% if not teacher.donation_amount == 0 %}${{ teacher.donation_amount|number_format(2, '.', ',')}}</span>{% endif %}</td>
                             <td style="text-align:center;vertical-align: middle;"><span class="label label-{% if teacher.rank == 1 %}success{% elseif teacher.rank == 2 %}warning{% elseif teacher.rank == 3 %}primary{% else %}default{% endif %}">{{ teacher.rank}}</span></td>
-                            {% if is_granted('ROLE_USER') %}
-                            <td style="text-align:center;vertical-align: middle;">
-                                <a href="{{ path(entity|lower ~ '_show', { 'id': teacher.id }) }}" class="btn btn-xs btn-info">
-                                    <i class="glyphicon glyphicon-eye-open"></i>
-                                    <span class="hidden-xs hidden-sm">
-                                        View</span>
-                                </a>
-                                {% if is_granted('ROLE_ADMIN') %}<a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.id }) }}" class="btn btn-xs btn-warning">
-                                    <i class="glyphicon glyphicon-edit"></i>
-                                    <span class="hidden-xs hidden-sm">
-                                        Edit</span>
-                                </a>{% endif %}
                             </td>
-                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -17,7 +17,7 @@ use DateTime;
 /**
  * Teacher controller.
  *
- * @Route("/teacher")
+ * @Route("/manage/teacher")
  */
 class TeacherController extends Controller
 {

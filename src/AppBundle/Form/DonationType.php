@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use AppBundle\Entity\Student;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use AppBundle\Entity\Teacher;
 use Doctrine\ORM\EntityRepository;
 use DateTime;
@@ -29,9 +30,19 @@ class DonationType extends AbstractType
                   return $er->createQueryBuilder('u')->orderBy('u.teacher', 'ASC');
               },
               'choice_label' => 'getStudentAndTeacher',
+              'required' => false
               ))
+              ->add('teacher', EntityType::class, array(
+                'class' => 'AppBundle:Teacher',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')->orderBy('u.grade, u.teacherName', 'ASC');
+                },
+                'choice_label' => 'teacherAndGrade',
+                ))
             ->add('amount', MoneyType::class, array('required' => true, 'currency' => 'USD'))
             ->add('donated_at', DateType::class)
+            ->add('source', HiddenType::class, array('data' => 'Offlinedonation',
+));
         ;
     }
 

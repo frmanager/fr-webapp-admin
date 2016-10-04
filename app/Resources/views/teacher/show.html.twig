@@ -4,11 +4,9 @@
 {% block body %}
     {% set number_of_donations = 0 %}
     {% set donation_amount = 0 %}
-    {% for student in teacher.students %}
-        {% for donation in student.donations %}
+        {% for donation in teacher.donations %}
             {% set number_of_donations = number_of_donations + 1 %}
             {% set donation_amount = donation_amount + donation.amount %}
-        {% endfor %}
     {% endfor %}
 
     <div class="row" style="">
@@ -191,18 +189,15 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for student in teacher.students %}
-
-                                                    {% for donation in student.donations %}
+                                                {% for donation in teacher.donations %}
                                                         <tr>
                                                             <td>{{ donation.donatedAt|date("m/d/Y")  }}</td>
                                                             <td>
-                                                                <a href="{{ path('student_show', { 'id': student.id }) }}">{{ student.name }}</a>
+                                                                {% if donation.student.id is defined %}<a href="{{ path('student_show', { 'id': donation.student.id }) }}">{{ donation.student.name }}</a>{% else %}N/A{% endif %}
                                                             </td>
                                                             <td style="text-align:right;">${{ donation.amount |number_format(2, '.', ',')}}</td>
                                                             <td style="text-align:center;">{{ donation.type }}</td>
                                                         </tr>
-                                                    {% endfor %}
                                                 {% endfor %}
                                                 <tbody></table>
                                             {% else %}
