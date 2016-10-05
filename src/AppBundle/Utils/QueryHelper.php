@@ -50,7 +50,7 @@ class QueryHelper
     public function getStudentsDataQuery(array $options)
     {
       if (isset($options['before_date'])) {
-          $date = "WHERE d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
+          $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
       } else {
           $date = '';
       }
@@ -89,7 +89,7 @@ class QueryHelper
     public function getTotalDonationsQuery(array $options)
     {
       if (isset($options['before_date'])) {
-          $date = "WHERE d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
+          $date = "WHERE d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
       } else {
           $date = '';
       }
@@ -107,7 +107,7 @@ class QueryHelper
     public function getTeachersDataQuery(array $options)
     {
         if (isset($options['before_date'])) {
-            $date = "WHERE d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
+            $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
         } else {
             $date = '';
         }
@@ -142,7 +142,7 @@ class QueryHelper
     public function getTeacherDonationsByDayQuery(array $options)
     {
       if (isset($options['before_date'])) {
-          $date = "AND d.donatedAt <= '".$endDate->format('Y-m-d H:i:s')."' ";
+          $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
       } else {
           $date = '';
       }
@@ -326,9 +326,9 @@ class QueryHelper
     public function getNewTeacherAwards(array $options)
     {
         if (isset($options['before_date'])) {
-            $todaysDate = $this->convertToDay($options['before_date']);
+            $todaysDate = $this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
         } else {
-            $todaysDate = $this->convertToDay(new DateTime());
+            $todaysDate = $this->convertToDay(new DateTime())->format('Y-m-d H:i:s')."' ";;
         }
 
 

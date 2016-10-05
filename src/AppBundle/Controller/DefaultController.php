@@ -32,14 +32,14 @@ class DefaultController extends Controller
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),
-          'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array('before' => $reportDate)),
-          'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> $limit, 'before' => $reportDate)),
+          'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array('before_date' => $reportDate)),
+          'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
           'report_date' => $reportDate,
           'ranking_limit' => $limit,
           'causevoxteams' => $causevoxteams,
           'causevoxfundraisers' => $causevoxfundraisers,
-          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> $limit, 'before' => $reportDate)),
-          'totals' => $queryHelper->getTotalDonations(array('before' => $reportDate)),
+          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
+          'totals' => $queryHelper->getTotalDonations(array('before_date' => $reportDate)),
         ));
     }
 
@@ -82,7 +82,7 @@ class DefaultController extends Controller
 
         // replace this example code with whatever you need
         return $this->render('default/teacherIndex.html.twig', array(
-          'teachers' => $queryHelper->getTeacherRanks(array('limit'=> 0, 'before' => $reportDate))
+          'teachers' => $queryHelper->getTeacherRanks(array('limit'=> 0, 'before_date' => $reportDate))
         ));
 
     }
@@ -113,7 +113,7 @@ class DefaultController extends Controller
 
         return $this->render('default/teacherShow.html.twig', array(
             'teacher' => $teacher,
-            'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('limit' => 0, 'before' => $reportDate)),
+            'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('limit' => 0, 'before_date' => $reportDate)),
             'campaign_awards' => $campaignAwards,
             'campaignsettings' => $campaignSettings->getCampaignSettings(),
         ));

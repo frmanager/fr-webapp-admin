@@ -98,7 +98,7 @@
                                         <span class="label label-{% if teacher_ranking.rank == 1 %}success{% elseif teacher_ranking.rank == 2 %}warning{% elseif teacher_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ teacher_ranking.rank }}</span>
                                     </td>
                                     <td>
-                                        <a href="{{ path('public_teacher_index', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
+                                        <a href="{{ path('public_teacher_show', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
                                             -
                                             {{ teacher_ranking.teacher_name }}</a>
                                     </td>
