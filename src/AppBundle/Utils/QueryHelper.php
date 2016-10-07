@@ -326,9 +326,9 @@ class QueryHelper
     public function getNewTeacherAwards(array $options)
     {
         if (isset($options['before_date'])) {
-            $todaysDate = $this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
+            $todaysDate = $this->convertToDay($options['before_date']);
         } else {
-            $todaysDate = $this->convertToDay(new DateTime())->format('Y-m-d H:i:s')."' ";;
+            $todaysDate = $this->convertToDay(new DateTime());
         }
 
 
@@ -347,24 +347,28 @@ class QueryHelper
 
               foreach ($teacherCampaignawards as $teacherCampaignaward) {
                   if ($teacherCampaignaward->getAmount() <= $sumAmount) {
+                      $this->logger->debug('Teacher '.$thisRecord['teacher_name'].', On date: '.$teacher['donated_at']->format('Y-m-d H:i:s').', earned: '.$sumAmount.', Has Award: '.$teacherCampaignaward->getName().' [$'.$teacherCampaignaward->getAmount().']');
                       $teacher['campaignaward_id'] = $teacherCampaignaward->getId();
                       $teacher['campaignaward_name'] = $teacherCampaignaward->getName();
                       $teacher['campaignaward_amount'] = $teacherCampaignaward->getAmount();
                   }
               }
               $teacher['cumulative_donation_amount'] = $sumAmount;
-              $this->logger->debug(print_r($teacher, true));
+              //$this->logger->debug(print_r($teacher, true));
           }
 
         $todaysTeachersWithAwards = [];
         $yesterdaysTeachersWithAwards = [];
         foreach ($teacherDonationAmountsByDay as $outerLoop) {
+
             if (isset($outerLoop['campaignaward_id'])) {
+                //$this->logger->debug("Comparing Today: ".$todaysDate->format('Y-m-d H:i:s')." To outerLoop date: ".$outerLoop['donated_at']->format('Y-m-d H:i:s'));
                 if ($todaysDate == $outerLoop['donated_at']) { //Today
-                  $this->logger->debug(print_r($teacher, true));
+                    //$this->logger->debug("Found award for today: ".print_r($outerLoop, true));
                     array_push($todaysTeachersWithAwards, $outerLoop);
-                } elseif ($todaysDate > $outerLoop['donated_at']) { //Today
-                $existsFlag = false;
+                } elseif ($todaysDate > $outerLoop['donated_at']) { //Yesterday
+                    $existsFlag = false;
+                    //$this->logger->debug("Found award for yesterday: ".print_r($outerLoop, true));
                     foreach ($yesterdaysTeachersWithAwards as $key => $innerLoop) {
                         if ($innerLoop['id'] == $outerLoop['id']) {
                             $existsFlag = true;
