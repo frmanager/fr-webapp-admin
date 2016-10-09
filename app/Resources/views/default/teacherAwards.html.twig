@@ -1,0 +1,64 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-4">
+            <h1>Awards by Teacher</h1>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <hr/>
+    <div class="clearfix"></div>
+    <div class="panel panel-success">
+  <div class="panel-body">
+    NOTE: New awards are highlighted green.
+  </div>
+</div>
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            {% set teacher_id = -1 %}
+            {% set start = true %}
+            {% for teacher in teachers %}
+                {% if teacher_id != teacher.id %}
+                    {% if start == false %}
+                        </tbody></table></div>
+                    {% else %}
+                        {% set start = false %}
+                    {% endif %}
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <a href="{{ path('public_teacher_show', { 'id': teacher.id }) }}">
+                                <span class="hidden-xs">{{ teacher.grade_name }}
+                                    -</span>
+                                {{ teacher.teacher_name }}</a>
+                        </div>
+                        <table class="table table-bordered table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="col-xs-4">Date Earned</th>
+                                    <th class="col-xs-3">Total Donations</th>
+                                    <th class="col-xs-5">Award Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                      {% endif %}{% set teacher_id = teacher.id %}
+                <tr {% if teacher.donated_at == report_date %} class="success" {% endif %}>
+                      <td>{{ teacher.donated_at|date("l, F d") }}</td>
+                      <td>${{ teacher.cumulative_donation_amount|number_format(2, '.', ',') }}
+                    </td>
+                    <td>${{ teacher.campaignaward_amount }}
+                        -
+                        {{ teacher.campaignaward_name }}</td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script></script>
+{% endblock %}

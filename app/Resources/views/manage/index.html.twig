@@ -59,27 +59,30 @@
                                 <th>Teacher</th>
                                 <th>Total Donations</th>
                                 <th>Award Level</th>
+                               <th>Date Earned</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for teacher in new_teacher_awards %}
-                                <tr>
-                                    <td>
-                                        {% if is_granted('ROLE_USER') %}
-                                            <a href="{{ path('teacher_show', { 'id': teacher.id }) }}">{{ teacher.grade_name }}
-                                                -
-                                                {{ teacher.teacher_name }}</a>{% else %}{{ teacher.grade_name }}
-                                            -
-                                            {{ teacher.teacher_name }}}{% endif %}
-                                    </td>
-                                    <td>${{ teacher.cumulative_donation_amount|number_format(2, '.', ',') }}
-                                        <small>(<span style="color:#5cb85c;">+{{ teacher.donation_amount|number_format(2, '.', ',') }}</span>)</small>
-                                    </td>
-                                    <td>${{ teacher.campaignaward_amount }}
-                                        -
-                                        {{ teacher.campaignaward_name }}</td>
-                                </tr>
-                            {% endfor %}
+                          {% for teacher in new_teacher_awards %}
+                              <tr>
+                                  <td>
+
+                                      <a href="{{ path('public_teacher_show', { 'id': teacher.id }) }}">
+                                          <span class="hidden-xs">{{ teacher.grade_name }}
+                                              -</span>
+                                          {{ teacher.teacher_name }}</a>
+                                  </td>
+                                  <td>${{ teacher.cumulative_donation_amount|number_format(2, '.', ',') }}
+                                      <span class="hidden-xs">
+                                          <small>(<span style="color:#5cb85c;">+{{ teacher.donation_amount|number_format(2, '.', ',') }}</span>)</small>
+                                      </span>
+                                  </td>
+                                  <td>${{ teacher.campaignaward_amount }}
+                                      -
+                                      {{ teacher.campaignaward_name }}</td>
+                                  <td>{{ teacher.donated_at|date("D, M d") }}</td>
+                              </tr>
+                          {% endfor %}
                         </tbody>
                     </table>
                 {% else %}

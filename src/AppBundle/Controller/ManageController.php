@@ -29,7 +29,7 @@ class ManageController extends Controller
         // replace this example code with whatever you need
         return $this->render('manage/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),
-          'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array()),
+          'new_teacher_awards' => $queryHelper->getTeacherAwards(array()),
           'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> 10)),
           'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> 10)),
           'totals' => $queryHelper->getTotalDonations(array()),
