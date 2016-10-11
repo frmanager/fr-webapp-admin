@@ -32,7 +32,7 @@ class DefaultController extends Controller
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', array(
           'campaign_settings' => $campaignSettings->getCampaignSettings(),
-          'new_teacher_awards' => $queryHelper->getNewTeacherAwards(array('before_date' => $reportDate)),
+          'new_teacher_awards' => $queryHelper->getTeacherAwards(array('before_date' => $reportDate, 'limit' => 5, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
           'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
           'report_date' => $reportDate,
           'ranking_limit' => $limit,
