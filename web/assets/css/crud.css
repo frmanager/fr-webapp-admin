@@ -25,6 +25,10 @@ body {
     color: #555;
 }
 
+.body-container .panel .panel-heading a {
+    color: #fff;
+}
+
 .back-to-top {
     cursor: pointer;
     position: fixed;

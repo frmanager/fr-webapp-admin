@@ -49,11 +49,11 @@ class QueryHelper
 
     public function getStudentsDataQuery(array $options)
     {
-      if (isset($options['before_date'])) {
-          $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
-      } else {
-          $date = '';
-      }
+        if (isset($options['before_date'])) {
+            $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
+        } else {
+            $date = '';
+        }
 
         if (isset($options['id'])) {
             $whereId = 'WHERE s.id = '.$options['id'];
@@ -61,9 +61,10 @@ class QueryHelper
             $whereId = '';
         }
 
-        $queryString = sprintf("SELECT s.id as id,
+        $queryString = sprintf('SELECT s.id as id,
                       s.name as student_name,
                       t.id as teacher_id,
+                      t.email as teacher_email,
                       t.teacherName as teacher_name,
                       g.id as grade_id,
                       g.name as grade_name,
@@ -79,7 +80,7 @@ class QueryHelper
                  WITH g.id = t.grade
                    %s
              GROUP BY s.id
-             ORDER BY donation_amount DESC", $date, $whereId);
+             ORDER BY donation_amount DESC', $date, $whereId);
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -88,16 +89,16 @@ class QueryHelper
 
     public function getTotalDonationsQuery(array $options)
     {
-      if (isset($options['before_date'])) {
-          $date = "WHERE d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
-      } else {
-          $date = '';
-      }
+        if (isset($options['before_date'])) {
+            $date = "WHERE d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
+        } else {
+            $date = '';
+        }
 
-        $queryString = sprintf("SELECT sum(d.amount) as donation_amount,
+        $queryString = sprintf('SELECT sum(d.amount) as donation_amount,
                                        count(d.amount) as total_donations
                                   FROM AppBundle:Donation d
-                                  %s", $date);
+                                  %s', $date);
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -118,8 +119,9 @@ class QueryHelper
             $whereId = '';
         }
 
-        $queryString = sprintf("SELECT t.id as id,
+        $queryString = sprintf('SELECT t.id as id,
                                        t.teacherName as teacher_name,
+                                       t.email as teacher_email,
                                        g.id as grade_id,
                                        g.name as grade_name,
                                        sum(d.amount) as donation_amount,
@@ -132,7 +134,7 @@ class QueryHelper
                                   WITH g.id = t.grade
                                     %s
                               GROUP BY t.id
-                              ORDER BY donation_amount DESC", $date, $whereId);
+                              ORDER BY donation_amount DESC', $date, $whereId);
 
         $this->logger->debug('Query : '.$queryString);
 
@@ -141,14 +143,21 @@ class QueryHelper
 
     public function getTeacherDonationsByDayQuery(array $options)
     {
-      if (isset($options['before_date'])) {
-          $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
-      } else {
-          $date = '';
-      }
+        if (isset($options['before_date'])) {
+            $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
+        } else {
+            $date = '';
+        }
 
-        $queryString = sprintf("SELECT t.id as id,
+        if (isset($options['id'])) {
+            $whereId = 'WHERE t.id = '.$options['id'];
+        } else {
+            $whereId = '';
+        }
+
+        $queryString = sprintf('SELECT t.id as id,
                         t.teacherName as teacher_name,
+                        t.email as teacher_email,
                         g.id as grade_id,
                         g.name as grade_name,
                         d.donatedAt as donated_at,
@@ -160,36 +169,49 @@ class QueryHelper
                       %s
                    JOIN AppBundle:Grade g
                    WITH g.id = t.grade
+                      %s
                GROUP BY d.donatedAt, t.id
-               ORDER BY t.id ASC, d.donatedAt ASC", $date);
+               ORDER BY t.id ASC, d.donatedAt ASC', $date, $whereId);
 
         $this->logger->debug('Query : '.$queryString);
 
         return $queryString;
     }
 
-    public function sortObjectbyAmount(array $objects, array $settings)
+
+    /*
+    *
+    * This loops trhough the "order_by" array in reverse and sorts it
+    *
+    */
+    public function sortObject(array $objects, array $settings)
     {
-        if (isset($settings['amount_field'])) {
-            $amountField = $settings['amount_field'];
+
+        $this->logger->debug('sortObject Settings: '.print_r($settings, true));
+        if (isset($settings['order_by'])) {
+            $order_by = $settings['order_by'];
+
         } else {
-            $amountField = 'donation_amount';
+           //Order By must be set
+           return false;
         }
 
-        $listOfAmounts = [];
-        foreach ($objects as $key => $value) {
-            $this->logger->debug('Before sortObjectbyAmount: row ['.$key.'] - '.print_r($value, true));
-            $listOfAmounts[$key] = $value[$amountField];
-        }
-        arsort($listOfAmounts);
+          $tempObjectArray = [];
 
-        $newObjectArray = [];
-        foreach ($listOfAmounts as $key => $value) {
-            $this->logger->debug('After sortObjectbyAmount: row ['.$key.'] - '.print_r($value, true));
-            array_push($newObjectArray, $objects[$key]);
-        }
+          $listOfAmounts = [];
+          foreach ($objects as $key => $value) {
+              $this->logger->debug('Before sortObject: row ['.$key.'] - '.print_r($value, true));
+              $listOfAmounts[$key] = $value[$order_by['field']];
+          }
+          arsort($listOfAmounts);
 
-        return $objects;
+          $newObjectArray = [];
+          foreach ($listOfAmounts as $key => $value) {
+              $this->logger->debug('After sortObject: row ['.$key.'] - '.print_r($value, true));
+              array_push($newObjectArray, $objects[$key]);
+          }
+
+        return $newObjectArray;
     }
 
     public function getRanks(array $objects, array $settings)
@@ -211,7 +233,7 @@ class QueryHelper
         }
 
         //Sorting DESC
-        $sortedObjects = $this->sortObjectbyAmount($objects, $settings);
+        $sortedObjects = $this->sortObject($objects, array('order_by' => array('field' => 'donation_amount', 'order' => "asc")));
 
         $rank = 0;
         $amount = 9999999999999999999; //some astronomical number
@@ -263,7 +285,7 @@ class QueryHelper
         }
 
         //Sorting DESC
-        $sortedObjects = $this->sortObjectbyAmount($objects, $settings);
+        $sortedObjects = $this->sortObject($objects, array('order_by' => array('field' => 'donation_amount', 'order' => "asc")));
 
         $rank = 0;
         $amount = 9999999999999999999; //some astronomical number
@@ -320,7 +342,7 @@ class QueryHelper
     }
 
     /**
-     * Gets teacher ID and donation amounts by Dat
+     * Gets teacher ID and donation amounts by Date
      * returns object.
      */
     public function getNewTeacherAwards(array $options)
@@ -331,36 +353,11 @@ class QueryHelper
             $todaysDate = $this->convertToDay(new DateTime());
         }
 
-
-        $teacherDonationAmountsByDay = $this->getTeacherDonationsByDay($options);
-        $teacherCampaignawards = $this->getCampaignAwards('teacher', 'level');
-
-          //ADDING AWARD DATA TO $teacherDonationAmountsByDay. WE WILL COMPARE THIS AGAINST TODAYS TOTALS
-          foreach ($teacherDonationAmountsByDay as &$teacher) {
-              $sumAmount = 0;
-            //GETTING CUMULATIVE SUM FOR EACH DAY
-            foreach ($teacherDonationAmountsByDay as $thisRecord) {
-                if ($teacher['id'] == $thisRecord['id'] && $teacher['donated_at'] >= $thisRecord['donated_at']) {
-                    $sumAmount += $thisRecord['donation_amount'];
-                }
-            }
-
-              foreach ($teacherCampaignawards as $teacherCampaignaward) {
-                  if ($teacherCampaignaward->getAmount() <= $sumAmount) {
-                      $this->logger->debug('Teacher '.$thisRecord['teacher_name'].', On date: '.$teacher['donated_at']->format('Y-m-d H:i:s').', earned: '.$sumAmount.', Has Award: '.$teacherCampaignaward->getName().' [$'.$teacherCampaignaward->getAmount().']');
-                      $teacher['campaignaward_id'] = $teacherCampaignaward->getId();
-                      $teacher['campaignaward_name'] = $teacherCampaignaward->getName();
-                      $teacher['campaignaward_amount'] = $teacherCampaignaward->getAmount();
-                  }
-              }
-              $teacher['cumulative_donation_amount'] = $sumAmount;
-              //$this->logger->debug(print_r($teacher, true));
-          }
+        $teacherDonationAmountsByDay = $this->getTeacherAwards($options);
 
         $todaysTeachersWithAwards = [];
         $yesterdaysTeachersWithAwards = [];
         foreach ($teacherDonationAmountsByDay as $outerLoop) {
-
             if (isset($outerLoop['campaignaward_id'])) {
                 //$this->logger->debug("Comparing Today: ".$todaysDate->format('Y-m-d H:i:s')." To outerLoop date: ".$outerLoop['donated_at']->format('Y-m-d H:i:s'));
                 if ($todaysDate == $outerLoop['donated_at']) { //Today
@@ -403,8 +400,93 @@ class QueryHelper
         return $todaysTeachersWithAwards;
     }
 
-    public function convertToDay($inDate){
-      $dateString = $inDate->format('Y-m-d').' 00:00:00';
-      return DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
+    /**
+     * Gets the date that various awards were met
+     * returns object.
+     */
+    public function getTeacherAwards(array $options)
+    {
+
+        $teacherDonationAmountsByDay = $this->getTeacherDonationsByDay($options);
+        $teacherCampaignawards = $this->getCampaignAwards('teacher', 'level');
+
+          //ADDING AWARD DATA TO $teacherDonationAmountsByDay. WE WILL COMPARE THIS AGAINST TODAYS TOTALS
+          $loaddedAwardArray = [];
+
+          foreach ($teacherDonationAmountsByDay as $teacher) {
+              $sumAmount = 0;
+             //GETTING CUMULATIVE SUM FOR EACH DAY
+              foreach ($teacherDonationAmountsByDay as $thisRecord) {
+                  if ($teacher['id'] == $thisRecord['id'] && $teacher['donated_at'] >= $thisRecord['donated_at']) {
+                      $sumAmount += $thisRecord['donation_amount'];
+                  }
+              }
+              $teacher['cumulative_donation_amount'] = $sumAmount;
+              //$this->logger->debug(print_r($teacher, true));
+
+              foreach ($teacherCampaignawards as $teacherCampaignaward) {
+                  if ($teacherCampaignaward->getAmount() <= $sumAmount) {
+                      $teacher['campaignaward_id'] = $teacherCampaignaward->getId();
+                      $teacher['campaignaward_name'] = $teacherCampaignaward->getName();
+                      $teacher['campaignaward_amount'] = $teacherCampaignaward->getAmount();
+                      array_push($loaddedAwardArray, $teacher);
+                  }
+              }
+
+          }
+
+        foreach ($loaddedAwardArray as $key => $outerLoop) {
+            foreach ($loaddedAwardArray as $innerLoop) {
+                //If award already happend on a previous day, we remove it
+              if (!isset($outerLoop['campaignaward_id'])){
+                  unset($loaddedAwardArray[$key]);
+              }else if ($innerLoop['id'] == $outerLoop['id'] && $innerLoop['campaignaward_id'] == $outerLoop['campaignaward_id'] && $innerLoop['donated_at'] < $outerLoop['donated_at']) {
+                  unset($loaddedAwardArray[$key]);
+              }
+            }
+        }
+
+          $this->logger->debug('Classes with Awards before today!');
+          foreach ($loaddedAwardArray as $outerLoop) {
+              $this->logger->debug(print_r($outerLoop, true));
+          }
+
+
+          if (isset($options['order_by'])) {
+              $loaddedAwardArray = $this->sortObject($loaddedAwardArray, $options);
+          } else {
+              $order_by = [];
+          }
+
+          if (isset($options['limit'])) {
+              $limit = $options['limit'];
+          } else {
+              $limit = 0;
+          }
+
+
+          if ($limit > 0) {
+              $counter = 0;
+              $newArray = [];
+              foreach ($loaddedAwardArray as $object) {
+                  if ($counter < $limit) {
+                      array_push($newArray, $object);
+                  }else{
+                    break;
+                  }
+                  ++$counter;
+              }
+              $loaddedAwardArray = $newArray;
+          }
+
+
+        return $loaddedAwardArray;
+    }
+
+    public function convertToDay($inDate)
+    {
+        $dateString = $inDate->format('Y-m-d').' 00:00:00';
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
     }
 }
