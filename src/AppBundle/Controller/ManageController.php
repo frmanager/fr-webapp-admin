@@ -59,7 +59,7 @@ class ManageController extends Controller
         $logger->debug("New Awards for: ".print_r($newAwards, true));
         if(isset($newAwards) && !empty($newAwards) && count($newAwards) > 0){
           if (strcmp($this->container->get('kernel')->getEnvironment(), "dev") == 0){
-            $toAddress = 'davidlarrimore@gmail.com';
+            $toAddress = 'funrun@lrespto.org';
           }else{
             $toAddress = $teacher->getEmail();
           }
@@ -67,8 +67,8 @@ class ManageController extends Controller
           $logger->info("Sending Daily Email to: ".$teacher->getTeacherName());
           $message = \Swift_Message::newInstance()
                   ->setSubject('New Fun Run Award Level Reached!')
-                  ->setFrom('funrun@lrespto.org')
-                  ->setCc('funrun@lrespto.org')
+                  ->setFrom('support@lrespto.org')
+                  ->setCc('funrun@lrespto.org', 'support@lrespto.org')
                   ->setTo($toAddress)
                   ->setBody(
                       $this->renderView(
