@@ -68,6 +68,7 @@ class ManageController extends Controller
           $message = \Swift_Message::newInstance()
                   ->setSubject('New Fun Run Award Level Reached!')
                   ->setFrom('funrun@lrespto.org')
+                  ->setCc('funrun@lrespto.org')
                   ->setTo($toAddress)
                   ->setBody(
                       $this->renderView(
