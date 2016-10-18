@@ -294,11 +294,12 @@ class DonationController extends Controller
                         unset($studentId);
                         unset($errorMessage);
                         unset($student);
+                        unset($studentIdAlt);
                         unset($grade);
                         unset($teacher);
                         $teamPageFlag = false;
 
-                        if (strcmp($fileType, 'Causevoxdonation') == 0 && isset($item['donation_page'])) {
+                        if (strcmp($fileType, 'Causevoxdonation') == 0 && isset($item['donation_page']) && !strcmp($item['donation_page'], 'none') == 0) {
                             $urlString = substr($item['donation_page'], 0, 5);
                             if (strcmp($urlString, '/team') == 0) {
                                 $teamPageFlag = true;
@@ -375,10 +376,11 @@ class DonationController extends Controller
                             }
                         }
 
-                        if (!$failure && !isset($studentId) && !isset($teacherId)) {
+                        //Here is our backup/Alt logic
+                        if (!$failure) {
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
 
-                            if (empty($grade)) {
+                            if (empty($grade) && !isset($studentId) && !$teamPageFlag) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
@@ -390,14 +392,14 @@ class DonationController extends Controller
                             }
                         }
 
-                        if (!$failure && !isset($studentId) && !$teamPageFlag) {
+                        if (!$failure && isset($grade)) {
                             $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
                             $queryString = sprintf("SELECT u.id FROM AppBundle:Teacher u WHERE u.teacherName = '%s'", $item['teachers_name']);
                             $result = $em->createQuery($queryString)->getResult();
                             if (!empty($result)) {
                                 $teacherId = $result[0]['id'];
                                 $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found teacher "'.$item['teachers_name'].'" [#'.$teacherId.'] using name "'.$item['teachers_name'].'"');
-                            } else {
+                            } else if(empty($result) && !isset($studentId) && !isset($teacherId) && !$teamPageFlag) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
@@ -410,35 +412,39 @@ class DonationController extends Controller
                         }
 
                         //Here is our find student logic. We try a lot of different methods to try and find it....
-                        if (!$failure && !isset($studentId)) {
-                            if (!isset($studentId)) {
+                        if (!$failure && isset($grade) && isset($teacher)) {
+                            if (!isset($studentIdAlt)) {
                                 $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacherId, $item['students_name']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
-                                    $studentId = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using provided name');
+                                    $studentIdAlt = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIdAlt.'] using provided name');
                                 }
                             }
 
-                            if (!isset($studentId)) {
+                            if (!isset($studentIdAlt)) {
                                 $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacherId, $item['students_first_name']);
                                 $result = $em->createQuery($queryString)->getResult();
                                 if (!empty($result)) {
-                                    $studentId = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using first name fuzzy match "'.$item['students_first_name'].'"');
+                                    $studentIdAlt = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIdAlt.'] using first name fuzzy match "'.$item['students_first_name'].'"');
                                 }
                             }
 
-                            if (!isset($studentId)) {
+                            if (!isset($studentIdAlt)) {
                                 $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.teacher = '%s' AND u.name = '%s'", $teacherId, $item['students_name_with_initial']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
-                                    $studentId = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using first name + last initial fuzzy match "'.$item['students_name_with_initial'].'"');
+                                    $studentIdAlt = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIdAlt.'] using first name + last initial fuzzy match "'.$item['students_name_with_initial'].'"');
                                 }
                             }
+
+                          if(isset($studentIdAlt)){
+                            $studentId = $studentIdAlt;
+                          }
 
                           //If it is not a team page and we didn't find a student, it is a failure
                           if (!isset($studentId) && !$teamPageFlag) {
