@@ -9,9 +9,9 @@
         <title>
             {% block title %}{% endblock %}
         </title>
-        <link rel="stylesheet" href="http://manage.funrun.lrespto.org/assets/vendor/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="http://manage.funrun.lrespto.org/assets/css/superhero.css">
-        <link rel="stylesheet" href="http://manage.funrun.lrespto.org/assets/css/crud.css">
+        <link rel="stylesheet" href="{{ asset(url('homepage') ~ 'assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset(url('homepage') ~ 'assets/css/superhero.css') }}">
+        <link rel="stylesheet" href="{{ asset(url('homepage') ~ 'assets/css/crud.email.css') }}">
 
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 
@@ -71,19 +71,18 @@
 
 </div>
 
-<script type='application/javascript' src="http://manage.funrun.lrespto.org/assets/vendor/jquery/dist/jquery.min.js"></script>
-<script type='application/javascript' src="http://manage.funrun.lrespto.org/assets/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type='application/javascript' src="{{ asset(url('homepage') ~ 'assets/vendor/jquery/dist/jquery.min.js') }}" ></script>
+<script type='application/javascript' src="{{ asset(url('homepage') ~ 'assets/vendor/bootstrap/dist/js/bootstrap.min.js') }}" ></script>
+<script type='application/javascript' src="{{ asset(url('homepage') ~ 'assets/vendor/fastclick/lib/fastclick.js') }}" ></script>
+<script type='application/javascript' src="{{ asset(url('homepage') ~ 'assets/vendor/moment/min/moment.min.js') }}" ></script>
+<script type='application/javascript' src="{{ asset(url('homepage') ~ 'assets/vendor/matchheight/dist/jquery.matchHeight-min.js') }}" ></script>
 
-<script type='application/javascript' src="http://manage.funrun.lrespto.org/assets/vendor/fastclick/lib/fastclick.js"></script>
-<script type='application/javascript' src="http://manage.funrun.lrespto.org/assets/vendor/moment/min/moment.min.js"></script>
-<script type='application/javascript' src="http://manage.funrun.lrespto.org/assets/vendor/matchheight/dist/jquery.matchHeight-min.js"></script>
-<script type='application/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
-<script type="application/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/fh-3.1.2/r-2.1.0/sc-1.4.2/datatables.min.js"></script>
-<script type='application/javascript' src="http://manage.funrun.lrespto.org/assets/vendor/jquery.countdown/dist/jquery.countdown.min.js"></script>
+<script type='application/javascript' src="{{ asset(url('homepage') ~ 'assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}" ></script>
+
 {% block javascripts %}{% endblock %}
 
 <!-- IE 10 Viewport Bug Fix -->
-<script src="http://manage.funrun.lrespto.org/assets/js/ie10-viewport-bug-workaround.js') }}"></script>
+<script type='application/javascript' src="{{ asset(url('homepage') ~ 'assets/js/ie10-viewport-bug-workaround.js') }}" ></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
