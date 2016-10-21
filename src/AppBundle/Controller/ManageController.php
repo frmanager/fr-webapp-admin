@@ -51,11 +51,15 @@ class ManageController extends Controller
 
         $reportDate = $queryHelper->convertToDay(new DateTime());
 
+        if(null !== $request->query->get('date_modify')){
+          $reportDate->modify($request->query->get('date_modify').' day');
+        }
+
         $logger->info("Sending Daily Email");
         $emailCount = 0;
         foreach ($teachers as $teacher) {
         unset($newAwards);
-        $newAwards = $queryHelper->getNewTeacherAwards(array('id' => $teacher->getId(), 'order_by' => array('field' => 'donation_amount',  'order' => 'asc')));
+        $newAwards = $queryHelper->getNewTeacherAwards(array('before_date' => $reportDate, 'id' => $teacher->getId(), 'order_by' => array('field' => 'donation_amount',  'order' => 'asc')));
         $logger->debug("New Awards for: ".print_r($newAwards, true));
         if(isset($newAwards) && !empty($newAwards) && count($newAwards) > 0){
           if (strcmp($this->container->get('kernel')->getEnvironment(), "dev") == 0){
