@@ -46,7 +46,9 @@ vendor/beelab/bowerphp/bin/bowerphp install
 ## Running Locally
 
 
-  php bin/console server:start
+```
+php bin/console server:start
+```
 
 URL:[localhost:8000](localhost:8000)
 
@@ -59,48 +61,59 @@ The Phing configuration is dynamic and will support any amount of environments. 
 1. clone branch to remote location that you want to deploy to. For example, I cloned "test" to my testfunrunfbapp directory but it is test....yeah yeah.....). So I just ran some shell magic to initialize the environment.
 
 
-    git clone https://github.com/lrespto/funrun-symfony2.git ./
-    git checkout dev  # <-- name of the branch I wanted
-    composer update # <-- for some reason, phing couldn't run this the first time.
-    composer install # <-- for some reason, phing couldn't run this the first time.
+```
+git clone https://github.com/lrespto/funrun-symfony2.git ./
+git checkout dev  # <-- name of the branch I wanted
+composer update # <-- for some reason, phing couldn't run this the first time.
+composer install # <-- for some reason, phing couldn't run this the first time.
+```
+
 
 2. Setup the build.properties file under "config" folder
 
-  environments=test,production
+```
+environments=test,production
 
-  test.hostname=hostname for SSH
-  test.ftphostname=hostname for FTP
-  test.ftpport=21
-  test.username=username
-  test.password=super_secure_password
-  test.documentroot=testfunrunfbapp.lrespto.org
-  test.repositoryname=test
+test.hostname=hostname for SSH
+test.ftphostname=hostname for FTP
+test.ftpport=21
+test.username=username
+test.password=super_secure_password
+test.documentroot=testfunrunfbapp.lrespto.org
+test.repositoryname=test
 
-  githubApiKey=longstring
-
+githubApiKey=longstring
+```
 
 
 ### .bash_profile on dreamhost
 
-
-  umask 002
-  PS1='[\h]$ '
-  export PATH=/usr/local/php56/bin:$PATH
-  export PATH=/home/<USERNAME>/.php/composer:$PATH
-  export SYMFONY_ENV=prod
-  export BOWERPHP_TOKEN=<GITHUB_API_KEY>
-
+```
+umask 002
+PS1='[\h]$ '
+export PATH=/usr/local/php56/bin:$PATH
+export PATH=/home/<USERNAME>/.php/composer:$PATH
+export SYMFONY_ENV=prod
+export BOWERPHP_TOKEN=<GITHUB_API_KEY>
+```
 
 
 ### Update entity getters and setters from database
 
-  php bin/console doctrine:generate:entities AppBundle:Donation
+
+
+```
+php bin/console doctrine:generate:entities AppBundle:Donation
+```
+
 
 
 ### Update database from entities
 
-  php bin/console doctrine:schema:update --force
 
+```
+php bin/console doctrine:schema:update --force
+```
 
 
 ## TODO: TimeZone
