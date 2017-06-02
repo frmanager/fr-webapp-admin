@@ -38,9 +38,11 @@ composer update
 
 
 ```
-export BOWERPHP_TOKEN={(Insert Github API Token)[https://github.com/settings/tokens]};
+export BOWERPHP_TOKEN=<GITHUB_API_KEY>;
 vendor/beelab/bowerphp/bin/bowerphp install
 ```
+
+Go (here)[https://github.com/settings/tokens] to create a Github API Token. This will fail without one due to call limits on the public api.
 
 
 ## Running Locally
@@ -82,7 +84,7 @@ test.password=super_secure_password
 test.documentroot=testfunrunfbapp.lrespto.org
 test.repositoryname=test
 
-githubApiKey=longstring
+githubApiKey=<GITHUB_API_KEY>
 ```
 
 
