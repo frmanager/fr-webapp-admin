@@ -26,15 +26,21 @@ This is a SYMFONY2 PHP based application designed to be run on a Dreamhost Share
 2. Setup app/config/parameters.yml
 3. Install PHP packages via composer
 
-    composer self-update
-    composer install
-    composer update
+
+```
+composer self-update
+composer install
+composer update
+```
+
 
 4. install Javascript packages via Bower
 
-    export BOWERPHP_TOKEN={(Insert Github API Token)[https://github.com/settings/tokens]};
-    vendor/beelab/bowerphp/bin/bowerphp install
 
+```
+export BOWERPHP_TOKEN={(Insert Github API Token)[https://github.com/settings/tokens]};
+vendor/beelab/bowerphp/bin/bowerphp install
+```
 
 
 ## Running Locally
