@@ -1,44 +1,49 @@
 #LRES PTO Superhero Fun Run Management Website
-This single page application is used to support the LRES PTO Fun Run Facebook App which is used to share information on the status and progress of the LRES PTO Fun Run donation drive.
+This Symphony2 Application is used to manage the "LRES PTO" FunRun, which is a school fundraiser where classes and students compete to raise donations for the PTO. This portal handles the daily data ingest, analytics, calculations, and notifications.
 
-##About
-
-This project started as a fork from another project designed around a single page PHP Slim application to be put on shared hosting. It has now matured to include Test Automation and Continuous Integration principles.
-
+The ultimate goal will be for the system to be developed in an "Open Source" spirit where other schools can either leverage the same system, or download and configure the application to use for their own purposes without much customization.
 
 
 ##Setup
 
-This project requires configuration files (See below) and data files (pulled from CauseVox).
+This is a SYMFONY2 PHP based application designed to be run on a Dreamhost Shared server and MYSQL server. This is important because it proves that shared hosting (which can sometimes be free for non-profits) can set this up and host it for free.
 
+
+##Components
+
+- PHP 5.6 or above
+- Composer (PHP Package Management)
+- Bower (JS Package Management)
+- RDBMS (We use MySQL)
+- Phing (For CI/CD)
+- pear (Net_FTP) (Specific for Dreamhost)
 
 
 ##Configuration
 
-This project requires configuration files (See below) and data files (pulled from CauseVox).
+
+1. Download repository from Github
+2. Setup app/config/parameters.yml
+3. Install PHP packages via composer
+
+    composer self-update
+    composer install
+    composer update
+
+4. install Javascript packages via Bower
+
+    export BOWERPHP_TOKEN={(Insert Github API Token)[https://github.com/settings/tokens]};
+    vendor/beelab/bowerphp/bin/bowerphp install
 
 
 
-
-
-##Dependencies
-For the most part, development runs on vagrant homestead, which reduces a lot of the project dependencies. However, if you wish to do some CI, you need some additional tools/libraries:
-
-1. Git
-2. phing
-3. pear (Net_FTP)
-4. MySQL
-
-
-
-
-
-##Run locally
+## Running Locally
 
 
   php bin/console server:start
 
 URL:[localhost:8000](localhost:8000)
+
 
 
 ##CI/CD (Phing) Configuration

@@ -19,3 +19,7 @@
 /web/assets/vendor/
 build.properties
 /.vagrant/
+/nbproject/private/
+nbproject/project.properties
+
+nbproject/project.xml
