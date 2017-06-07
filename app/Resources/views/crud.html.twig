@@ -1,3 +1,8 @@
+{% if app.session.get('campaign') is defined %}
+{% set sessionCampaign = app.session.get('campaign') %}
+{% else %}
+{% set sessionCampaign = null %}
+{% endif %}
 <html>
     <head>
         <base target="_parent" />
@@ -58,14 +63,14 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="{{ path('homepage') }}" class="navbar-brand">FUN RUN</a>
+                    <a href="{{ path('homepage') }}" class="navbar-brand">{FR}</a>
                 </div>
                 <div class="collapse navbar-collapse navbar-x-collapse">
                     <ul class="nav navbar-nav">
-                        {% if is_granted('ROLE_USER') %}
-                            <li class="dropdown {% if app.request.attributes.get('_route') in ['manage_index', 'campaignsetting_index', 'campaignaward_index', 'donation_index', 'causevoxfundraiser_index','causevoxteam_index']%}active{% endif %}">
+                        {% if is_granted('ROLE_USER') and sessionCampaign.name is defined %}
+                            <li class="dropdown {% if app.request.attributes.get('_route') in ['manage_index', 'campaign_index', 'campaign_edit', 'campaignaward_index', 'donation_index', 'causevoxfundraiser_index','causevoxteam_index']%}active{% endif %}">
                                 <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    Manage Campaign</span>
+                                    {{ sessionCampaign.name }}</span>
                             </strong>
                             <span class="caret"></span>
                         </a>
@@ -76,18 +81,17 @@
                                     Dashboard
                                 </a>
                             </li>
-                            <li>
-                                <a href="http://funrun.lrespto.org" target="_blank">
-                                    <span class="glyphicon glyphicon-new-window"></span>
-                                    Go to Causevox Site
-                                </a>
+                            <li {% if app.request.attributes.get('_route') == 'campaign_edit'%} class="active" {% endif %}>
+                                <a href="{{ path('campaign_edit' , { 'id': sessionCampaign.id }) }}">
+                                    <span class="glyphicon glyphicon-cog"></span>
+                                    Edit Campaign</a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'campaign_index'%} class="active" {% endif %}>
+                                <a href="{{ path('campaign_index') }}">
+                                    <span class="glyphicon glyphicon-refresh"></span>
+                                    Switch Campaign</a>
                             </li>
                             <li role="separator" class="divider"></li>
-                            <li {% if app.request.attributes.get('_route') == 'campaignsetting_index'%} class="active" {% endif %}>
-                                <a href="{{ path('campaignsetting_index') }}">
-                                    <span class="glyphicon glyphicon-cog"></span>
-                                    Campaign Settings</a>
-                            </li>
                             <li {% if app.request.attributes.get('_route') == 'campaignaward_index'%} class="active" {% endif %}>
                                 <a href="{{ path('campaignaward_index') }}">
                                     <span class="glyphicon glyphicon-star"></span>
@@ -99,6 +103,12 @@
                             </li>
                             <li role="separator" class="divider"></li>
                             <li class="dropdown-header">CauseVox</li>
+                            <li>
+                                <a href="http://funrun.lrespto.org" target="_blank">
+                                    <span class="glyphicon glyphicon-new-window"></span>
+                                    Go to Causevox Site
+                                </a>
+                            </li>
                             <li {% if app.request.attributes.get('_route') == 'causevoxteam_index'%} class="active" {% endif %}>
                                 <a href="{{ path('causevoxteam_index') }}">
                                     <span class="glyphicon glyphicon-apple"></span>

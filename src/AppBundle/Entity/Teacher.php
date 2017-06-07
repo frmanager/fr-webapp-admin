@@ -33,6 +33,17 @@ class Teacher
 
 
     /**
+     * @var Campaign
+     *
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="teachers")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
+     */
+    private $campaign;
+
+
+
+    /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -291,5 +302,29 @@ class Teacher
     public function getDonations()
     {
         return $this->donations;
+    }
+
+    /**
+     * Set campaign
+     *
+     * @param \AppBundle\Entity\Campaign $campaign
+     *
+     * @return Teacher
+     */
+    public function setCampaign(\AppBundle\Entity\Campaign $campaign = null)
+    {
+        $this->campaign = $campaign;
+
+        return $this;
+    }
+
+    /**
+     * Get campaign
+     *
+     * @return \AppBundle\Entity\Campaign
+     */
+    public function getCampaign()
+    {
+        return $this->campaign;
     }
 }

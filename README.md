@@ -42,7 +42,7 @@ export BOWERPHP_TOKEN=<GITHUB_API_KEY>;
 vendor/beelab/bowerphp/bin/bowerphp install
 ```
 
-Go (here)[https://github.com/settings/tokens] to create a Github API Token. This will fail without one due to call limits on the public api.
+Go [here](https://github.com/settings/tokens) to create a Github API Token. This will fail without one due to call limits on the public api.
 
 
 ## Running Locally

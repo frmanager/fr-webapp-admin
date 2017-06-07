@@ -24,21 +24,27 @@ SET time_zone = "+00:00";
 -- Dumping data for table `campaignawardstyle`
 --
 
+/*
 INSERT INTO `campaignawardstyle` (`id`, `display_name`, `value`, `description`) VALUES
 (1, 'Rank', 'place', ''),
 (2, 'Donation Level', 'level', 'award received if (Teacher/Student) reach donation amount');
+/*
 
 --
 -- Dumping data for table `campaignawardtype`
 --
 
+/*
 INSERT INTO `campaignawardtype` (`id`, `display_name`, `value`, `description`) VALUES
 (1, 'Teacher/Class', 'teacher', ''),
 (2, 'Student/Individual', 'student', '');
+/*
+
 --
 -- Dumping data for table `campaignaward`
 --
 
+/*
 INSERT INTO `campaignaward` (`id`, `campaignawardtype_id`, `campaignawardstyle_id`, `name`, `place`, `amount`, `description`) VALUES
 (1, 1, 2, '10 Minutes Extra Recess', NULL, 50, NULL),
 (2, 1, 2, 'Crazy Day', NULL, 150, 'Silly socks, backwards clothes, funny hats'),
@@ -54,17 +60,20 @@ INSERT INTO `campaignaward` (`id`, `campaignawardtype_id`, `campaignawardstyle_i
 (12, 1, 1, 'Private Art Class', 2, NULL, 'From the Edgmoore Art Studio'),
 (13, 1, 1, 'Cupcake Party', 3, NULL, 'From Confectios'),
 (14, 2, 1, 'Kindle Tablet', 1, NULL, NULL);
-
+*/
 --
 -- Dumping data for table `campaignsetting`
 --
+
+/*
+
 
 INSERT INTO `campaignsetting` (`id`, `display_name`, `value`, `description`, `format`) VALUES
 (1, 'campaign_start_date', '9/15/2016', NULL, 'mm/dd/yyyy'),
 (2, 'campaign_end_date', '10/27/2016', NULL, 'mm/dd/yyyy'),
 (3, 'campaign_funding_goal', '20000', NULL, 'an Amount, no commas!'),
 (4, 'campaign_url', 'http://funrun.lrespto.org', NULL, 'FQDN');
-
+*/
 --
 -- Dumping data for table `grade`
 --

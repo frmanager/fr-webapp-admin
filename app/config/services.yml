@@ -4,6 +4,8 @@ parameters:
 #    parameter_name: value
 
 services:
+
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
@@ -35,3 +37,9 @@ services:
 
     app.CampaignHelper:
         class: AppBundle\Utils\CampaignHelper
+
+    app.CampaignSubscriber:
+        class: AppBundle\EventSubscriber\CampaignSubscriber
+        arguments: ['@service_container']
+        tags:
+          - { name: kernel.event_subscriber }

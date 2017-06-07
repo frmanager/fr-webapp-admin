@@ -51,6 +51,18 @@ class Student
      */
     private $causevoxfundraisers;
 
+
+    /**
+     * @var Campaign
+     *
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="students")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
+     */
+    private $campaign;
+
+
+
     /**
      * Get id.
      *
@@ -245,5 +257,29 @@ class Student
     public function removeCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
     {
         $this->causevoxfundraisers->removeElement($causevoxfundraiser);
+    }
+
+    /**
+     * Set campaign
+     *
+     * @param \AppBundle\Entity\Campaign $campaign
+     *
+     * @return Student
+     */
+    public function setCampaign(\AppBundle\Entity\Campaign $campaign = null)
+    {
+        $this->campaign = $campaign;
+
+        return $this;
+    }
+
+    /**
+     * Get campaign
+     *
+     * @return \AppBundle\Entity\Campaign
+     */
+    public function getCampaign()
+    {
+        return $this->campaign;
     }
 }

@@ -60,6 +60,18 @@ class Campaignaward
      */
     private $description;
 
+
+    /**
+     * @var Campaign
+     *
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="campaignawards")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
+     */
+    private $campaign;
+
+
+
     /**
      * Get id.
      *
@@ -212,5 +224,29 @@ class Campaignaward
     public function getCampaignawardstyle()
     {
         return $this->campaignawardstyle;
+    }
+
+    /**
+     * Set campaign
+     *
+     * @param \AppBundle\Entity\Campaign $campaign
+     *
+     * @return Campaignaward
+     */
+    public function setCampaign(\AppBundle\Entity\Campaign $campaign = null)
+    {
+        $this->campaign = $campaign;
+
+        return $this;
+    }
+
+    /**
+     * Get campaign
+     *
+     * @return \AppBundle\Entity\Campaign
+     */
+    public function getCampaign()
+    {
+        return $this->campaign;
     }
 }

@@ -55,6 +55,17 @@ class Causevoxteam
      */
     private $teacher;
 
+
+    /**
+     * @var Campaign
+     *
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="causevoxteams")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
+     */
+    private $campaign;
+
+
     /**
      * Get id.
      *
@@ -183,5 +194,29 @@ class Causevoxteam
     public function getTeacher()
     {
         return $this->teacher;
+    }
+
+    /**
+     * Set campaign
+     *
+     * @param \AppBundle\Entity\Campaign $campaign
+     *
+     * @return Causevoxteam
+     */
+    public function setCampaign(\AppBundle\Entity\Campaign $campaign = null)
+    {
+        $this->campaign = $campaign;
+
+        return $this;
+    }
+
+    /**
+     * Get campaign
+     *
+     * @return \AppBundle\Entity\Campaign
+     */
+    public function getCampaign()
+    {
+        return $this->campaign;
     }
 }

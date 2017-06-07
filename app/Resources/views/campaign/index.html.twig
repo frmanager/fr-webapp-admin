@@ -1,0 +1,50 @@
+{% extends 'crud.html.twig' %}
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Select Campaign</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div style="text-align:right;">
+                <a href="{{ path(entity|lower ~ '_new') }}" class="btn btn-default">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    Add New</a>
+            </div>
+            <br/>
+
+            <div class="list-group">
+              {% for campaign in campaigns %}
+              {% set notStarted = false %}
+              {% set difference = date(campaign.endDate|date('Y/m/d')).diff(date('now'|date('Y/m/d'))) %}
+              {% set leftDays = difference.days %}
+              {% if date('now'|date('Y/m/d')) > date(campaign.endDate|date('Y/m/d')) %}
+              {% set leftDays = leftDays * -1 %}
+              {% endif %}
+              {% if date('now'|date('Y/m/d')) < date(campaign.startDate|date('Y/m/d')) %}
+                {% set notStarted = true %}
+                {% set difference = date(campaign.startDate|date('Y/m/d')).diff(date('now'|date('Y/m/d'))) %}
+                {% set startDays = difference.days %}
+              {% endif %}
+              <a href="{{ path(entity|lower ~ '_set', { 'id': campaign.id }) }}" class="list-group-item">
+              <div class="media">
+                <div class="media-left">
+                    <img class="media-object" src="/assets/img/shoeprints48.png"  alt="...">
+                </div>
+                <div class="media-body">
+                  <h4 class="media-heading">{{ campaign.name }}</h4>
+                  {{ campaign.description }} | {% if notStarted %}<span class="label label-info">Starts in {{startDays}} days</span>{% else %}{% if leftDays <= 0 %}<span class="label label-warning">Ended</span>{% else %}<span class="label label-success">{{ leftDays }} days left</span>{% endif %}{% endif %}
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+
+          
+        </div>
+    </div>
+{% endblock %}
