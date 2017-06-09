@@ -1,3 +1,8 @@
+{% if app.session.get('campaign') is defined %}
+{% set sessionCampaign = app.session.get('campaign') %}
+{% else %}
+{% set sessionCampaign = null %}
+{% endif %}
 <html>
     <head>
         <base target="_parent" />
@@ -58,27 +63,97 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <!--<a href="{{ path('homepage') }}" class="navbar-brand">{FR}</a>-->
+                    <a href="{{ path('homepage') }}" class="navbar-brand">{FR}</a>
                 </div>
                 <div class="collapse navbar-collapse navbar-x-collapse">
                     <ul class="nav navbar-nav">
-                        <li {% if app.request.attributes.get('_route') == 'campaignManager_index'%} class="active" {% endif %}>
-                          <a href="{{ path('campaign_show', { 'url': campaign.url }) }}">
-                              <span class="glyphicon glyphicon-dashboard"></span>
-                              Home
-                          </a>
-                        </li>
-                        <li {% if app.request.attributes.get('_route') == 'grade_index'%} class="active" {% endif %}>
-                            <a href="{{ path('grade_index') }}">
-                                <span class="glyphicon glyphicon-apple"></span>
-                                Grade Rankings</a>
-                        </li>
-                        <li {% if app.request.attributes.get('_route') == 'teacher_index'%} class="active" {% endif %}>
-                            <a href="{{ path('teacher_index') }}">
-                                <span class="glyphicon glyphicon-apple"></span>
-                                Teacher Rankings</a>
-                        </li>
+                        {% if is_granted('ROLE_USER') and sessionCampaign.name is defined %}
+                            <li class="dropdown {% if app.request.attributes.get('_route') in ['campaignManager_dashboard', 'campaignManager_index', 'campaignManager_edit', 'campaignaward_index', 'donation_index', 'causevoxfundraiser_index','causevoxteam_index']%}active{% endif %}">
+                                <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    {{ sessionCampaign.name }}</span>
+                            </strong>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="drop3">
+                            <li {% if app.request.attributes.get('_route') == 'campaignManager_index'%} class="active" {% endif %}>
+                                <a href="{{ path('campaignManager_index') }}" role="button">
+                                    <span class="glyphicon glyphicon-dashboard"></span>
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'campaignManager_edit'%} class="active" {% endif %}>
+                                <a href="{{ path('campaignManager_edit' , { 'id': sessionCampaign.id }) }}">
+                                    <span class="glyphicon glyphicon-cog"></span>
+                                    Edit Campaign</a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'campaignManager_index'%} class="active" {% endif %}>
+                                <a href="{{ path('campaignManager_index') }}">
+                                    <span class="glyphicon glyphicon-refresh"></span>
+                                    Switch Campaign</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li {% if app.request.attributes.get('_route') == 'campaignaward_index'%} class="active" {% endif %}>
+                                <a href="{{ path('campaignaward_index') }}">
+                                    <span class="glyphicon glyphicon-star"></span>
+                                    Awards</a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'offlinedonation_index'%} class="active" {% endif %}>
+                                <a href="{{ path('donation_index') }}">
+                                    <span class="glyphicon glyphicon-usd"></span>Donations</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-header">CauseVox</li>
+                            <li>
+                                <a href="http://funrun.lrespto.org" target="_blank">
+                                    <span class="glyphicon glyphicon-new-window"></span>
+                                    Go to Causevox Site
+                                </a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'causevoxteam_index'%} class="active" {% endif %}>
+                                <a href="{{ path('causevoxteam_index') }}">
+                                    <span class="glyphicon glyphicon-apple"></span>
+                                    Causevox Teams</a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'causevoxfundraiser_index'%} class="active" {% endif %}>
+                                <a href="{{ path('causevoxfundraiser_index') }}">
+                                    <span class="glyphicon glyphicon-user"></span>
+                                    Causevox Fundraisers</a>
+                            </li>
+                        </ul>
                     </li>
+                    <li {% if app.request.attributes.get('_route') == 'student_index'%} class="active" {% endif %}>
+                        <a href="{{ path('student_index') }}">
+                            <span class="glyphicon glyphicon-user"></span>
+                            Students</a>
+                    </li>
+                    <li {% if app.request.attributes.get('_route') == 'teacher_index'%} class="active" {% endif %}>
+                        <a href="{{ path('teacher_index') }}">
+                            <span class="glyphicon glyphicon-apple"></span>
+                            Teachers</a>
+                    </li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="dropdown {% if app.request.attributes.get('_route') in ['grade_index']%}active{% endif %}">
+                            <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                Admin
+                            </strong>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="drop4">
+                            <li class="dropdown-header">Core Data</li>
+                            <li {% if app.request.attributes.get('_route') == 'grade_index'%} class="active" {% endif %}>
+                                <a href="{{ path('grade_index') }}">Manage Grades</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li {% if app.request.attributes.get('_route') == 'user_index'%} class="active" {% endif %}>
+                                <a href="{{ path('user_index') }}">Manage Users</a>
+                            </li>
+                            <li {% if app.request.attributes.get('_route') == 'invitation_index'%} class="active" {% endif %}>
+                                <a href="{{ path('invitation_index') }}">Manage Invitations</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+            {% elseif app.request.attributes.get('_route') in ['homepage', 'faq'] %}
           {% if causevoxfundraisers|length > 0 %}
               <li class="dropdown">
                   <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -94,8 +169,11 @@
               {% endfor %}
           </ul>
       </li>
-      <li><p class="navbar-text" style="margin-left: 2px;margin-right: 2px;color:#333;"</p></li>
-      {% if not is_granted('ROLE_USER') %}
+      <li><p class="navbar-text" style="margin-left: 2px;margin-right: 2px;color:#333;">OR</p></li>
+      <li>
+          <a href="{{campaign_settings.campaign_url}}/signup" role="button">Create your own!</a>
+      </li>
+      {% else %}
       <li>
           <a href="{{campaign_settings.campaign_url}}/signup" role="button">Create your own Fundraiser Page!</a>
       </li>
@@ -104,9 +182,6 @@
 </ul>
 <ul class="nav navbar-nav navbar-right">
     {% if is_granted('ROLE_USER') %}
-      <li>
-          <a href="{{ path('faq') }}" role="button">FAQs</a>
-      </li>
         <li class="dropdown">
             <a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 <i class="glyphicon glyphicon-user"></i>&nbsp;
@@ -119,8 +194,10 @@
                 </li>
             </ul>
         </li>
-
     {% else %}
+        <li>
+            <a href="{{ path('faq') }}" role="button">FAQs</a>
+        </li>
         <li>
             <a href="{{ path('login_check') }}" role="button">Login to PTO Portal</a>
         </li>

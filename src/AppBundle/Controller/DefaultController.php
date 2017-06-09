@@ -56,7 +56,7 @@ class DefaultController extends Controller
                 'Already logged in'
             );
 
-            return $this->redirectToRoute('manage_index');
+            return $this->redirectToRoute('campaignManager_teacher_daily_email');
         } else {
             return $this->redirectToRoute('fos_user_security_login');
         }

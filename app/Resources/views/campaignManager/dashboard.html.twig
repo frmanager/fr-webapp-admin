@@ -1,4 +1,4 @@
-{% extends 'crud.html.twig' %}
+{% extends 'manage.html.twig' %}
 
 {% block body %}
     <div class="row dashboard">
@@ -37,9 +37,9 @@
             <nav class="navbar navbar-default">
                 <div class="container-fluid">
                     <div style="text-align:center">
-                        <a href="{{ path('manage_teacher_daily_email') }}?date_modify=-1" class="btn btn-default navbar-btn">Send Yesterdays Award Emails
+                        <a href="{{ path('campaignManager_teacher_daily_email') }}?date_modify=-1" class="btn btn-default navbar-btn">Send Yesterdays Award Emails
                         </a>
-                        <a href="{{ path('manage_teacher_daily_email') }}" class="btn btn-default navbar-btn">Send Todays Award Emails
+                        <a href="{{ path('campaignManager_teacher_daily_email') }}" class="btn btn-default navbar-btn">Send Todays Award Emails
                         </a>
                     </div>
                 </div>

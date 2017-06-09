@@ -1,4 +1,4 @@
-{% extends 'crud.html.twig' %}
+{% extends 'manage.html.twig' %}
 {% use 'bootstrap_3_layout.html.twig' %}
 
 {% block body %}
@@ -10,6 +10,11 @@
     </div>
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
+            <div style="text-align:right;">
+                <a href="{{ path('campaignManager_new') }}" class="btn btn-default">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    Add New</a>
+            </div>
             <br/>
 
             <div class="list-group">
@@ -25,7 +30,7 @@
                 {% set difference = date(campaign.startDate|date('Y/m/d')).diff(date('now'|date('Y/m/d'))) %}
                 {% set startDays = difference.days %}
               {% endif %}
-              <a href="{{ path(entity|lower ~ '_show', { 'url': campaign.url }) }}" class="list-group-item">
+              <a href="{{ path('campaignManager_dashboard', { 'url': campaign.url }) }}" class="list-group-item">
               <div class="media">
                 <div class="media-left">
                     <img class="media-object" src="/assets/img/shoeprints48.png"  alt="...">
