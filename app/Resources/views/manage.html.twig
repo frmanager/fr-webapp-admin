@@ -90,7 +90,10 @@
       <nav class="sidebar-nav">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="index.html"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
+            <a class="nav-link" href="{{ path('campaignManager_dashboard', { 'url': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ path('campaign_dashboard', { 'url': campaign.url }) }}"><i class="fa fa-external-link"></i> View Campaign</a>
           </li>
           <li class="nav-title">
               Manage Campaign
