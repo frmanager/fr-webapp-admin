@@ -66,6 +66,9 @@
           <li class="nav-item">
               <a class="nav-link navbar-toggler sidebar-toggler" href="#">☰</a>
           </li>
+          <li class="nav-item px-3">
+                <a class="nav-link" href="{{ path('campaignManager_index') }}"><i class="fa fa-refresh"></i> Switch Campaign</a>
+            </li>
       </ul>
       <ul class="nav navbar-nav ml-auto">
           <li class="nav-item dropdown">
@@ -82,42 +85,36 @@
       </ul>
   </header>
   <div class="app-body">
+    {% if is_granted('ROLE_USER') and campaign is defined %}
     <div class="sidebar">
       <nav class="sidebar-nav">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="index.html"><i class="icon-speedometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
+            <a class="nav-link" href="index.html"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
           </li>
           <li class="nav-title">
-              UI Elements
+              Manage Campaign
           </li>
-          <li class="nav-item nav-dropdown">
-              <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-puzzle"></i> Components</a>
-              <ul class="nav-dropdown-items">
-                  <li class="nav-item">
-                      <a class="nav-link" href="components-buttons.html"><i class="icon-puzzle"></i> Buttons</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="components-social-buttons.html"><i class="icon-puzzle"></i> Social Buttons</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="components-cards.html"><i class="icon-puzzle"></i> Cards</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="components-forms.html"><i class="icon-puzzle"></i> Forms</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="components-switches.html"><i class="icon-puzzle"></i> Switches</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="components-tables.html"><i class="icon-puzzle"></i> Tables</a>
-                  </li>
-              </ul>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa fa-wrench"></i> Campaign Settings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa fa-trophy"></i> Awards</a>
+          </li>
+          <li class="nav-title">
+              Manage Data
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa fa-apple"></i> Teachers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa fa-graduation-cap"></i> Students</a>
+          </li>
           </li>
         </ul>
       </nav>
     </div>
-
+   {% endif %}
     <!-- Main content -->
     <main class="main">
       <!-- Breadcrumb -->
@@ -125,16 +122,8 @@
         {% if campaign.name is defined %}{{ campaign.name }}{% else %}&nbsp;{% endif %}
       </ol>
       <div class="container-fluid">
-        <div class="card">
-           <div class="card-block">
-               <div class="row">
-                   <div class="col-xs-5">
-                     {% block body %}{% endblock %}
-                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {% block body %}{% endblock %}
+      </div>
     </main>
 
 <!--
@@ -145,8 +134,10 @@
   </div>
 
   <footer class="app-footer">
-    ...
-  </footer>
+       Created by <a href="mailto:davidlarrimore@gmail.com">David Larrimore</a>
+       <span class="float-right">Admin interface Powered by <a href="http://coreui.io">CoreUI</a>
+       </span>
+   </footer>
 
   <!-- Bootstrap and necessary plugins -->
   <script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
