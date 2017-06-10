@@ -122,7 +122,9 @@
         {% if campaign.name is defined %}{{ campaign.name }}{% else %}&nbsp;{% endif %}
       </ol>
       <div class="container-fluid">
+        <div class="animated fadeIn">
           {% block body %}{% endblock %}
+        </div>
       </div>
     </main>
 
@@ -167,6 +169,16 @@
 
   <!-- IE 10 Viewport Bug Fix -->
   <script src="{{ asset('assets/js/ie10-viewport-bug-workaround.js') }}"></script>
+
+  <script type='application/javascript'>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+        $(".clickable-row").css('cursor', 'pointer');
+    });
+  </script>
+
 
 </body>
 </html>
