@@ -34,6 +34,5 @@ security:
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/manage, role: ROLE_USER }
-        - { path: ^/campaign, role: ROLE_USER }
         - { path: ^/manage/user, role: ROLE_ADMIN }
         - { path: ^/manage/invitation, role: ROLE_ADMIN }

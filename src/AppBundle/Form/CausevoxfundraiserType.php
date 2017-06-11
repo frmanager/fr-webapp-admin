@@ -22,7 +22,7 @@ class CausevoxfundraiserType extends AbstractType
               'choice_label' => 'name',
               ))
             ->add('email')
-            ->add('url')
+            ->add('campaignUrl')
         ;
     }
 

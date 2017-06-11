@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-8" style="text-align:right;">
             <div style="">
-                <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-default">
+                <a href="{{ path('mangeTeacher_index', { 'campaignUrl': campaign.url }) }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-user"></i>
                     Back to Teachers List</a>
             </div>
@@ -88,16 +88,6 @@
                         </tr>
                     </tbody>
                 </table>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="panel-body" style="font-size:16px;">
-                        <div style="text-align:center;">
-                            {{ form_start(delete_form) }}
-                            <a href="{{ path(entity|lower ~ '_edit', { 'id': teacher.id }) }}" class="btn btn-warning">Edit</a>
-                            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{teacher.id}}?')" class="btn btn-danger">
-                            {{ form_end(delete_form) }}
-                        </div>
-                    </div>
-                {% endif %}
             </div>
         </div>
         <div class="col-sm-7">

@@ -51,31 +51,6 @@ class DefaultController extends Controller
 
 
     /**
-     * Lists all Teacher entities.
-     *
-     * @Route("/teacher", name="public_teacher_index")
-     * @Method({"GET", "POST"})
-     */
-    public function TeacherIndexAction()
-    {
-        $logger = $this->get('logger');
-        $em = $this->getDoctrine()->getManager();
-
-        $queryHelper = new QueryHelper($em, $logger);
-        $reportDate = $queryHelper->convertToDay(new DateTime());
-        $reportDate->modify('-1 day');
-
-
-        // replace this example code with whatever you need
-        return $this->render('default/teacherIndex.html.twig', array(
-          'teachers' => $queryHelper->getTeacherRanks(array('limit'=> 0, 'before_date' => $reportDate))
-        ));
-
-    }
-
-
-
-    /**
      * Lists all Awards for teachers.
      *
      * @Route("/awards", name="public_teacher_awards")
@@ -101,37 +76,6 @@ class DefaultController extends Controller
     }
 
 
-    /**
-     * Finds and displays a Teacher entity.
-     *
-     * @Route("/teacher/{id}", name="public_teacher_show")
-     * @Method("GET")
-     */
-    public function showAction(Teacher $teacher)
-    {
-        $logger = $this->get('logger');
-        $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneById($teacher->getId());
-        //$logger->debug(print_r($student->getDonations()));
-        $em = $this->getDoctrine()->getManager();
-
-        $qb = $em->createQueryBuilder()->select('u')
-               ->from('AppBundle:Campaignaward', 'u')
-               ->orderBy('u.amount', 'DESC');
-
-        $campaignAwards = $qb->getQuery()->getResult();
-        $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
-
-        $queryHelper = new QueryHelper($em, $logger);
-        $reportDate = $queryHelper->convertToDay(new DateTime());
-        $reportDate->modify('-1 day');
-
-        return $this->render('default/teacherShow.html.twig', array(
-            'teacher' => $teacher,
-            'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('limit' => 0, 'before_date' => $reportDate)),
-            'campaign_awards' => $campaignAwards,
-            'campaignsettings' => $campaignSettings->getCampaignSettings(),
-        ));
-    }
 
     /**
      * @Route("/faq", name="faq")
@@ -157,10 +101,10 @@ class DefaultController extends Controller
     /**
      * Lists all Campaign entities.
      *
-     * @Route("/{url}", name="campaign_dashboard")
+     * @Route("/{campaignUrl}", name="campaign_dashboard")
      * @Method("GET")
      */
-     public function campaignDashboardAction($url)
+     public function campaignDashboardAction($campaignUrl)
      {
        $logger = $this->get('logger');
        $limit = 3;
@@ -184,7 +128,7 @@ class DefaultController extends Controller
          'causevoxfundraisers' => $causevoxfundraisers,
          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
          'totals' => $queryHelper->getTotalDonations(array('before_date' => $reportDate)),
-         'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($url),
+         'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
        ));
 
 

@@ -11,6 +11,7 @@
         "moment": "*",
         "matchheight": "*",
         "fastclick": "*",
-        "jquery.countdown": "*"
+        "jquery.countdown": "*",
+        "pace": "*"
     }
 }

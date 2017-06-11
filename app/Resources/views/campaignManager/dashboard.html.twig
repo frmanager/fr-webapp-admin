@@ -71,7 +71,7 @@
                                             <tr>
                                                 <td>
 
-                                                    <a href="{{ path('public_teacher_show', { 'id': teacher.id }) }}">
+                                                    <a href="{{ path('manageTeacher_show', { 'campaignUrl':campaign.url, 'id': teacher.id }) }}">
                                                         <span class="hidden-xs">{{ teacher.grade_name }}
                                                             -</span>
                                                         {{ teacher.teacher_name }}</a>
@@ -120,7 +120,7 @@
                                                       <span class="label label-{% if teacher_ranking.rank == 1 %}success{% elseif teacher_ranking.rank == 2 %}warning{% elseif teacher_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ teacher_ranking.rank }}</span>
                                                   </td>
                                                   <td>  {% if is_granted('ROLE_USER') %}
-                                                      <a href="{{ path('teacher_show', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
+                                                      <a href="{{ path('teacher_show', {'campaignUrl':campaign.url, 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
                                                           -
                                                           {{ teacher_ranking.teacher_name }}</a>{% else %}{{ teacher_ranking.grade_name }}
                                                               -
@@ -162,7 +162,7 @@
                                                       <span class="label label-{% if student_ranking.rank == 1 %}success{% elseif student_ranking.rank == 2 %}warning{% elseif student_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ student_ranking.rank }}</span>
                                                   </td>
                                                   <td>{% if is_granted('ROLE_USER') %}
-                                                      <a href="{{ path('teacher_show', { 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>{% else %}{{ student_ranking.teacher_name }}{% endif  %}
+                                                      <a href="{{ path('teacher_show', {'campaignUrl':campaign.url, 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>{% else %}{{ student_ranking.teacher_name }}{% endif  %}
                                                   </td>
                                                   <td>{% if is_granted('ROLE_USER') %}
                                                       <a href="{{ path('student_show', { 'id': student_ranking.id }) }}">{{ student_ranking.student_name }}</a>{% else %}{{ student_ranking.student_name }}{% endif  %}

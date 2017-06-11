@@ -21,7 +21,7 @@ class CampaignType extends AbstractType
         $builder
             ->add('name', TextType::class, array('required' => true))
             ->add('description')
-            ->add('url')
+            ->add('campaignUrl')
             ->add('email', TextType::class, array('required' => true))
             ->add('start_date', DateType::class, array('widget' => 'single_text' ))
             ->add('endDate', DateType::class, array('widget' => 'single_text'))

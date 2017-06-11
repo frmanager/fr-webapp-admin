@@ -53,7 +53,7 @@
                        {% else %}
                           {% set percentLeft = 100 %}
                        {%  endif %}
-                         <tr class="clickable-row" data-href='{{ path('campaignManager_dashboard', { 'url': campaign.url }) }}'>
+                         <tr class="clickable-row" data-href='{{ path('campaignManager_dashboard', { 'campaignUrl': campaign.url }) }}'>
                              <td class="text-center">
                                  <div class="avatar">
                                      <img src="../assets/img/shoeprints48.png" class="img-avatar" alt="admin@bootstrapmaster.com">

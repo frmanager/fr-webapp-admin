@@ -182,7 +182,7 @@ class CausevoxteamController extends Controller
                 $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
                 $CSVHelper->cleanTeacherNames();
 
-                $templateFields = array('name', 'grade', 'url', 'funds_needed', 'funds_raised', 'teachers_name', 'members', 'admins');
+                $templateFields = array('name', 'grade', 'campaignUrl', 'funds_needed', 'funds_raised', 'teachers_name', 'members', 'admins');
 
                 if ($CSVHelper->validateHeaders($templateFields)) {
                     $logger->debug('Making changes to database');
@@ -264,7 +264,7 @@ class CausevoxteamController extends Controller
 
                             $causevoxteam->setName($item['name']);
                             $causevoxteam->setFundsNeeded(intval($item['funds_needed']));
-                            $causevoxteam->setUrl($item['url']);
+                            $causevoxteam->setUrl($item['campaignUrl']);
                             $causevoxteam->setFundsRaised(intval($item['funds_raised']));
                             $causevoxteam->setTeacher($teacher);
 

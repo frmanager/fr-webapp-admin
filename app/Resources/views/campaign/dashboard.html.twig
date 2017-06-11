@@ -66,7 +66,7 @@
                                 <tr>
                                     <td>{{ teacher.donated_at|date("D, M d") }}</td>
                                     <td>
-                                        <a href="{{ path('public_teacher_show', { 'id': teacher.id }) }}">
+                                        <a href="{{ path('teacher_show', { 'campaignUrl': campaign.url, 'id': teacher.id }) }}">
                                             <span class="hidden-xs">{{ teacher.grade_name }}
                                                 -</span>
                                             {{ teacher.teacher_name }}</a>
@@ -100,7 +100,7 @@
                 <div class="panel-heading">Top
                     {{ ranking_limit }}
                     Class Rankings -
-                    <a href="{{ path('public_teacher_index') }}">
+                    <a href="{{ path('teacher_index', {'campaignUrl':campaign.url}) }}">
                         <small>(click here to view all)</small>
                     </a>
                 </div>
@@ -121,7 +121,7 @@
                                         <span class="label label-{% if teacher_ranking.rank == 1 %}success{% elseif teacher_ranking.rank == 2 %}warning{% elseif teacher_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ teacher_ranking.rank }}</span>
                                     </td>
                                     <td>
-                                        <a href="{{ path('public_teacher_show', { 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
+                                        <a href="{{ path('teacher_show', { 'campaignUrl':campaign.url, 'id': teacher_ranking.id }) }}">{{ teacher_ranking.grade_name }}
                                             -
                                             {{ teacher_ranking.teacher_name }}</a>
                                     </td>
@@ -164,7 +164,7 @@
                                     </td>
                                     <td>
                                         {% if is_granted('ROLE_USER') %}
-                                            <a href="{{ path('teacher_show', { 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>
+                                            <a href="{{ path('teacher_show', { 'campaignUrl':campaign.url, 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>
                                         {% else %}{{ student_ranking.teacher_name }}{% endif %}
                                     </td>
                                     <td>

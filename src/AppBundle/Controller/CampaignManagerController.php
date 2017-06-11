@@ -32,19 +32,17 @@ class CampaignManagerController extends Controller
          $entity = 'Campaign';
          $em = $this->getDoctrine()->getManager();
 
-         $campaigns = $em->getRepository('AppBundle:Campaign')->findAll();
-
          return $this->render('CampaignManager/index.html.twig', array(
-             'campaigns' => $campaigns,
+             'campaigns' => $em->getRepository('AppBundle:Campaign')->findAll(),
              'entity' => $entity,
          ));
      }
 
 
      /**
-      * @Route("/{url}", name="campaignManager_dashboard")
+      * @Route("/{campaignUrl}", name="campaignManager_dashboard")
       */
-     public function dashboardAction($url)
+     public function dashboardAction($campaignUrl)
      {
          $logger = $this->get('logger');
          $em = $this->getDoctrine()->getManager();
@@ -58,7 +56,7 @@ class CampaignManagerController extends Controller
            'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> 10)),
            'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> 10)),
            'totals' => $queryHelper->getTotalDonations(array()),
-           'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($url),
+           'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
          ));
      }
 

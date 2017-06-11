@@ -22,7 +22,7 @@ class CausevoxteamType extends AbstractType
               'choice_label' => 'teachername',
               ))
             ->add('name')
-            ->add('url')
+            ->add('campaignUrl')
         ;
     }
 

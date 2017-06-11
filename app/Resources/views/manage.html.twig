@@ -18,8 +18,13 @@
   <link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/css/simple-line-icons.css') }}" rel="stylesheet">
 
+  <!-- Datatables styles -->
+  <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
   <!-- Main styles for this application -->
   <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+
+
 
 
   <!-- GOOGLE ANALYTICS -->
@@ -58,7 +63,7 @@
 
 -->
 
-<body class="navbar-fixed sidebar-nav fixed-nav">
+<body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
   <header class="app-header navbar">
       <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button">☰</button>
       <a class="navbar-brand" href="#"></a>
@@ -69,11 +74,14 @@
           <li class="nav-item px-3">
                 <a class="nav-link" href="{{ path('campaignManager_index') }}"><i class="fa fa-refresh"></i> Switch Campaign</a>
             </li>
+            <li class="nav-item px-3">
+                  <a class="nav-link" href="{{ path('campaignManager_index') }}"><i class="fa fa-plus"></i> Create New Campaign</a>
+              </li>
       </ul>
       <ul class="nav navbar-nav ml-auto">
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                  <img src="../assets/img/profile.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                  <img src="{{ asset('assets/img/profile.jpg') }}" class="img-avatar" alt="admin@bootstrapmaster.com">
                   <span class="d-md-down-none">{{ app.user.username }}</span>
               </a>
               <div class="dropdown-menu dropdown-menu-right">
@@ -90,10 +98,10 @@
       <nav class="sidebar-nav">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaignManager_dashboard', { 'url': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
+            <a class="nav-link" href="{{ path('campaignManager_dashboard', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaign_dashboard', { 'url': campaign.url }) }}"><i class="fa fa-external-link"></i> View Campaign</a>
+            <a class="nav-link" href="{{ path('campaign_dashboard', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-external-link"></i> View Campaign</a>
           </li>
           <li class="nav-title">
               Manage Campaign
@@ -108,10 +116,13 @@
               Manage Data
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa fa-apple"></i> Teachers</a>
+            <a class="nav-link" href="{{ path('grade_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-graduation-cap"></i> Grades</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa fa-graduation-cap"></i> Students</a>
+            <a class="nav-link" href="{{ path('manageTeacher_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-apple"></i> Teachers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa fa-user"></i> Students</a>
           </li>
           </li>
         </ul>
@@ -145,10 +156,10 @@
    </footer>
 
   <!-- Bootstrap and necessary plugins -->
-  <script src="{{ asset('assets/vendor/jquery/dist/jquery.min.js') }}"></script>
-  <script src="{{ asset('assets/vendor/tether/dist/js/tether.min.js') }}"></script>
+  <script src="{{ asset('assets/js/libs/jquery-3.2.1.min.js') }}"></script>
+  <script src="{{ asset('assets/js/libs/tether.min.js') }}"></script>
   <script src="{{ asset('assets/js/libs/bootstrap.min.js') }}"></script>
-  <script src="{{ asset('assets/vendor/pace/pace.min.js') }}"></script>
+  <script src="{{ asset('assets/js/libs/pace.min.js') }}"></script>
 
   <!-- Plugins and scripts required by all views -->
   <script src="{{ asset('assets/js/libs/Chart.min.js') }}"></script>
@@ -160,12 +171,12 @@
   <!--<script src="..."></script>-->
 
   <!-- Custom scripts required by this view -->
-  <script src="{{ asset('assets/js/views/main.js') }}"></script>
+  <!--<script src="{{ asset('assets/js/views/main.js') }}"></script>-->
 
   <!-- LEGACY -->
   <script type='application/javascript' src="{{ asset('assets/vendor/moment/min/moment.min.js') }}"></script>
-  <script type='application/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
-  <script type="application/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/fh-3.1.2/r-2.1.0/sc-1.4.2/datatables.min.js"></script>
+  <script type="application/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+  <script type="application/javascript" src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js"></script>
   <script type='application/javascript' src="{{ asset('assets/vendor/jquery.countdown/dist/jquery.countdown.min.js') }}"></script>
 
   {% block javascripts %}{% endblock %}
@@ -179,6 +190,7 @@
             window.location = $(this).data("href");
         });
         $(".clickable-row").css('cursor', 'pointer');
+
     });
   </script>
 
