@@ -168,9 +168,7 @@
                                         {% else %}{{ student_ranking.teacher_name }}{% endif %}
                                     </td>
                                     <td>
-                                        {% if is_granted('ROLE_USER') %}
-                                            <a href="{{ path('student_show', { 'id': student_ranking.id }) }}">{{ student_ranking.student_name }}</a>
-                                        {% else %}{{ student_ranking.student_name }}{% endif %}
+                                        {{ student_ranking.student_name }}
                                     </td>
                                     <td style="text-align:right;">${{ student_ranking.donation_amount|number_format(2, '.', ',') }}</td>
 

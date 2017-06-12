@@ -1,4 +1,4 @@
-{% extends 'campaign.html.twig' %}
+{% extends 'manage.html.twig' %}
 {% use 'bootstrap_3_horizontal_layout.html.twig' %}
 
 {% block body %}
@@ -18,7 +18,7 @@
         </div>
         <div class="col-sm-8" style="text-align:right;">
             <div style="">
-                <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-default">
+                <a href="{{ path('manageStudent_index', {'campaignUrl':campaign.url}) }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-user"></i>
                     Back to Students List</a>
             </div>
@@ -69,13 +69,13 @@
                         <tr>
                             <th style="text-align:right;">Grade</th>
                             <td>
-                                <a href="{{ path('grade_show', { 'id': student.teacher.grade.id }) }}">{{ student.teacher.grade.name }}</a>
+                                <a href="{{ path('grade_show', {'campaignUrl':campaign.url, 'id': student.teacher.grade.id }) }}">{{ student.teacher.grade.name }}</a>
                             </td>
                         </tr>
                         <tr>
                             <th style="text-align:right;">Teacher</th>
                             <td>
-                                <a href="{{ path('teacher_show', { 'id': student.teacher.id }) }}">{{ student.teacher.teachername }}</a>
+                                <a href="{{ path('manageTeacher_show', {'campaignUrl':campaign.url,  'id': student.teacher.id }) }}">{{ student.teacher.teachername }}</a>
                             </td>
                         </tr>
                         <tr>
@@ -101,8 +101,8 @@
                     <div class="panel-body" style="font-size:16px;">
                         <div style="text-align:center;">
                             {{ form_start(delete_form) }}
-                            <a href="{{ path(entity|lower ~ '_edit', { 'id': student.id }) }}" class="btn btn-warning">Edit</a>
-                            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{student.id}}?')" class="btn btn-danger">
+                            <a href="{{ path('manageStudent_edit', {'campaignUrl': campaign.url, 'id': student.id }) }}" class="btn btn-warning">Edit</a>
+                            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{student.name}}?')" class="btn btn-danger">
                             {{ form_end(delete_form) }}
                         </div>
                     </div>

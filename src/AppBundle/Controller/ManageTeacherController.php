@@ -17,7 +17,7 @@ use DateTime;
 /**
  * Teacher controller.
  *
- * @Route("/manage/{campaignUrl}/teacher")
+ * @Route("/manage/{campaignUrl}/teachers")
  */
 class ManageTeacherController extends Controller
 {
@@ -38,7 +38,7 @@ class ManageTeacherController extends Controller
       $dateString = $tempDate->format('Y-m-d').' 00:00:00';
       $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
       // replace this example code with whatever you need
-      return $this->render('/campaignManager/teacher.index.html.twig', array(
+      return $this->render('campaignManager/teacher.index.html.twig', array(
         'teachers' => $queryHelper->getTeacherRanks(array('limit'=> 0)),
         'entity' => strtolower($entity),
         'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
@@ -99,7 +99,7 @@ class ManageTeacherController extends Controller
 
         $queryHelper = new QueryHelper($em, $logger);
 
-        return $this->render(strtolower($entity).'/show.html.twig', array(
+        return $this->render('campaignManager/teacher.show.html.twig', array(
             'teacher' => $teacher,
             'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('limit' => 0)),
             'campaign_awards' => $campaignAwards,
@@ -157,7 +157,7 @@ class ManageTeacherController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute(strtolower($entity).'_index');
+        return $this->redirectToRoute('campaignManager_index');
     }
 
     /**
@@ -172,7 +172,7 @@ class ManageTeacherController extends Controller
         $entity = 'Teacher';
 
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl(strtolower($entity).'_delete', array('campaignUrl'=> $campaignUrl, 'id' => $teacher->getId())))
+            ->setAction($this->generateUrl('campaignManager_delete', array('campaignUrl'=> $campaignUrl, 'id' => $teacher->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;

@@ -161,11 +161,11 @@
                                                   <td style="text-align:center;vertical-align: middle;">
                                                       <span class="label label-{% if student_ranking.rank == 1 %}success{% elseif student_ranking.rank == 2 %}warning{% elseif student_ranking.rank == 3 %}primary{% else %}default{% endif %}">{{ student_ranking.rank }}</span>
                                                   </td>
-                                                  <td>{% if is_granted('ROLE_USER') %}
-                                                      <a href="{{ path('teacher_show', {'campaignUrl':campaign.url, 'id': student_ranking.teacher_id }) }}">{{ student_ranking.teacher_name }}</a>{% else %}{{ student_ranking.teacher_name }}{% endif  %}
+                                                  <td>
+                                                      <a href="{{ path('teacher_show', {'campaignUrl':campaign.url, 'id': student_ranking.teacher_id }) }}">
                                                   </td>
-                                                  <td>{% if is_granted('ROLE_USER') %}
-                                                      <a href="{{ path('student_show', { 'id': student_ranking.id }) }}">{{ student_ranking.student_name }}</a>{% else %}{{ student_ranking.student_name }}{% endif  %}
+                                                  <td>
+                                                      <a href="{{ path('manageStudent_show', {'campaignUrl': campaign.url, 'id': student_ranking.id }) }}">{{ student_ranking.student_name }}</a>
                                                   </td>
                                                   <td style="text-align:right;">${{ student_ranking.donation_amount|number_format(2, '.', ',') }}</td>
 

@@ -17,17 +17,17 @@ use DateTime;
 /**
  * Student controller.
  *
- * @Route("/manage/student")
+ * @Route("/manage/{campaignUrl}/students")
  */
-class StudentController extends Controller
+class ManageStudentController extends Controller
 {
     /**
      * Lists all Student entities.
      *
-     * @Route("/", name="student_index")
+     * @Route("/", name="manageStudent_index")
      * @Method("GET")
      */
-    public function indexAction()
+    public function indexAction($campaignUrl)
     {
         $logger = $this->get('logger');
         $entity = 'Student';
@@ -39,19 +39,20 @@ class StudentController extends Controller
         $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
         // replace this example code with whatever you need
 
-        return $this->render(strtolower($entity).'/index.html.twig', array(
+        return $this->render('campaignManager/student.index.html.twig', array(
             'students' => $queryHelper->getStudentRanks(array('limit'=> 0)),
             'entity' => $entity,
+            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
         ));
     }
 
     /**
      * Creates a new Student entity.
      *
-     * @Route("/new", name="student_new")
+     * @Route("/new", name="manageStudent_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $campaignUrl)
     {
         $entity = 'Student';
         $student = new Student();
@@ -70,20 +71,21 @@ class StudentController extends Controller
             'student' => $student,
             'form' => $form->createView(),
             'entity' => $entity,
+            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
         ));
     }
 
     /**
      * Finds and displays a Student entity.
      *
-     * @Route("/show/{id}", name="student_show")
+     * @Route("/show/{id}", name="manageStudent_show")
      * @Method("GET")
      */
-    public function showAction(Student $student)
+    public function showAction(Student $student, $campaignUrl)
     {
         $logger = $this->get('logger');
         $entity = 'Student';
-        $deleteForm = $this->createDeleteForm($student);
+        $deleteForm = $this->createDeleteForm($student, $campaignUrl);
         $student = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($student->getId());
         //$logger->debug(print_r($student->getDonations()));
 
@@ -98,25 +100,26 @@ class StudentController extends Controller
 
         $queryHelper = new QueryHelper($em, $logger);
 
-        return $this->render(strtolower($entity).'/show.html.twig', array(
+        return $this->render('campaignManager/student.show.html.twig', array(
             'student' => $student,
-            'teacher' => $queryHelper->getTeachersData(array('id' => $student->getTeacher()->getId())),            
+            'teacher' => $queryHelper->getTeachersData(array('id' => $student->getTeacher()->getId())),
             'student_rank' => $queryHelper->getStudentRank($student->getId(),array('limit' => 0)),
             'teacher_rank' => $queryHelper->getTeacherRank($student->getTeacher()->getId(),array('limit' => 0)),
             'campaign_awards' => $campaignAwards,
             'campaignsettings' => $campaignSettings->getCampaignSettings(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
+            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
         ));
     }
 
     /**
      * Displays a form to edit an existing Student entity.
      *
-     * @Route("/edit/{id}", name="student_edit")
+     * @Route("/edit/{id}", name="manageStudent_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Student $student)
+    public function editAction(Request $request, Student $student, $campaignUrl)
     {
         $entity = 'Student';
         $deleteForm = $this->createDeleteForm($student);
@@ -136,16 +139,17 @@ class StudentController extends Controller
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
+            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
         ));
     }
 
     /**
      * Deletes a Student entity.
      *
-     * @Route("/delete/{id}", name="student_delete")
+     * @Route("/delete/{id}", name="manageStudent_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, Student $student)
+    public function deleteAction(Request $request, Student $student, $campaignUrl)
     {
         $entity = 'Student';
         $form = $this->createDeleteForm($student);
@@ -167,12 +171,12 @@ class StudentController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Student $student)
+    private function createDeleteForm(Student $student, $campaignUrl)
     {
         $entity = 'Student';
 
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl(strtolower($entity).'_delete', array('id' => $student->getId())))
+            ->setAction($this->generateUrl('manageStudent_delete', array('campaignUrl'=> $campaignUrl, 'id' => $student->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
