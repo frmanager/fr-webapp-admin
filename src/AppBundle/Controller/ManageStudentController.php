@@ -78,7 +78,7 @@ class ManageStudentController extends Controller
     /**
      * Finds and displays a Student entity.
      *
-     * @Route("/show/{id}", name="manageStudent_show")
+     * @Route("/{id}", name="manageStudent_show")
      * @Method("GET")
      */
     public function showAction(Student $student, $campaignUrl)
@@ -185,7 +185,7 @@ class ManageStudentController extends Controller
     /**
      * Creates a new Student entity.
      *
-     * @Route("/upload", name="student_upload")
+     * @Route("/upload", name="manageStudent_upload")
      * @Method({"GET", "POST"})
      */
     public function uploadForm(Request $request)

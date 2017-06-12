@@ -8,10 +8,10 @@
         </div>
         <div class="col-md-8" style="text-align:right;">
             <div style="">
-                <a href="{{ path('manageStudent_new') }}" class="btn btn-success">
+                <a href="{{ path('manageStudent_new', {'campaignUrl': campaign.url}) }}" class="btn btn-success">
                     <i class="glyphicon glyphicon-plus"></i>
                     Add New</a>
-                <a href="{{ path('manageStudent_upload') }}" class="btn btn-danger">
+                <a href="{{ path('manageStudent_upload', {'campaignUrl': campaign.url}) }}" class="btn btn-danger">
                     <i class="glyphicon glyphicon-upload"></i>
                     Upload CSV</a>
             </div>
@@ -35,7 +35,7 @@
                 <tbody>
                     {% for student in students %}
                         <tr>
-                            <td><a href="{{ path('teacherManager_show', {'campaignUrl':campaign.url, 'id': student.teacher_id }) }}">{{ student.grade_name }}
+                            <td><a href="{{ path('manageTeacher_show', {'campaignUrl':campaign.url, 'id': student.teacher_id }) }}">{{ student.grade_name }}
                                 -
                                 {{ student.teacher_name }}</a></td>
                             <td><a href="{{ path('manageStudent_show', { 'campaignUrl':campaign.url, 'id': student.id }) }}">{{ student.student_name }}</a></td>

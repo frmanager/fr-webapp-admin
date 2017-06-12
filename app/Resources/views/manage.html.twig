@@ -116,13 +116,13 @@
               Manage Data
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('grade_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-graduation-cap"></i> Grades</a>
+            <a class="nav-link" href="{{ path('manageGrade_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-graduation-cap"></i> Grades</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ path('manageTeacher_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-apple"></i> Teachers</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa fa-user"></i> Students</a>
+            <a class="nav-link" href="{{ path('manageStudent_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-user"></i> Students</a>
           </li>
           </li>
         </ul>
