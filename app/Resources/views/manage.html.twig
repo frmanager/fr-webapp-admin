@@ -63,14 +63,17 @@
 
 -->
 
-<body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
+<body class="app header-fixed sidebar-fixed {% if campaign is not defined %}sidebar-hidden{% endif %} aside-menu-fixed aside-menu-hidden">
   <header class="app-header navbar">
       <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button">☰</button>
       <a class="navbar-brand" href="#"></a>
+      {% if is_granted('ROLE_USER') %}
       <ul class="nav navbar-nav d-md-down-none">
+          {% if campaign is defined %}
           <li class="nav-item">
               <a class="nav-link navbar-toggler sidebar-toggler" href="#">☰</a>
           </li>
+          {% endif %}
           <li class="nav-item px-3">
                 <a class="nav-link" href="{{ path('campaignManager_index') }}"><i class="fa fa-refresh"></i> Switch Campaign</a>
             </li>
@@ -87,10 +90,11 @@
               <div class="dropdown-menu dropdown-menu-right">
                   <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Profile</a>
                   <div class="divider"></div>
-                  <a class="dropdown-item" href="#"><i class="fa fa-lock"></i> Logout</a>
+                  <a class="dropdown-item" href="{{ path('fos_user_security_logout') }}"><i class="fa fa-lock"></i> Logout</a>
               </div>
           </li>
       </ul>
+      {% endif %}
   </header>
   <div class="app-body">
     {% if is_granted('ROLE_USER') and campaign is defined %}
@@ -132,9 +136,11 @@
     <!-- Main content -->
     <main class="main">
       <!-- Breadcrumb -->
+      {% if is_granted('ROLE_USER') and campaign is defined %}
       <ol class="breadcrumb">
-        {% if campaign.name is defined %}{{ campaign.name }}{% else %}&nbsp;{% endif %}
+        {{ campaign.name }}
       </ol>
+      {%  endif %}
       <div class="container-fluid">
         <div class="animated fadeIn">
           {% block body %}{% endblock %}

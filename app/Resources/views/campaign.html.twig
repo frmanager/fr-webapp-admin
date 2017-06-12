@@ -51,6 +51,7 @@
 		<!--<a href="{{ path('homepage') }}" class="navbar-brand">{FR}</a>-->
 	</div>
 	<div class="collapse navbar-collapse navbar-x-collapse">
+    {% if campaign is defined %}
 		<ul class="nav navbar-nav">
 			<li {% if app.request.attributes.get('_route')=='campaign_dashboard'%} class="active" {% endif %}>
 			<a href="{{ path('campaign_dashboard', { 'campaignUrl': campaign.url }) }}">
@@ -69,6 +70,7 @@
 			</li>
 			</li>
 		</ul>
+    {% endif %}
 		<ul class="nav navbar-nav navbar-right">
 			<li>
 			<a href="{{ path('faq') }}" role="button">FAQs</a>
@@ -86,7 +88,7 @@
 			</li>
 			 {% else %}
 			<li>
-			<a href="{{ path('login_check') }}" role="button">Login to PTO Portal</a>
+			<a href="{{ path('fos_user_security_login') }}" role="button">Login</a>
 			</li>
 			 {% endif %}
 		</ul>
@@ -193,6 +195,16 @@ $(document).ready(function() {
     $(function() {
         FastClick.attach(document.body);
     });
+
+
+      $(document).ready(function($) {
+          $(".clickable-row").click(function() {
+              window.location = $(this).data("href");
+          });
+          $(".clickable-row").css('cursor', 'pointer');
+
+      });
+
 });
 </script>
 </body>

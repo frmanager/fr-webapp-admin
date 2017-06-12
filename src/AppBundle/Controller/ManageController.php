@@ -22,17 +22,9 @@ class ManageController extends Controller
     public function indexAction(Request $request)
     {
         $logger = $this->get('logger');
-        $em = $this->getDoctrine()->getManager();
-        $queryHelper = new QueryHelper($em, $logger);
-        $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
         // replace this example code with whatever you need
-        return $this->render('manage/index.html.twig', array(
-          'campaign_settings' => $campaignSettings->getCampaignSettings(),
-          'new_teacher_awards' => $queryHelper->getTeacherAwards(array('limit' => 10, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
-          'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> 10)),
-          'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> 10)),
-          'totals' => $queryHelper->getTotalDonations(array()),
+        return $this->render('manage/campaign.index.html.twig', array(
         ));
     }
 

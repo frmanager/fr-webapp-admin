@@ -42,39 +42,11 @@ class DefaultController extends Controller
                 'Already logged in'
             );
 
-            return $this->redirectToRoute('campaignManager_teacher_daily_email');
+            return $this->redirectToRoute('campaignManager_index');
         } else {
             return $this->redirectToRoute('fos_user_security_login');
         }
     }
-
-
-
-    /**
-     * Lists all Awards for teachers.
-     *
-     * @Route("/awards", name="public_teacher_awards")
-     * @Method({"GET", "POST"})
-     */
-    public function TeacherAwardsAction()
-    {
-      $logger = $this->get('logger');
-      $limit = 3;
-      $em = $this->getDoctrine()->getManager();
-      $queryHelper = new QueryHelper($em, $logger);
-      $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
-      $reportDate = $queryHelper->convertToDay(new DateTime());
-      $reportDate->modify('-1 day');
-
-      // replace this example code with whatever you need
-      return $this->render('default/teacherAwards.html.twig', array(
-        'campaign_settings' => $campaignSettings->getCampaignSettings(),
-        'teachers' => $queryHelper->getTeacherAwards(array('before_date' => $reportDate)),
-        'report_date' => $reportDate,
-      ));
-
-    }
-
 
 
     /**
@@ -97,42 +69,101 @@ class DefaultController extends Controller
     }
 
 
+        /**
+         * Lists all Awards for teachers.
+         *
+         * @Route("/awards", name="public_teacher_awards")
+         * @Method({"GET", "POST"})
+         */
+        public function TeacherAwardsAction()
+        {
+          $logger = $this->get('logger');
+          $limit = 3;
+          $em = $this->getDoctrine()->getManager();
+          $queryHelper = new QueryHelper($em, $logger);
+          $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
+          $reportDate = $queryHelper->convertToDay(new DateTime());
+          $reportDate->modify('-1 day');
 
-    /**
-     * Lists all Campaign entities.
-     *
-     * @Route("/{campaignUrl}", name="campaign_dashboard")
-     * @Method("GET")
-     */
-     public function campaignDashboardAction($campaignUrl)
-     {
-       $logger = $this->get('logger');
-       $limit = 3;
-       $em = $this->getDoctrine()->getManager();
-       $queryHelper = new QueryHelper($em, $logger);
-       $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
-       $causevoxteams = $em->getRepository('AppBundle:Causevoxteam')->findAll();
-       $causevoxfundraisers = $em->getRepository('AppBundle:Causevoxfundraiser')->findAll();
+          // replace this example code with whatever you need
+          return $this->render('default/teacherAwards.html.twig', array(
+            'campaign_settings' => $campaignSettings->getCampaignSettings(),
+            'teachers' => $queryHelper->getTeacherAwards(array('before_date' => $reportDate)),
+            'report_date' => $reportDate,
+          ));
 
-       $reportDate = $queryHelper->convertToDay(new DateTime());
-       $reportDate->modify('-1 day');
-
-       // replace this example code with whatever you need
-       return $this->render('campaign/dashboard.html.twig', array(
-         'campaign_settings' => $campaignSettings->getCampaignSettings(),
-         'new_teacher_awards' => $queryHelper->getTeacherAwards(array('before_date' => $reportDate, 'limit' => 5, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
-         'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
-         'report_date' => $reportDate,
-         'ranking_limit' => $limit,
-         'causevoxteams' => $causevoxteams,
-         'causevoxfundraisers' => $causevoxfundraisers,
-         'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
-         'totals' => $queryHelper->getTotalDonations(array('before_date' => $reportDate)),
-         'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
-       ));
+        }
 
 
-     }
+      /**
+       * Lists all Campaign entities.
+       *
+       * @Route("/campaigns", name="campaign_index")
+       * @Method("GET")
+       */
+       public function campaignIndexAction()
+       {
+           $logger = $this->get('logger');
+           $entity = 'Campaign';
+           $em = $this->getDoctrine()->getManager();
+
+           return $this->render('CampaignManager/campaign.index.html.twig', array(
+               'campaigns' => $em->getRepository('AppBundle:Campaign')->findAll(),
+               'entity' => $entity,
+           ));
+       }
+
+
+
+        /**
+         * Show campaign dashboard.
+         *
+         * @Route("/{campaignUrl}", name="campaign_dashboard")
+         * @Method("GET")
+         */
+         public function campaignDashboardAction($campaignUrl)
+         {
+
+           $logger = $this->get('logger');
+           $limit = 3;
+           $em = $this->getDoctrine()->getManager();
+
+           $campaign =  $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+
+           if(count($campaign) == 0){
+             $this->addFlash(
+                 'warning',
+                 'Could not find Campaign'
+             );
+             return $this->redirectToRoute('campaign_index');
+           }
+
+
+           $queryHelper = new QueryHelper($em, $logger);
+           $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
+           $causevoxteams = $em->getRepository('AppBundle:Causevoxteam')->findAll();
+           $causevoxfundraisers = $em->getRepository('AppBundle:Causevoxfundraiser')->findAll();
+
+           $reportDate = $queryHelper->convertToDay(new DateTime());
+           $reportDate->modify('-1 day');
+
+           // replace this example code with whatever you need
+           return $this->render('campaign/dashboard.html.twig', array(
+             'campaign_settings' => $campaignSettings->getCampaignSettings(),
+             'new_teacher_awards' => $queryHelper->getTeacherAwards(array('before_date' => $reportDate, 'limit' => 5, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
+             'teacher_rankings' => $queryHelper->getTeacherRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
+             'report_date' => $reportDate,
+             'ranking_limit' => $limit,
+             'causevoxteams' => $causevoxteams,
+             'causevoxfundraisers' => $causevoxfundraisers,
+             'student_rankings' => $queryHelper->getStudentRanks(array('limit'=> $limit, 'before_date' => $reportDate)),
+             'totals' => $queryHelper->getTotalDonations(array('before_date' => $reportDate)),
+             'campaign' => $campaign
+           ));
+
+
+         }
+
 
 
 

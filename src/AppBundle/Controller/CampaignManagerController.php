@@ -32,7 +32,7 @@ class CampaignManagerController extends Controller
          $entity = 'Campaign';
          $em = $this->getDoctrine()->getManager();
 
-         return $this->render('CampaignManager/index.html.twig', array(
+         return $this->render('CampaignManager/campaign.index.html.twig', array(
              'campaigns' => $em->getRepository('AppBundle:Campaign')->findAll(),
              'entity' => $entity,
          ));

@@ -90,8 +90,8 @@ fos_user:
             template:   FOSUserBundle:Registration:email.txt.twig
             enabled: true
             from_email:
-                address:        funrun@lrespto.org
-                sender_name:    Fun Run Support
+                address:        davidlarrimore@gmail.com
+                sender_name:    "{fr} Manager Support"
     from_email:
         address:        funrun@lrespto.org
         sender_name:    Fun Run Support
