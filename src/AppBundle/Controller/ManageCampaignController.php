@@ -16,7 +16,7 @@ use DateTime;
  *
  * @Route("/manage")
  */
-class CampaignManagerController extends Controller
+class ManageCampaignController extends Controller
 {
 
 
