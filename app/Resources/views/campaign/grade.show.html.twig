@@ -4,7 +4,7 @@
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h1>View Grade</h1>
+            <h1>{{ grade.name }}</h1>
             <hr/>
         </div>
     </div>
@@ -16,11 +16,6 @@
                 <dt>Name</dt>
                 <dd>{{ grade.name }}</dd>
             </dl>
-            {{ form_start(delete_form) }}
-            <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Back</a>
-            <a href="{{ path(entity|lower ~ '_edit', { 'id': grade.id }) }}" class="btn btn-primary">Edit</a>
-            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{grade.id}}?')" class="btn btn-danger">
-            {{ form_end(delete_form) }}
         </div>
     </div>
 {% endblock %}

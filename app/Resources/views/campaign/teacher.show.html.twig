@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-8" style="text-align:right;">
             <div style="">
-                <a href="{{ path('mangeTeacher_index', { 'campaignUrl': campaign.url }) }}" class="btn btn-default">
+                <a href="{{ path('manageTeacher_index', { 'campaignUrl': campaign.url }) }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-user"></i>
                     Back to Teachers List</a>
             </div>
@@ -49,7 +49,7 @@
                         <tr>
                             <th style="text-align:right;">Grade</th>
                             <td>
-                                {% if is_granted('ROLE_USER') %}<a href="{{ path('grade_show', { 'id': teacher.grade.id }) }}">{{ teacher.grade.name }}</a>{% else %}{{ teacher.grade.name }}{% endif %}
+                            <a href="{{ path('grade_show', {'campaignUrl': campaign.url, 'id': teacher.grade.id }) }}">{{ teacher.grade.name }}</a>
                             </td>
                         </tr>
                         <tr>
@@ -152,7 +152,7 @@
                                         {% endfor %}
                                         <tr>
                                             <td>
-                                                <a href="{{ path('student_show', { 'id': student.id }) }}">{{ student.name }}</a>
+                                                {{ student.name }}
                                             </td>
                                             <td style="text-align:right;">
                                                 {% if not student_donation_amount == 0 %}${{ student_donation_amount|number_format(2, '.', ',')}}{% endif %}
@@ -183,7 +183,7 @@
                                                         <tr>
                                                             <td>{{ donation.donatedAt|date("m/d/Y")  }}</td>
                                                             <td>
-                                                                {% if donation.student.id is defined %}<a href="{{ path('student_show', { 'id': donation.student.id }) }}">{{ donation.student.name }}</a>{% else %}N/A{% endif %}
+                                                                {% if donation.student.id is defined %}{{ donation.student.name }}{% else %}N/A{% endif %}
                                                             </td>
                                                             <td style="text-align:right;">${{ donation.amount |number_format(2, '.', ',')}}</td>
                                                             <td style="text-align:center;">{{ donation.type }}</td>

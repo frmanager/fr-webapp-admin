@@ -50,7 +50,6 @@
 		</button>
 		<!--<a href="{{ path('homepage') }}" class="navbar-brand">{FR}</a>-->
 	</div>
-	 {% if is_granted('ROLE_USER') and campaign is defined and campaign|length > 0 %}
 	<div class="collapse navbar-collapse navbar-x-collapse">
 		<ul class="nav navbar-nav">
 			<li {% if app.request.attributes.get('_route')=='campaign_dashboard'%} class="active" {% endif %}>
@@ -59,7 +58,7 @@
 			Home </a>
 			</li>
 			<li {% if app.request.attributes.get('_route')=='grade_index'%} class="active" {% endif %}>
-			<a href="{{ path('grade_index') }}">
+			<a href="{{ path('grade_index', {'campaignUrl': campaign.url}) }}">
 			<span class="glyphicon glyphicon-apple"></span>
 			Grade Rankings</a>
 			</li>
@@ -70,12 +69,11 @@
 			</li>
 			</li>
 		</ul>
-		 {% endif %}
 		<ul class="nav navbar-nav navbar-right">
-			 {% if is_granted('ROLE_USER') %}
 			<li>
 			<a href="{{ path('faq') }}" role="button">FAQs</a>
 			</li>
+      {% if is_granted('ROLE_USER') %}
 			<li class="dropdown">
 			<a href="#" class="dropdown-toggle" id="dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			<i class="glyphicon glyphicon-user"></i>&nbsp; {{ app.user.username }}&nbsp; <span class="caret"></span>

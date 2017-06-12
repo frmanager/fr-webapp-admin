@@ -97,7 +97,7 @@ class TeacherController extends Controller
 
         $queryHelper = new QueryHelper($em, $logger);
 
-        return $this->render(strtolower($entity).'/campaign/teacher.show.html.twig', array(
+        return $this->render('/campaign/teacher.show.html.twig', array(
             'teacher' => $teacher,
             'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('limit' => 0)),
             'campaign_awards' => $campaignAwards,
