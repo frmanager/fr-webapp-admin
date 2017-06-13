@@ -14,7 +14,7 @@ use AppBundle\Utils\ValidationHelper;
 /**
  * Causevoxteam controller.
  *
- * @Route("/manage/causevoxteam")
+ * @Route("/causevoxteam")
  */
 class CausevoxteamController extends Controller
 {

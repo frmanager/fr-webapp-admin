@@ -17,14 +17,14 @@ use DateTime;
 /**
  * Student controller.
  *
- * @Route("/manage/{campaignUrl}/students")
+ * @Route("/{campaignUrl}/students")
  */
-class ManageStudentController extends Controller
+class StudentController extends Controller
 {
     /**
      * Lists all Student entities.
      *
-     * @Route("/", name="manageStudent_index")
+     * @Route("/", name="student_index")
      * @Method("GET")
      */
     public function indexAction($campaignUrl)
@@ -33,23 +33,24 @@ class ManageStudentController extends Controller
         $entity = 'Student';
 
         $em = $this->getDoctrine()->getManager();
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         $queryHelper = new QueryHelper($em, $logger);
         $tempDate = new DateTime();
         $dateString = $tempDate->format('Y-m-d').' 00:00:00';
         $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
         // replace this example code with whatever you need
 
-        return $this->render('campaignManager/student.index.html.twig', array(
-            'students' => $queryHelper->getStudentRanks(array('limit'=> 0)),
+        return $this->render('campaign/student.index.html.twig', array(
+            'students' => $queryHelper->getStudentRanks(array('campaign' => $campaign,'limit'=> 0)),
             'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
+            'campaign' => $campaign,
         ));
     }
 
     /**
      * Creates a new Student entity.
      *
-     * @Route("/new", name="manageStudent_new")
+     * @Route("/new", name="student_new")
      * @Method({"GET", "POST"})
      */
     public function newAction(Request $request, $campaignUrl)
@@ -78,7 +79,7 @@ class ManageStudentController extends Controller
     /**
      * Finds and displays a Student entity.
      *
-     * @Route("/{id}", name="manageStudent_show")
+     * @Route("/{id}", name="student_show")
      * @Method("GET")
      */
     public function showAction(Student $student, $campaignUrl)
@@ -89,34 +90,35 @@ class ManageStudentController extends Controller
         $student = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($student->getId());
         //$logger->debug(print_r($student->getDonations()));
 
-          $em = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
 
         $qb = $em->createQueryBuilder()->select('u')
                ->from('AppBundle:Campaignaward', 'u')
                ->orderBy('u.amount', 'DESC');
 
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         $campaignAwards = $qb->getQuery()->getResult();
         $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
         $queryHelper = new QueryHelper($em, $logger);
 
-        return $this->render('campaignManager/student.show.html.twig', array(
+        return $this->render('campaign/student.show.html.twig', array(
             'student' => $student,
-            'teacher' => $queryHelper->getTeachersData(array('id' => $student->getTeacher()->getId())),
-            'student_rank' => $queryHelper->getStudentRank($student->getId(),array('limit' => 0)),
-            'teacher_rank' => $queryHelper->getTeacherRank($student->getTeacher()->getId(),array('limit' => 0)),
+            'teacher' => $queryHelper->getTeachersData(array('campaign' => $campaign, 'id' => $student->getTeacher()->getId())),
+            'student_rank' => $queryHelper->getStudentRank($student->getId(),array('campaign' => $campaign, 'limit' => 0)),
+            'teacher_rank' => $queryHelper->getTeacherRank($student->getTeacher()->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'campaign_awards' => $campaignAwards,
             'campaignsettings' => $campaignSettings->getCampaignSettings(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
+            'campaign' => $campaign,
         ));
     }
 
     /**
      * Displays a form to edit an existing Student entity.
      *
-     * @Route("/edit/{id}", name="manageStudent_edit")
+     * @Route("/edit/{id}", name="student_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, Student $student, $campaignUrl)
@@ -146,7 +148,7 @@ class ManageStudentController extends Controller
     /**
      * Deletes a Student entity.
      *
-     * @Route("/delete/{id}", name="manageStudent_delete")
+     * @Route("/delete/{id}", name="student_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, Student $student, $campaignUrl)
@@ -176,7 +178,7 @@ class ManageStudentController extends Controller
         $entity = 'Student';
 
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('manageStudent_delete', array('campaignUrl'=> $campaignUrl, 'id' => $student->getId())))
+            ->setAction($this->generateUrl('student_delete', array('campaignUrl'=> $campaignUrl, 'id' => $student->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
@@ -185,7 +187,7 @@ class ManageStudentController extends Controller
     /**
      * Creates a new Student entity.
      *
-     * @Route("/upload", name="manageStudent_upload")
+     * @Route("/upload", name="student_upload")
      * @Method({"GET", "POST"})
      */
     public function uploadForm(Request $request)

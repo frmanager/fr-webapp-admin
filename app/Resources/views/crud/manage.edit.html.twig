@@ -1,4 +1,4 @@
-{% extends 'manage.html.twig' %}
+{% extends 'template.html.twig' %}
 {% use 'bootstrap_3_horizontal_layout.html.twig' %}
 {% block body %}
     <div class="row">
@@ -15,7 +15,7 @@
             {{ form_widget(edit_form) }}
             <hr/>
             <div>
-                <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Cancel</a>
+                <a href="{{ path(entity|lower ~ '_index', {'campaignUrl': campaign.url}) }}" class="btn btn-info">Cancel</a>
                 <button type="reset" value="Reset" class="btn btn-primary">Reset</button>
                 <input type="submit" value="Update" class="btn btn-warning"/>
             </div>

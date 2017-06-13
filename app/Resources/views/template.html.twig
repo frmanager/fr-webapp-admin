@@ -66,7 +66,7 @@
 <body class="app header-fixed sidebar-fixed {% if campaign is not defined %}sidebar-hidden{% endif %} aside-menu-fixed aside-menu-hidden">
   <header class="app-header navbar">
       <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button">☰</button>
-      <a class="navbar-brand" href="{{ path('campaignManager_index') }}"></a>
+      <a class="navbar-brand" href="{{ path('homepage') }}"></a>
       {% if is_granted('ROLE_USER') %}
       <ul class="nav navbar-nav d-md-down-none">
           {% if campaign is defined %}
@@ -99,16 +99,16 @@
       <nav class="sidebar-nav">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaignManager_dashboard', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
+            <a class="nav-link" href="{{ path('campaign_dashboard', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaign_dashboard', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-external-link"></i> View Campaign</a>
+            <a class="nav-link" href="{{ url('homepage') }}{{campaign.url}}"><i class="fa fa-external-link"></i> View Campaign</a>
           </li>
           <li class="nav-title">
               Manage Campaign
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaignManager_edit', {'campaignUrl': campaign.url}) }}"><i class="fa fa-wrench"></i> Campaign Settings</a>
+            <a class="nav-link" href="{{ path('campaign_edit', {'campaignUrl': campaign.url, 'id': campaign.id}) }}"><i class="fa fa-wrench"></i> Campaign Settings</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ path('manageCampaignaward_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-trophy"></i> Awards</a>
@@ -117,13 +117,13 @@
               Manage School
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('manageGrade_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-graduation-cap"></i> Grades</a>
+            <a class="nav-link" href="{{ path('grade_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-graduation-cap"></i> Grades</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('manageTeacher_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-apple"></i> Teachers</a>
+            <a class="nav-link" href="{{ path('teacher_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-apple"></i> Teachers</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('manageStudent_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-user"></i> Students</a>
+            <a class="nav-link" href="{{ path('student_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-user"></i> Students</a>
           </li>
           </li>
         </ul>

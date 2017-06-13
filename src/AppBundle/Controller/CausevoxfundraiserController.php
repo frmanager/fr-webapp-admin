@@ -15,7 +15,7 @@ use AppBundle\Utils\ValidationHelper;
 /**
  * Causevoxfundraiser controller.
  *
- * @Route("/manage/causevoxfundraiser")
+ * @Route("/causevoxfundraiser")
  */
 class CausevoxfundraiserController extends Controller
 {

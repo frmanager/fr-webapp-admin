@@ -1,10 +1,10 @@
-{% extends 'campaign.html.twig' %}
+{% extends 'template.html.twig' %}
 {% use 'bootstrap_3_horizontal_layout.html.twig' %}
 
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h1>{{ grade.name }}</h1>
+            <h1>View Grade</h1>
             <hr/>
         </div>
     </div>
@@ -16,6 +16,11 @@
                 <dt>Name</dt>
                 <dd>{{ grade.name }}</dd>
             </dl>
+            {{ form_start(delete_form) }}
+            <a href="{{ path('grade_index', {'campaignUrl':campaign.url}) }}" class="btn btn-info">Back</a>
+            <a href="{{ path('grade_edit', {'campaignUrl':campaign.url, 'id': grade.id }) }}" class="btn btn-primary">Edit</a>
+            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{grade.name}}?')" class="btn btn-danger">
+            {{ form_end(delete_form) }}
         </div>
     </div>
 {% endblock %}

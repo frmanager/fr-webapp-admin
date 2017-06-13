@@ -18,7 +18,7 @@ use DateTimeZone;
 /**
  * Donation controller.
  *
- * @Route("/manage/donation")
+ * @Route("/donation")
  */
 class DonationController extends Controller
 {
