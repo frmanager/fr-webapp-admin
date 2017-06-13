@@ -66,20 +66,17 @@
 <body class="app header-fixed sidebar-fixed {% if campaign is not defined %}sidebar-hidden{% endif %} aside-menu-fixed aside-menu-hidden">
   <header class="app-header navbar">
       <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button">☰</button>
-      <a class="navbar-brand" href="#"></a>
+      <a class="navbar-brand" href="{{ path('campaignManager_index') }}"></a>
       {% if is_granted('ROLE_USER') %}
       <ul class="nav navbar-nav d-md-down-none">
           {% if campaign is defined %}
           <li class="nav-item">
               <a class="nav-link navbar-toggler sidebar-toggler" href="#">☰</a>
           </li>
-          {% endif %}
           <li class="nav-item px-3">
-                <a class="nav-link" href="{{ path('campaignManager_index') }}"><i class="fa fa-refresh"></i> Switch Campaign</a>
+              <span><strong>{{ campaign.name }}</strong></span>
             </li>
-            <li class="nav-item px-3">
-                  <a class="nav-link" href="{{ path('campaignManager_index') }}"><i class="fa fa-plus"></i> Create New Campaign</a>
-              </li>
+          {% endif %}
       </ul>
       <ul class="nav navbar-nav ml-auto">
           <li class="nav-item dropdown">
@@ -111,7 +108,7 @@
               Manage Campaign
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa fa-wrench"></i> Campaign Settings</a>
+            <a class="nav-link" href="{{ path('campaignManager_edit', {'campaignUrl': campaign.url}) }}"><i class="fa fa-wrench"></i> Campaign Settings</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ path('manageCampaignaward_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-trophy"></i> Awards</a>
@@ -136,11 +133,11 @@
     <!-- Main content -->
     <main class="main">
       <!-- Breadcrumb -->
-      {% if is_granted('ROLE_USER') and campaign is defined %}
-      <ol class="breadcrumb">
-        {{ campaign.name }}
-      </ol>
-      {%  endif %}
+      <!--
+        <ol class="breadcrumb">
+        </ol>
+      -->
+      <br/>
       <div class="container-fluid">
         <div class="animated fadeIn">
           {% block body %}{% endblock %}

@@ -137,11 +137,13 @@ class ManageCampaignController extends Controller
     /**
      * Displays a form to edit an existing Campaign entity.
      *
-     * @Route("/edit/{id}", name="campaignManager_edit")
+     * @Route("/{campaignUrl}/edit/", name="campaignManager_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Campaign $campaign)
+    public function editAction(Request $request, $campaignUrl)
     {
+        $em = $this->getDoctrine()->getManager();
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         $logger = $this->get('logger');
         $entity = 'Campaign';
         $deleteForm = $this->createDeleteForm($campaign);
@@ -158,10 +160,10 @@ class ManageCampaignController extends Controller
               'Campaigns Saved!'
             );
 
-            return $this->redirectToRoute('campaignManager_index', array('id' => $campaign->getId()));
+            return $this->redirectToRoute('campaignManager_dashboard', array('campaignUrl'=> $campaignUrl));
         }
 
-        return $this->render('crud/edit.html.twig', array(
+        return $this->render('crud/manage.edit.html.twig', array(
             'campaign' => $campaign,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
