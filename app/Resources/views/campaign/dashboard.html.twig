@@ -85,7 +85,7 @@
      <!--/.col-->
  </div>
  <br/>
-   {% if new_teacher_awards | length > 0 %}
+   {% if new_teacher_awards is defined and new_teacher_awards | length > 0 %}
        <table class="table table-responsive table-hover table-outline mb-0 no-footer">
            <thead class="thead-default">
                <tr>
@@ -212,7 +212,7 @@
       <!--/.col-->
   </div>
   <br/>
-    {% if new_teacher_awards | length > 0 %}
+    {% if new_teacher_awards is defined and new_teacher_awards | length > 0 %}
         <table class="table table-responsive table-hover table-outline mb-0 no-footer">
             <thead class="thead-default">
                 <tr>
