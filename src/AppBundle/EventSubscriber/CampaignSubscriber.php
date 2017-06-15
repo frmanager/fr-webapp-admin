@@ -32,19 +32,23 @@ class CampaignSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $session = $this->container->get('session');
 
-        if(!$this->container->get('session')->get('campaign')){
-          // Get the doctrine service
-          $doctrine_service = $this->container->get('doctrine');
-          // Get the entity manager
-          $em = $doctrine_service->getEntityManager();
-          $campaign = $em->getRepository('AppBundle:Campaign')->find(1);
-          $this->container->get('session')->set('campaign', $campaign);
-          $session->save();
-        }else{
-          return;
-        }
+        /*
+            $session = $this->container->get('session');
+
+            if(!$this->container->get('session')->get('campaign')){
+              // Get the doctrine service
+              $doctrine_service = $this->container->get('doctrine');
+              // Get the entity manager
+              $em = $doctrine_service->getEntityManager();
+              $campaign = $em->getRepository('AppBundle:Campaign')->find(1);
+              $this->container->get('session')->set('campaign', $campaign);
+              $session->save();
+            }else{
+              return;
+            }
+        */
+
 
     }
 

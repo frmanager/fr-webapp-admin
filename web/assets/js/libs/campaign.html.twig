@@ -53,8 +53,8 @@
 	 {% if is_granted('ROLE_USER') and campaign is defined and campaign|length > 0 %}
 	<div class="collapse navbar-collapse navbar-x-collapse">
 		<ul class="nav navbar-nav">
-			<li {% if app.request.attributes.get('_route')=='campaign_dashboard'%} class="active" {% endif %}>
-			<a href="{{ path('campaign_dashboard', { 'campaignUrl': campaign.url }) }}">
+			<li {% if app.request.attributes.get('_route')=='campaign_index'%} class="active" {% endif %}>
+			<a href="{{ path('campaign_index', { 'campaignUrl': campaign.url }) }}">
 			<span class="glyphicon glyphicon-dashboard"></span>
 			Home </a>
 			</li>

@@ -13,12 +13,34 @@ use AppBundle\Utils\QueryHelper;
 use DateTime;
 
 /**
- * Manage Grade controller.
+ * Manage Campaign controller.
  *
  * @Route("/{campaignUrl}")
  */
 class CampaignController extends Controller
 {
+
+  /**
+   * @Route("/", name="campaign_index")
+   */
+  public function dashboardAction($campaignUrl)
+  {
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
+      $queryHelper = new QueryHelper($em, $logger);
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
+
+      // replace this example code with whatever you need
+      return $this->render('campaign/dashboard.html.twig', array(
+        'campaign_settings' => $campaignSettings->getCampaignSettings(),
+        'new_teacher_awards' => $queryHelper->getTeacherAwards(array('campaign' => $campaign,'limit' => 10, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
+        'teacher_rankings' => $queryHelper->getTeacherRanks(array('campaign' => $campaign,'limit'=> 10)),
+        'student_rankings' => $queryHelper->getStudentRanks(array('campaign' => $campaign,'limit'=> 10)),
+        'totals' => $queryHelper->getTotalDonations(array('campaign' => $campaign)),
+        'campaign' => $campaign,
+      ));
+  }
 
   /**
    * Finds and displays a Campaign entity.
@@ -42,7 +64,7 @@ class CampaignController extends Controller
   /**
    * Displays a form to edit an existing Campaign entity.
    *
-   * @Route("/edit", name="campaign_edit")
+   * @Route("/settings", name="campaign_edit")
    * @Method({"GET", "POST"})
    */
   public function editAction(Request $request, $campaignUrl)
@@ -65,10 +87,10 @@ class CampaignController extends Controller
             'Campaigns Saved!'
           );
 
-          return $this->redirectToRoute('campaign_dashboard', array('campaignUrl'=> $campaignUrl));
+          return $this->redirectToRoute('campaign_index', array('campaignUrl'=> $campaignUrl));
       }
 
-      return $this->render('crud/manage.edit.html.twig', array(
+      return $this->render('campaign/campaign.edit.html.twig', array(
           'campaign' => $campaign,
           'edit_form' => $editForm->createView(),
           'delete_form' => $deleteForm->createView(),
@@ -114,6 +136,84 @@ class CampaignController extends Controller
           ->getForm()
       ;
   }
+
+
+
+  /**
+   * @Route("/send_daily_email", name="manage_teacher_daily_email")
+   */
+  public function sendDailyEmailAction(Request $request, $campaignUrl)
+  {
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
+      $teachers = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findAll();
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      $queryHelper = new QueryHelper($em, $logger);
+
+      $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
+
+      $reportDate = $queryHelper->convertToDay(new DateTime());
+
+      if(null !== $request->query->get('date_modify')){
+        $reportDate->modify($request->query->get('date_modify').' day');
+      }
+
+      $logger->info("Sending Daily Email");
+      $emailCount = 0;
+      foreach ($teachers as $teacher) {
+      unset($newAwards);
+      $newAwards = $queryHelper->getNewTeacherAwards(array('campaign' => $campaign, 'before_date' => $reportDate, 'id' => $teacher->getId(), 'order_by' => array('field' => 'donation_amount',  'order' => 'asc')));
+      $logger->debug("New Awards for: ".print_r($newAwards, true));
+      if(isset($newAwards) && !empty($newAwards) && count($newAwards) > 0){
+        if (strcmp($this->container->get('kernel')->getEnvironment(), "dev") == 0){
+          $toAddress = 'funrun@lrespto.org';
+        }else{
+          $toAddress = $teacher->getEmail();
+        }
+        $emailCount ++;
+        $logger->info("Sending Daily Email to: ".$teacher->getTeacherName());
+        $message = \Swift_Message::newInstance()
+                ->setSubject('New Fun Run Award Level Reached!')
+                ->setFrom('support@lrespto.org')
+                ->setCc('funrun@lrespto.org', 'support@lrespto.org')
+                ->setTo($toAddress)
+                ->setBody(
+                    $this->renderView(
+                        // app/Resources/views/Emails/registration.html.twig
+                        'email/teacherAwards.html.twig',
+                        array(
+                          'teacher' => $teacher,
+                          'report_date' => $reportDate,
+                          'awards' => $newAwards
+                        )
+                    ),
+                    'text/html'
+                )
+                /*
+                 * If you also want to include a plaintext version of the message
+                ->addPart(
+                    $this->renderView(
+                        'Emails/registration.txt.twig',
+                        array('name' => $name)
+                    ),
+                    'text/plain'
+                )
+                */
+            ;
+            $this->get('mailer')->send($message);
+      }else{
+        $logger->info("Teacher ".$teacher->getTeacherName()." did not have any new awards.");
+      }
+        }
+
+        $this->addFlash(
+            'success',
+            'Sent '.$emailCount.' emails'
+        );
+
+        return $this->redirectToRoute('manage_index');
+  }
+
 
 
 }

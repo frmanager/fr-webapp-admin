@@ -155,7 +155,7 @@ class QueryHelper
         $campaign = $options['campaign'];
 
         if (isset($options['before_date'])) {
-            $date = "WHERE d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
+            $date = "AND d.donatedAt <= '".$this->convertToDay($options['before_date'])->format('Y-m-d H:i:s')."' ";
         } else {
             $date = '';
         }

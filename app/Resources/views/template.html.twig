@@ -99,7 +99,7 @@
       <nav class="sidebar-nav">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaign_dashboard', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
+            <a class="nav-link" href="{{ path('campaign_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url('homepage') }}{{campaign.url}}"><i class="fa fa-external-link"></i> View Campaign</a>
@@ -108,7 +108,7 @@
               Manage Campaign
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaign_edit', {'campaignUrl': campaign.url, 'id': campaign.id}) }}"><i class="fa fa-wrench"></i> Campaign Settings</a>
+            <a class="nav-link" href="{{ path('campaign_edit', {'campaignUrl': campaign.url}) }}"><i class="fa fa-wrench"></i> Campaign Settings</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ path('manageCampaignaward_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-trophy"></i> Awards</a>

@@ -1,6 +1,8 @@
 {% extends 'template.html.twig' %}
 
 {% block body %}
+<div class="card">
+<div class="card-block">
     <div class="row">
         <div class="col-md-12">
             <h1>Create new
@@ -13,11 +15,13 @@
             {{ form_start(form) }}
             {{ form_widget(form) }}
             <div>
-                <a href="{{ path(entity|lower ~ '_index') }}" class="btn btn-info">Cancel</a>
+                <a href="{{ path('homepage') }}" class="btn btn-info">Cancel</a>
                 <button type="reset" value="Reset" class="btn btn-primary">Reset</button>
                 <input type="submit" value="Add New {{entity}}" class="btn btn-warning"/>
             </div>
             {{ form_end(form) }}
         </div>
     </div>
+  </div>
+</div>
 {% endblock %}
