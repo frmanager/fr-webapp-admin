@@ -102,7 +102,7 @@
             <a class="nav-link" href="{{ path('campaign_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-tachometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('homepage') }}{{campaign.url}}"><i class="fa fa-external-link"></i> View Campaign</a>
+            <a class="nav-link" target="_blank" href="{{ main_app_url }}/{{campaign.url}}/"><i class="fa fa-external-link"></i> View Campaign</a>
           </li>
           <li class="nav-title">
               Manage Campaign
