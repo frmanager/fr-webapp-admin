@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class CampaignType extends AbstractType
 {
@@ -23,6 +24,26 @@ class CampaignType extends AbstractType
             ->add('description')
             ->add('url')
             ->add('email', TextType::class, array('required' => true))
+            ->add('theme', ChoiceType::class, array(
+                  'choices'  => array(
+                      'Default' => 'cerulean',
+                      'Cosmo' => 'cosmo',
+                      'Cyborg' => 'cyborg',
+                      'Darkly' => 'darkly',
+                      'Flatly' => 'flatly',
+                      'Journal' => 'journal',
+                      'Lumen' => 'lumen',
+                      'Paper' => 'paper',
+                      'Readable' => 'readable',
+                      'Sandstone' => 'sandstone',
+                      'Cerulean' => 'cerulean',
+                      'Slate' => 'slate',
+                      'Solar' => 'solar',
+                      'Space Lab' => 'spacelab',
+                      'Superhero' => 'superhero',
+                      'United' => 'united',
+                      'Yeti' => 'yeti',
+                  )))
             ->add('start_date', DateType::class, array('widget' => 'single_text' ))
             ->add('endDate', DateType::class, array('widget' => 'single_text'))
             ->add('fundingGoal', MoneyType::class, array('required' => true, 'currency' => 'USD'))
