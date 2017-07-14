@@ -1,0 +1,5 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+    <p>{{ 'registration.check_email'|trans({'%email%': user.email}) }}</p>
+{% endblock body %}
