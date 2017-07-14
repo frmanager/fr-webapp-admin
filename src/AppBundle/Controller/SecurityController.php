@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
- * Security controller.
+ * Security Controller
  *
  */
 class SecurityController extends Controller
@@ -65,17 +65,7 @@ class SecurityController extends Controller
       $logger = $this->get('logger');
       /** @var $session \Symfony\Component\HttpFoundation\Session\Session */
       $session = $request->getSession();
-      $campaign = null;
 
-      if (!empty($request->attributes->get('_route_params'))) {
-          $routeParams = $request->attributes->get('_route_params');
-          if (array_key_exists('campaignUrl', $routeParams)) {
-              $em = $this->getDoctrine()->getManager();
-              $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($routeParams['campaignUrl']);
-          }
-      }
-
-
-      return $this->redirectToRoute('campaign_index', array('campaignUrl' => $campaign->getUrl()));
+      return $this->redirectToRoute('homepage');
   }
 }

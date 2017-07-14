@@ -1,3 +1,8 @@
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+
+account:
+    resource: "@AppBundle/Controller/SecurityController.php"
+    prefix:   /account
+    type:     annotation

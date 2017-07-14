@@ -20,12 +20,12 @@ security:
             provider: our_db_provider
             form_login:
                 provider: our_db_provider
-                login_path: login
-                check_path: login
+                login_path: /account/login
+                check_path: /account/login
                 default_target_path: loginRedirect
             logout:
-                path: logout
-                target: campaign_index
+                path: /account/logout
+                target: homepage
             anonymous:    true
 
         dev:
@@ -33,10 +33,8 @@ security:
             security: false
 
     access_control:
-        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/account/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/account/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
-        - { path: ^/manage, role: ROLE_USER }
-        - { path: ^/manage/user, role: ROLE_ADMIN }
+        - { path: ^/account/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/account/logout$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/account/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/account/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: ROLE_USER }
