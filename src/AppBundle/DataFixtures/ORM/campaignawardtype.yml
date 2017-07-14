@@ -1,0 +1,9 @@
+AppBundle\Entity\Campaignawardtype:
+    campaignawardtype1:
+        displayName: "Teacher/Class"
+        value: "teacher"
+        description: "Teacher/Class"
+    campaignawardtype2:
+        displayName: "Student/Individual"
+        value: "student"
+        description: "Student/Individual"
