@@ -1,9 +1,0 @@
-AppBundle\Entity\UserStatus:
-    userStatus1:
-        name: "Registered"
-    userStatus2:
-        name: "Confirmed"
-    userStatus3:
-        name: "Locked"
-    userStatus4:
-        name: "Disabled"

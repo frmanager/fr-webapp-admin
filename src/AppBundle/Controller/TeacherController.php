@@ -91,13 +91,15 @@ class TeacherController extends Controller
         //$logger->debug(print_r($student->getDonations()));
         $em = $this->getDoctrine()->getManager();
 
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+
         $qb = $em->createQueryBuilder()->select('u')
                ->from('AppBundle:Campaignaward', 'u')
+               ->andWhere('u.campaign = :campaignId')
+               ->setParameter('campaignId', $campaign->getId())
                ->orderBy('u.amount', 'DESC');
 
-        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         $campaignAwards = $qb->getQuery()->getResult();
-        $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
         $queryHelper = new QueryHelper($em, $logger);
 
@@ -105,7 +107,6 @@ class TeacherController extends Controller
             'teacher' => $teacher,
             'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'campaign_awards' => $campaignAwards,
-            'campaignsettings' => $campaignSettings->getCampaignSettings(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
             'campaign' => $campaign,

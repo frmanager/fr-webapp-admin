@@ -8,7 +8,6 @@
             {% set number_of_donations = number_of_donations + 1 %}
             {% set donation_amount = donation_amount + donation.amount %}
     {% endfor %}
-
     <div class="row" style="">
         <div class="col-md-4">
             <h1>{{ teacher.teacherName }}</h1>
@@ -49,7 +48,7 @@
                         <tr>
                             <th style="text-align:right;">Grade</th>
                             <td>
-                                {% if is_granted('ROLE_USER') %}<a href="{{ path('grade_show', { 'id': teacher.grade.id }) }}">{{ teacher.grade.name }}</a>{% else %}{{ teacher.grade.name }}{% endif %}
+                                {% if is_granted('ROLE_USER') %}<a href="{{ path('grade_show', { 'campaignUrl': campaign.url, 'id': teacher.grade.id }) }}">{{ teacher.grade.name }}</a>{% else %}{{ teacher.grade.name }}{% endif %}
                             </td>
                         </tr>
                         <tr>
@@ -116,12 +115,12 @@
                             {% for campaign_award in campaign_awards %}
                                 {% if campaign_award.campaignawardtype.value == "teacher" %}
                                     {% if campaign_award.campaignawardstyle.value == "level" %}
-                                        <tr {% if donation_amount >= campaign_award.amount %} class="success" {% endif %}>
+                                        <tr {% if donation_amount >= campaign_award.amount %} class="table-success" {% endif %}>
                                             <td>{{ campaign_award.name }}</td>
                                             <td class="col-xs-3" style="text-align:right;">${{ campaign_award.amount|number_format(2, '.', ',') }}</td>
                                             <td class="col-xs-1" style="text-align:center;">
                                                 {% if donation_amount >= campaign_award.amount %}
-                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                    <span class="fa fa-check-circle"></span>
                                                 {% endif %}
                                             </td>
                                         </tr>
@@ -154,11 +153,13 @@
                                 </thead>
                                 <tbody>
                                     {% for student in teacher.students %}
+
                                         {% set student_number_of_donations = 0 %}
                                         {% set student_donation_amount = 0 %}
                                         {% for donation in student.donations %}
                                             {% set student_number_of_donations = student_number_of_donations + 1 %}
                                             {% set student_donation_amount = student_donation_amount + donation.amount %}
+
                                         {% endfor %}
                                         <tr>
                                             <td>

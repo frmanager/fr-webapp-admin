@@ -1,9 +1,0 @@
-AppBundle\Entity\Campaignawardstyle:
-    campaignawardstyle1:
-        displayName: "Place"
-        value: "place"
-        description: "Students compete for first place"
-    campaignawardstyle2:
-        displayName: "Donation Level"
-        value: "level"
-        description: "Award received if (Teacher/Student) reach donation amount"
