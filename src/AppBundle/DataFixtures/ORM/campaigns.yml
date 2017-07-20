@@ -6,8 +6,6 @@ AppBundle\Entity\Campaign:
         url: 'lrespto_funrun'
         email: '@user1->email'
         createdBy: '@user1'
-        createdAt: <dateTime('now')>
-        updatedAt: <dateTime('now')>
         startDate: <dateTimeBetween('-30 days', '+5 days')>
         endDate: <dateTimeBetween('+15 days','+90 days')>
         fundingGoal: <numberBetween(1000, 30000)>
@@ -18,8 +16,6 @@ AppBundle\Entity\Campaign:
         url (unique): <slug()>
         email: '<freeEmail()>'
         createdBy: '@user<current()>'
-        createdAt: <dateTime('now')>
-        updatedAt: <dateTime('now')>
         startDate: <dateTimeBetween('-30 days', '+5 days')>
         endDate: <dateTimeBetween('+15 days','+90 days')>
         fundingGoal: <numberBetween(1000, 30000)>
