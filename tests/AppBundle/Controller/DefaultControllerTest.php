@@ -13,6 +13,15 @@ class DefaultControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/');
 
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+    }
+
+    public function testIndexRedirect()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/account/login');
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }
