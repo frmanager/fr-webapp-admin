@@ -3,7 +3,7 @@ AppBundle\Entity\Donation:
         teacher: '@teacher*'
         student: null
         amount: <randomFloat(2, 1, 50)>
-        donatedAt: <dateTimeBetween('-60 days', '0 days')>
+        donatedAt: <dateTimeBetween('-30 days', '0 days')>
         type: "manual"
         source: "manual"
         __calls:
@@ -12,7 +12,7 @@ AppBundle\Entity\Donation:
     donation{501..5000}:
         student: '@student*'
         amount: <randomFloat(2, 1, 50)>
-        donatedAt: <dateTimeBetween('-60 days', '0 days')>
+        donatedAt: <dateTimeBetween('-30 days', '0 days')>
         type: "manual"
         source: "manual"
         __calls:
