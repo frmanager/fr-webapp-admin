@@ -1,10 +1,8 @@
+{% use 'bootstrap_3_horizontal_layout.html.twig' %}
 {% extends 'template.html.twig' %}
-{% use 'bootstrap_3_layout.html.twig' %}
+
 
 {% block body %}
-  {% set campaignUrl = null %}
-  {% set campaignUrl = app.request.attributes.get('_route_params')['campaignUrl'] %}
-
   <p style="text-align:left;">
     Join the Campaign!
     <hr/>
@@ -18,7 +16,7 @@
         {{ form_row(form.email) }}
         {{ form_row(form.Password.first) }}
         {{ form_row(form.Password.second) }}
-        <button type="submit">Register!</button>
+        <button class="btn btn-primary" type="submit">Register!</button>
     {{ form_end(form) }}
 
   {% endblock body %}

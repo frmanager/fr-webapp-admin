@@ -29,7 +29,6 @@ class QueryHelperTest extends KernelTestCase
 
     }
 
-
     public function testSearchByCategoryName()
     {
       $userStatuses = $this->em->getRepository('AppBundle:UserStatus')->findAll();

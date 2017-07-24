@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use DateTime;
+use DateTimeZone;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use AppBundle\Utils\CampaignHelper;
 
 /**
  * Security controller.
@@ -21,11 +24,13 @@ use DateTime;
 class RegistrationController extends Controller
 {
     /**
-     * @Route("/register", name="user_registration")
+     * @Route("/signup", name="user_registration")
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
         $logger = $this->get('logger');
+        $em = $this->getDoctrine()->getManager();
+
         // 1) build the form
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -55,15 +60,11 @@ class RegistrationController extends Controller
             // 4) save the User!
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
-
-            //Create CampaignUser
-            $campaignUser = new CampaignUser();
-            $campaignUser->setUser($user);
-            $campaignUser->setCampaign($campaign);
-            $em->persist($campaignUser);
-
-
             $em->flush();
+
+            $campaignHelper = new CampaignHelper($em, $logger);
+            $campaign = $campaignHelper->loadCampaign($this->getCampaignData($user), array());
+
 
             // ... do any other work - like sending them an email, etc
             // maybe set a "flash" success message for the user
@@ -74,9 +75,59 @@ class RegistrationController extends Controller
         return $this->render('registration/register.html.twig',
             array(
               'form' => $form->createView(),
-              'campaign' => $campaign
             )
         );
+    }
+
+
+
+    function getCampaignData(User $user){
+
+        $date = new DateTime();
+        $date->modify('-1 month');
+        $campaignStartDate = $date;
+
+        $date = new DateTime();
+        $date->modify('+2 months');
+        $campaignEndDate = $date;
+
+        $data = array(
+          'user' => $user,
+          'campaign' => array(
+            'name' => 'My First Campaign',
+            'description' => 'This is where the description will go for your campaign',
+            'theme' => 'cerulean',
+            'email' => $user->getEmail(),
+            'fundingGoal' => 10000,
+            'createdBy' => $user,
+            'startDate' => $campaignStartDate,
+            'endDate' => $campaignEndDate,
+            'grades'=> array(
+              0 => array(
+                'name'=>'Kindergarten',
+                'teachers' => array(
+                  0 => array(
+                    'teacherName' => 'Ms. Llane',
+                    'email' => '',
+                    'students' => array(
+                      0 => array(
+                        'name' => 'Gregory H.',
+                        'donations' => array(
+                          0 => array(
+                            'amount' => 25.00,
+                            'type' => 'manual',
+                            'source' => 'manual',
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          ));
+
+          return $data;
     }
 
 }

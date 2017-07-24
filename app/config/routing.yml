@@ -6,3 +6,8 @@ account:
     resource: "@AppBundle/Controller/SecurityController.php"
     prefix:   /account
     type:     annotation
+
+register:
+    resource: "@AppBundle/Controller/RegistrationController.php"
+    prefix:   /account
+    type:     annotation
