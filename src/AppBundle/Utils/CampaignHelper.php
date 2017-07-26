@@ -88,7 +88,7 @@ class CampaignHelper
     } else {
       $date = new DateTime();
       $date->modify('-1 month');
-      $campaign->setEndDate($date);
+      $campaign->setStartDate($date);
     }
 
 
