@@ -144,7 +144,11 @@ class CampaignHelperTest extends KernelTestCase
     }
 
 
-
+    /*
+    *
+    * Some variables provided, some not provided. should see "Some" defaults
+    *
+    */
     public function testPartialCampaign()
     {
 
@@ -178,6 +182,206 @@ class CampaignHelperTest extends KernelTestCase
         $this->em->remove($campaign);
         $this->em->flush();
     }
+
+
+
+    /*
+    *
+    * Testing all 4 combinations of campaign awards student/teacher place/level
+    *
+    */
+    public function testCampaignAwards()
+    {
+
+      $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
+      $campaignAwardTypeTeacher = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
+      $campaignAwardTypeStudent = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('student');
+      $campaignAwardStyleLevel = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
+      $campaignAwardStylePlace = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('place');
+
+
+      $data = array(
+        'user' => $user,
+        'campaign' => array(
+          'name' => 'New Campaign',
+          'email' => 'letstrythis@gmail.com',
+          'createdBy' => $user,
+          'campaignawards' => array(
+            0 => array(
+              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardstyle' => $campaignAwardStyleLevel,
+              'name' => 'Teacher Level Award',
+              'amount' => 100
+            ),
+            1 => array(
+              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardstyle' => $campaignAwardStylePlace,
+              'name' => 'Teacher Place Award',
+              'place' => 1
+            ),
+            2 => array(
+              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardstyle' => $campaignAwardStyleLevel,
+              'name' => 'Student Level Award',
+              'amount' => 100
+            ),
+            3 => array(
+              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardstyle' => $campaignAwardStylePlace,
+              'name' => 'Student Place Award',
+              'place' => 1
+            )
+          )
+        ));
+
+        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaign = $campaignHelper->loadCampaign($data, array());
+        $this->assertNotNull($campaign);
+
+        $campaignUser = $this->em->getRepository('AppBundle:CampaignUser')->findOneBy(array('campaign'=>$campaign, 'user'=>$user));
+        $this->assertNotNull($campaignUser);
+
+        $campaignAwards = $campaign->getCampaignAwards();
+        $this->assertNotNull($campaignAwards);
+        $this->assertCount(4, $campaignAwards);
+
+        $this->em->remove($campaignUser);
+        $this->em->remove($campaignAwards);
+        $this->em->remove($campaign);
+        $this->em->flush();
+    }
+
+
+    /*
+    *
+    * level awards require amount.....place provided....should fail (false)
+    *
+    */
+    public function testCampaignAwardsBadLevelTeacherCombo()
+    {
+      $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
+      $campaignAwardTypeTeacher = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
+      $campaignAwardStyleLevel = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
+
+      $data = array(
+        'user' => $user,
+        'campaign' => array(
+          'name' => 'New Campaign',
+          'email' => 'letstrythis@gmail.com',
+          'createdBy' => $user,
+          'campaignawards' => array(
+            0 => array(
+              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardstyle' => $campaignAwardStyleLevel,
+              'name' => 'Teacher Level Award',
+              'place' => 3
+            )
+          )
+        ));
+
+        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaign = $campaignHelper->loadCampaign($data, array());
+        $this->assertFalse($campaign);
+    }
+
+
+    /*
+    *
+    * place awards require place.....amount provided....should fail (false)
+    *
+    */
+    public function testCampaignAwardsBadPlaceTeacherCombo()
+    {
+      $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
+      $campaignAwardTypeTeacher = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
+      $campaignAwardStylePlace = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('place');
+
+      $data = array(
+        'user' => $user,
+        'campaign' => array(
+          'name' => 'New Campaign',
+          'email' => 'letstrythis@gmail.com',
+          'createdBy' => $user,
+          'campaignawards' => array(
+            0 => array(
+              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardstyle' => $campaignAwardStylePlace,
+              'name' => 'Teacher Place Award',
+              'amount' => 100
+            )
+          )
+        ));
+
+        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaign = $campaignHelper->loadCampaign($data, array());
+        $this->assertFalse($campaign);
+    }
+
+    /*
+    *
+    * level awards require amount.....place provided....should fail (false)
+    *
+    */
+    public function testCampaignAwardsBadLevelStudentCombo()
+    {
+      $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
+      $campaignAwardTypeStudent = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('student');
+      $campaignAwardStyleLevel = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
+
+      $data = array(
+        'user' => $user,
+        'campaign' => array(
+          'name' => 'New Campaign',
+          'email' => 'letstrythis@gmail.com',
+          'createdBy' => $user,
+          'campaignawards' => array(
+            0 => array(
+              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardstyle' => $campaignAwardStyleLevel,
+              'name' => 'Student Level Award',
+              'place' => 3
+            )
+          )
+        ));
+
+        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaign = $campaignHelper->loadCampaign($data, array());
+        $this->assertFalse($campaign);
+    }
+
+
+    /*
+    *
+    * place awards require place.....amount provided....should fail (false)
+    *
+    */
+    public function testCampaignAwardsBadPlaceStudentCombo()
+    {
+      $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
+      $campaignAwardTypeStudent = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('student');
+      $campaignAwardStylePlace = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('place');
+
+      $data = array(
+        'user' => $user,
+        'campaign' => array(
+          'name' => 'New Campaign',
+          'email' => 'letstrythis@gmail.com',
+          'createdBy' => $user,
+          'campaignawards' => array(
+            0 => array(
+              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardstyle' => $campaignAwardStylePlace,
+              'name' => 'Student Place Award',
+              'amount' => 100
+            )
+          )
+        ));
+
+        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaign = $campaignHelper->loadCampaign($data, array());
+        $this->assertFalse($campaign);
+    }
+
 
 
     /**
