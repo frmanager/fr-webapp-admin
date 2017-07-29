@@ -5,6 +5,7 @@
 namespace AppBundle\Utils;
 
 use AppBundle\Entity\Campaign;
+use AppBundle\Entity\Campaignaward;
 use AppBundle\Form\UserType;
 use AppBundle\Entity\User;
 use AppBundle\Entity\CampaignUser;
@@ -12,17 +13,20 @@ use AppBundle\Entity\UserStatus;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
+use Symfony\Component\HttpKernel\Kernel as kernel;
 
 
 class CampaignHelper
 {
   protected $em;
   protected $logger;
+  protected $environment;
 
-  public function __construct(EntityManager $em, Logger $logger)
+  public function __construct(EntityManager $em, Logger $logger, $environment = null)
   {
       $this->em = $em;
       $this->logger = $logger;
+      $this->environment = $environment;
   }
 
 
@@ -66,7 +70,9 @@ class CampaignHelper
 
     if (isset($data['campaign']['email'])) {
         $campaign->setEmail($data['campaign']['email']);
-    } else {
+    } else if ($this->environment === "test") {
+        $campaign->setEmail('thisisatest@gmail.com');
+    }else{
         $campaign->setEmail($data['user']->getEmail());
     }
 
@@ -104,9 +110,26 @@ class CampaignHelper
     $this->em->persist($campaign);
 
     //Now we add the campaignUser record
-    $this->createCampaignUser($campaign, $data['user']);
+    $campaignUser = $this->createCampaignUser($campaign, $data);
 
-    //$this->createDefaultGrades($campaign);
+    //If campaign awards are provided, create campaign awards
+    if(!$campaignUser){
+        $this->em->remove($campaign);
+        return false;
+    }
+
+
+    //If campaign awards are provided, create campaign awards
+    if(isset($data['campaign']['campaignawards'])){
+      if(!$this->createCampaignAwards($campaign, $data)){
+        $this->logger->debug("Create Campaignawards failed; removing CampaignUsers and Campaign");
+        $this->em->remove($campaignUser);
+        $this->em->remove($campaign);
+        return false;
+      }
+    }else{
+      $this->logger->debug("Skipping creating Campaignawards: none provided");
+    }
 
 
     #flush
@@ -116,16 +139,84 @@ class CampaignHelper
     return $campaign;
   }
 
-  private function createCampaignUser($campaign, $user){
+  public function createCampaignUser(Campaign $campaign, $data){
     //Now we need to add the user as a member of the campaign
     $campaignUser = new CampaignUser();
-    $campaignUser->setUser($user);
+    $campaignUser->setUser($data['user']);
     $campaignUser->setCampaign($campaign);
     //Save
     $this->em->persist($campaignUser);
+    $this->logger->debug("CampaignUser creation successful");
+    return $campaignUser;
+
   }
 
 
+  public function createCampaignAwards(Campaign $campaign, $data){
+    //Now we need to add the user as a member of the campaign
+
+    //check to see if Array
+    if(isset($data['campaign']['campaignawards'][0]) && is_array($data['campaign']['campaignawards'][0])){
+      foreach($data['campaign']['campaignawards'] as $campaignAward){
+        if(!$this->createCampaignAward($campaign, $campaignAward)){
+          return false;
+        }
+      }
+    }else{
+      if(!$this->createCampaignAward($campaign, $data['campaign']['campaignawards'])){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public function createCampaignAward(Campaign $campaign, $campaignAward){
+
+    if(!isset($campaignAward['campaignawardstyle'])){
+      $this->logger->debug("Campaignaward creation failure: Campaignawardstyle was not provided");
+      return false;
+    }else if(!isset($campaignAward['campaignawardtype'])){
+      $this->logger->debug("Campaignaward creation failure: Campaignaward Campaignawardtype was not provided");
+      return false;
+    }else if(!isset($campaignAward['name'])){
+      $this->logger->debug("Campaignaward creation failure: Campaignaward name was not provided");
+      return false;
+    }
+
+    if($campaignAward['campaignawardstyle']->getValue() == "level" && (!isset($campaignAward['amount']) || $campaignAward['amount'] === 0)){
+      $this->logger->debug("Campaignaward creation failure: Campaignawardstyle of level requires an amount");
+      return false;
+    }else if($campaignAward['campaignawardstyle']->getValue() == "place" && (!isset($campaignAward['place']) || $campaignAward['place'] === 0)){
+      $this->logger->debug("Campaignaward creation failure: Campaignawardstyle of place requires an place");
+      return false;
+    }
+
+    //Now we need to add the user as a member of the campaign
+    $newCampaignAward = new Campaignaward();
+    $newCampaignAward->setCampaign($campaign);
+    $newCampaignAward->setName($campaignAward['name']);
+    $newCampaignAward->setCampaignawardtype($campaignAward['campaignawardtype']);
+    $newCampaignAward->setCampaignawardstyle($campaignAward['campaignawardstyle']);
+
+
+    if(isset($campaignAward['place'])){
+      $newCampaignAward->setPlace($campaignAward['place']);
+    }
+
+    if(isset($campaignAward['amount'])){
+      $newCampaignAward->setAmount($campaignAward['amount']);
+    }
+
+    if(isset($campaignAward['description'])){
+      $newCampaignAward->setDescription($campaignAward['description']);
+    }
+
+    //Save
+    $this->em->persist($newCampaignAward);
+
+    return $newCampaignAward;
+  }
 
   private function generateRandomString($length = 10) {
       $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

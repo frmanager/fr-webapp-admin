@@ -17,6 +17,7 @@ services:
 
     app.CampaignHelper:
         class: AppBundle\Utils\CampaignHelper
+        arguments: ['@doctrine.orm.default_entity_manager', '@logger']
 
     app.CampaignSubscriber:
         class: AppBundle\EventSubscriber\CampaignSubscriber

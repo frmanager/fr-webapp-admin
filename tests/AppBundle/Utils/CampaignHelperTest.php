@@ -15,6 +15,11 @@ class CampaignHelperTest extends KernelTestCase
 {
 
     /**
+     * Dev/Test/Prod
+     */
+    private $environment;
+
+    /**
      * @var \Doctrine\ORM\EntityManager
      */
     private $em;
@@ -37,11 +42,15 @@ class CampaignHelperTest extends KernelTestCase
 
         $this->logger = static::$kernel->getContainer()
             ->get('logger');
+
+        $this->environment = static::$kernel->getContainer()
+            ->getParameter("kernel.environment");
+
     }
 
     public function testCampaignCreation()
     {
-
+      $this->logger->debug("running test: testCampaignCreation");
       $date = new DateTime();
       $date->modify('-1 month');
       $campaignStartDate = $date;
@@ -55,22 +64,22 @@ class CampaignHelperTest extends KernelTestCase
       $data = array(
         'user' => $user,
         'campaign' => array(
-          'name' => 'New Campaign',
+          'name' => 'testCampaignCreation',
           'description' => 'The Campaign description field',
           'theme' => 'superhero',
-          'email' => 'letstrythis@gmail.com',
+          'email' => 'thisisatest@gmail.com',
           'fundingGoal' => 1500,
           'createdBy' => $user,
           'startDate' => $campaignStartDate,
           'endDate' => $campaignEndDate,
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
 
         $this->assertEquals($campaign->getCreatedBy(), $user);
-        $this->assertEquals($campaign->getEmail(), 'letstrythis@gmail.com');
-        $this->assertEquals($campaign->getName(), 'New Campaign');
+        $this->assertEquals($campaign->getEmail(), 'thisisatest@gmail.com');
+        $this->assertEquals($campaign->getName(), 'testCampaignCreation');
         $this->assertEquals($campaign->getFundingGoal(), 1500);
         $this->assertEquals($campaign->getDescription(), 'The Campaign description field');
         $this->assertEquals($campaign->getStartDate(), $campaignStartDate);
@@ -79,10 +88,6 @@ class CampaignHelperTest extends KernelTestCase
 
         $campaignUser = $this->em->getRepository('AppBundle:CampaignUser')->findOneBy(array('campaign'=>$campaign, 'user'=>$user));
         $this->assertNotNull($campaignUser);
-
-        $this->em->remove($campaignUser);
-        $this->em->remove($campaign);
-        $this->em->flush();
     }
 
     /*
@@ -92,16 +97,16 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testDefaultCampaignCreation()
     {
-
+      $this->logger->debug("running test: testDefaultCampaignCreation");
       $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
 
       $data = array('user' => $user);
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
 
         $this->assertEquals($campaign->getCreatedBy(), $user);
-        $this->assertEquals($campaign->getEmail(), $user->getEmail());
+        $this->assertEquals($campaign->getEmail(), "thisisatest@gmail.com");
         $this->assertEquals($campaign->getName(), 'My First Campaign');
         $this->assertEquals($campaign->getFundingGoal(), 10000);
         $this->assertEquals($campaign->getDescription(), 'This is where the description will go for your campaign');
@@ -111,10 +116,6 @@ class CampaignHelperTest extends KernelTestCase
 
         $campaignUser = $this->em->getRepository('AppBundle:CampaignUser')->findOneBy(array('campaign'=>$campaign, 'user'=>$user));
         $this->assertNotNull($campaignUser);
-
-        $this->em->remove($campaignUser);
-        $this->em->remove($campaign);
-        $this->em->flush();
     }
 
 
@@ -125,20 +126,19 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testNoUserProvidedCreation()
     {
-
+      $this->logger->debug("running test: testNoUserProvidedCreation");
 
       $data = array(
         'campaign' => array(
-          'name' => 'New Campaign',
+          'name' => 'testNoUserProvidedCreation',
           'description' => 'The Campaign description field',
           'theme' => 'superhero',
-          'email' => 'letstrythis@gmail.com',
+          'email' => 'thisisatest@gmail.com',
           'fundingGoal' => 1500,
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
-
         $this->assertFalse($campaign);
 
     }
@@ -151,24 +151,24 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testPartialCampaign()
     {
-
+      $this->logger->debug("running test: testPartialCampaign");
 
       $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
 
       $data = array(
         'user' => $user,
         'campaign' => array(
-          'name' => 'New Campaign',
-          'email' => 'letstrythis@gmail.com',
+          'name' => 'testPartialCampaign',
+          'email' => 'thisisatest@gmail.com',
           'createdBy' => $user,
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
 
         $this->assertEquals($campaign->getCreatedBy(), $user);
-        $this->assertEquals($campaign->getEmail(), 'letstrythis@gmail.com');
-        $this->assertEquals($campaign->getName(), 'New Campaign');
+        $this->assertEquals($campaign->getEmail(), 'thisisatest@gmail.com');
+        $this->assertEquals($campaign->getName(), 'testPartialCampaign');
         $this->assertEquals($campaign->getFundingGoal(), 10000);
         $this->assertEquals($campaign->getDescription(), 'This is where the description will go for your campaign');
         $this->assertNotNull($campaign->getStartDate());
@@ -178,9 +178,6 @@ class CampaignHelperTest extends KernelTestCase
         $campaignUser = $this->em->getRepository('AppBundle:CampaignUser')->findOneBy(array('campaign'=>$campaign, 'user'=>$user));
         $this->assertNotNull($campaignUser);
 
-        $this->em->remove($campaignUser);
-        $this->em->remove($campaign);
-        $this->em->flush();
     }
 
 
@@ -192,6 +189,7 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testCampaignAwards()
     {
+      $this->logger->debug("running test: testCampaignAwards");
 
       $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
       $campaignAwardTypeTeacher = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
@@ -203,30 +201,30 @@ class CampaignHelperTest extends KernelTestCase
       $data = array(
         'user' => $user,
         'campaign' => array(
-          'name' => 'New Campaign',
-          'email' => 'letstrythis@gmail.com',
+          'name' => 'testCampaignAwards',
+          'email' => 'thisisatest@gmail.com',
           'createdBy' => $user,
           'campaignawards' => array(
             0 => array(
-              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardtype' => $campaignAwardTypeTeacher,
               'campaignawardstyle' => $campaignAwardStyleLevel,
               'name' => 'Teacher Level Award',
               'amount' => 100
             ),
             1 => array(
-              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardtype' => $campaignAwardTypeTeacher,
               'campaignawardstyle' => $campaignAwardStylePlace,
               'name' => 'Teacher Place Award',
               'place' => 1
             ),
             2 => array(
-              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardtype' => $campaignAwardTypeStudent,
               'campaignawardstyle' => $campaignAwardStyleLevel,
               'name' => 'Student Level Award',
               'amount' => 100
             ),
             3 => array(
-              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardtype' => $campaignAwardTypeStudent,
               'campaignawardstyle' => $campaignAwardStylePlace,
               'name' => 'Student Place Award',
               'place' => 1
@@ -234,7 +232,7 @@ class CampaignHelperTest extends KernelTestCase
           )
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
         $this->assertNotNull($campaign);
 
@@ -242,13 +240,20 @@ class CampaignHelperTest extends KernelTestCase
         $this->assertNotNull($campaignUser);
 
         $campaignAwards = $campaign->getCampaignAwards();
+        $campaignUsers = $campaign->getCampaignUsers();
+        $this->assertNotNull($campaignUsers);
         $this->assertNotNull($campaignAwards);
-        $this->assertCount(4, $campaignAwards);
 
-        $this->em->remove($campaignUser);
-        $this->em->remove($campaignAwards);
-        $this->em->remove($campaign);
-        $this->em->flush();
+        $query = $this->em->createQueryBuilder()
+            ->select('COUNT(u.id)')
+            ->from('AppBundle:Campaignaward', 'u')
+            ->where('u.campaign = :campaignId')
+            ->setParameter('campaignId', $campaign->getId())
+            ->getQuery();
+
+        $total = $query->getSingleScalarResult();
+        $this->assertEquals(4, $total);
+
     }
 
 
@@ -259,6 +264,7 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testCampaignAwardsBadLevelTeacherCombo()
     {
+      $this->logger->debug("running test: testCampaignAwardsBadLevelTeacherCombo");
       $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
       $campaignAwardTypeTeacher = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
       $campaignAwardStyleLevel = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
@@ -266,12 +272,12 @@ class CampaignHelperTest extends KernelTestCase
       $data = array(
         'user' => $user,
         'campaign' => array(
-          'name' => 'New Campaign',
-          'email' => 'letstrythis@gmail.com',
+          'name' => 'testCampaignAwards',
+          'email' => 'thisisatest@gmail.com',
           'createdBy' => $user,
           'campaignawards' => array(
             0 => array(
-              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardtype' => $campaignAwardTypeTeacher,
               'campaignawardstyle' => $campaignAwardStyleLevel,
               'name' => 'Teacher Level Award',
               'place' => 3
@@ -279,9 +285,10 @@ class CampaignHelperTest extends KernelTestCase
           )
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
         $this->assertFalse($campaign);
+
     }
 
 
@@ -292,6 +299,7 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testCampaignAwardsBadPlaceTeacherCombo()
     {
+      $this->logger->debug("running test: testCampaignAwardsBadPlaceTeacherCombo");
       $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
       $campaignAwardTypeTeacher = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
       $campaignAwardStylePlace = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('place');
@@ -299,12 +307,12 @@ class CampaignHelperTest extends KernelTestCase
       $data = array(
         'user' => $user,
         'campaign' => array(
-          'name' => 'New Campaign',
-          'email' => 'letstrythis@gmail.com',
+          'name' => 'testCampaignAwardsBadPlaceTeacherCombo',
+          'email' => 'thisisatest@gmail.com',
           'createdBy' => $user,
           'campaignawards' => array(
             0 => array(
-              'camapaignawardtype' => $campaignAwardTypeTeacher,
+              'campaignawardtype' => $campaignAwardTypeTeacher,
               'campaignawardstyle' => $campaignAwardStylePlace,
               'name' => 'Teacher Place Award',
               'amount' => 100
@@ -312,7 +320,7 @@ class CampaignHelperTest extends KernelTestCase
           )
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
         $this->assertFalse($campaign);
     }
@@ -324,6 +332,7 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testCampaignAwardsBadLevelStudentCombo()
     {
+      $this->logger->debug("running test: testCampaignAwardsBadLevelStudentCombo");
       $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
       $campaignAwardTypeStudent = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('student');
       $campaignAwardStyleLevel = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
@@ -331,12 +340,12 @@ class CampaignHelperTest extends KernelTestCase
       $data = array(
         'user' => $user,
         'campaign' => array(
-          'name' => 'New Campaign',
-          'email' => 'letstrythis@gmail.com',
+          'name' => 'testCampaignAwardsBadLevelStudentCombo',
+          'email' => 'thisisatest@gmail.com',
           'createdBy' => $user,
           'campaignawards' => array(
             0 => array(
-              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardtype' => $campaignAwardTypeStudent,
               'campaignawardstyle' => $campaignAwardStyleLevel,
               'name' => 'Student Level Award',
               'place' => 3
@@ -344,9 +353,43 @@ class CampaignHelperTest extends KernelTestCase
           )
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
         $this->assertFalse($campaign);
+    }
+
+
+    /*
+    *
+    * No CampaignAward Name provided
+    *
+    */
+    public function testCampaignAwardsNoName()
+    {
+      $this->logger->debug("running test: testCampaignAwardsNoName");
+      $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
+      $campaignAwardTypeStudent = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('student');
+      $campaignAwardStylePlace = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('place');
+
+      $data = array(
+        'user' => $user,
+        'campaign' => array(
+          'name' => 'testCampaignAwardsNoName',
+          'email' => 'thisisatest@gmail.com',
+          'createdBy' => $user,
+          'campaignawards' => array(
+            0 => array(
+              'campaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardstyle' => $campaignAwardStylePlace,
+              'amount' => 100
+            )
+          )
+        ));
+
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
+        $campaign = $campaignHelper->loadCampaign($data, array());
+        $this->assertFalse($campaign);
+
     }
 
 
@@ -357,6 +400,7 @@ class CampaignHelperTest extends KernelTestCase
     */
     public function testCampaignAwardsBadPlaceStudentCombo()
     {
+      $this->logger->debug("running test: testCampaignAwardsBadPlaceStudentCombo");
       $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
       $campaignAwardTypeStudent = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('student');
       $campaignAwardStylePlace = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('place');
@@ -364,12 +408,12 @@ class CampaignHelperTest extends KernelTestCase
       $data = array(
         'user' => $user,
         'campaign' => array(
-          'name' => 'New Campaign',
-          'email' => 'letstrythis@gmail.com',
+          'name' => 'testCampaignAwardsBadPlaceStudentCombo',
+          'email' => 'thisisatest@gmail.com',
           'createdBy' => $user,
           'campaignawards' => array(
             0 => array(
-              'camapaignawardtype' => $campaignAwardTypeStudent,
+              'campaignawardtype' => $campaignAwardTypeStudent,
               'campaignawardstyle' => $campaignAwardStylePlace,
               'name' => 'Student Place Award',
               'amount' => 100
@@ -377,12 +421,47 @@ class CampaignHelperTest extends KernelTestCase
           )
         ));
 
-        $campaignHelper = new CampaignHelper($this->em, $this->logger);
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
         $campaign = $campaignHelper->loadCampaign($data, array());
         $this->assertFalse($campaign);
+
     }
 
 
+    /*
+    *
+    * testing creating a single campaign award, vs an array of multiple
+    *
+    */
+    public function testCampaignAwardsSingle()
+    {
+      $this->logger->debug("running test: testCampaignAwardsSingle");
+      $user = $this->em->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
+      $campaignAwardTypeTeacher = $this->em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
+      $campaignAwardStyleLevel = $this->em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
+
+      $data = array(
+        'user' => $user,
+        'campaign' => array(
+          'name' => 'testCampaignAwardsSingle',
+          'email' => 'thisisatest@gmail.com',
+          'createdBy' => $user,
+          'campaignawards' => array(
+            'campaignawardtype' => $campaignAwardTypeTeacher,
+            'campaignawardstyle' => $campaignAwardStyleLevel,
+            'name' => 'Teacher Level Award',
+            'amount' => 300
+            )
+          )
+        );
+
+        $campaignHelper = new CampaignHelper($this->em, $this->logger, $this->environment);
+        $campaign = $campaignHelper->loadCampaign($data, array());
+        $campaignAwards = $campaign->getCampaignAwards();
+        $campaignUsers = $campaign->getCampaignUsers();
+        $this->assertNotNull($campaignUsers);
+        $this->assertNotNull($campaignAwards);
+    }
 
     /**
      * {@inheritDoc}
@@ -390,6 +469,13 @@ class CampaignHelperTest extends KernelTestCase
     protected function tearDown()
     {
         parent::tearDown();
+
+        $campaigns = $this->em->getRepository('AppBundle:Campaign')->findByEmail('thisisatest@gmail.com');
+
+        foreach($campaigns as $campaign){
+          $this->em->remove($campaign);
+        }
+        $this->em->flush();
 
         $this->em->close();
         $this->em = null; // avoid memory leaks
