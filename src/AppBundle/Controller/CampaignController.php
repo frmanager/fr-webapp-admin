@@ -29,11 +29,9 @@ class CampaignController extends Controller
       $em = $this->getDoctrine()->getManager();
       $queryHelper = new QueryHelper($em, $logger);
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
-      $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
       // replace this example code with whatever you need
       return $this->render('campaign/dashboard.html.twig', array(
-        'campaign_settings' => $campaignSettings->getCampaignSettings(),
         'new_teacher_awards' => $queryHelper->getTeacherAwards(array('campaign' => $campaign,'limit' => 10, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
         'teacher_rankings' => $queryHelper->getTeacherRanks(array('campaign' => $campaign,'limit'=> 10)),
         'student_rankings' => $queryHelper->getStudentRanks(array('campaign' => $campaign,'limit'=> 10)),

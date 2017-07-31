@@ -15,10 +15,6 @@ services:
     app.ValidationHelper:
         class: AppBundle\Utils\ValidationHelper
 
-    app.CampaignHelper:
-        class: AppBundle\Utils\CampaignHelper
-        arguments: ['@doctrine.orm.default_entity_manager', '@logger']
-
     app.CampaignSubscriber:
         class: AppBundle\EventSubscriber\CampaignSubscriber
         arguments: ['@service_container']
