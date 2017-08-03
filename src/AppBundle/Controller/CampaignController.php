@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Utils\CampaignHelper;
 use AppBundle\Entity\Teacher;
 use AppBundle\Utils\QueryHelper;
+use AppBundle\Entity\Campaign;
 
 use DateTime;
 
@@ -28,7 +29,6 @@ class CampaignController extends Controller
       $logger = $this->get('logger');
       $em = $this->getDoctrine()->getManager();
 
-      
       //CODE TO MAKE SURE THE CAMPAIGN EXISTS
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
       if(is_null($campaign)){
@@ -36,14 +36,9 @@ class CampaignController extends Controller
         return $this->redirectToRoute('homepage');
       }
 
-      //CODE TO PROTECT CONTROLLER FROM USERS WHO ARE NOT IN CAMPAIGNUSER TABLE
-      //TODO: ADD CODE TO ALLOW ADMINS TO ACCESS
-      $query = $em->createQuery('SELECT IDENTITY(cu.campaign) FROM AppBundle:CampaignUser cu where cu.user=?1');
-      $query->setParameter(1, $this->get('security.token_storage')->getToken()->getUser());
-      $results = array_map('current', $query->getScalarResult());
-      if(!in_array($campaign->getId(), $results)){
-        $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
-        return $this->redirectToRoute('homepage');
+      if(!$this->campaignPermissionsCheck($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
       }
 
 
@@ -233,5 +228,43 @@ class CampaignController extends Controller
   }
 
 
+
+  private function campaignCheck(){
+    $em = $this->getDoctrine()->getManager();
+
+    //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+    $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+    if(is_null($campaign)){
+      $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+      return $this->redirectToRoute('homepage');
+    }
+  }
+
+
+  /**
+  *
+  * campaignPermissionsCheck takes the campaign that was requested and verifies user has access to it
+  *
+  * Access is verified by looking at the CampaignUser entity and verifying a record exists
+  * for that campaign and user combination
+  *
+  * @param Campaign $campaign
+  *
+  * @return boolean
+  *
+  */
+  private function campaignPermissionsCheck(Campaign $campaign){
+    $em = $this->getDoctrine()->getManager();
+
+    //CODE TO PROTECT CONTROLLER FROM USERS WHO ARE NOT IN CAMPAIGNUSER TABLE
+    //TODO: ADD CODE TO ALLOW ADMINS TO ACCESS
+    $query = $em->createQuery('SELECT IDENTITY(cu.campaign) FROM AppBundle:CampaignUser cu where cu.user=?1');
+    $query->setParameter(1, $this->get('security.token_storage')->getToken()->getUser());
+    $results = array_map('current', $query->getScalarResult());
+    if(!in_array($campaign->getId(), $results)){
+      return false;
+    }
+    return true;
+  }
 
 }
