@@ -21,63 +21,42 @@ class DefaultController extends Controller
    */
   public function indexAction(Request $request)
   {
-    $securityContext = $this->container->get('security.authorization_checker');
-    if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-        $this->addFlash(
-            'success',
-            'Already logged in'
-        );
 
-        $logger = $this->get('logger');
-        $entity = 'Campaign';
-        $em = $this->getDoctrine()->getManager();
-        $campaigns = $em->getRepository('AppBundle:Campaign')->findAll();
+      $logger = $this->get('logger');
+      $entity = 'Campaign';
+      $em = $this->getDoctrine()->getManager();
+      $campaigns = $em->getRepository('AppBundle:Campaign')->findAll();
 
-        if(null !== $request->query->get('action')){
-            $action = $request->query->get('action');
+      if(null !== $request->query->get('action') && $request->query->get('action') === 'new_campaign'){
+          $action = $request->query->get('action');
+          $campaign = new Campaign();
+          $form = $this->createForm('AppBundle\Form\CampaignType');
+          $form->handleRequest($request);
 
+          $logger->debug("Logged in User ID: ".$this->getUser()->getId());
+          $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($this->getUser()->getId());
+          $logger->debug("User ID: ".$user->getId());
 
-            if($action === 'new_campaign'){
-                  $campaign = new Campaign();
-                  $form = $this->createForm('AppBundle\Form\CampaignType');
-                  $form->handleRequest($request);
+          //TODO: Add custom validation
+          if ($form->isSubmitted()) {
+              $logger->debug("Creating new Campaign");
+              $em = $this->getDoctrine()->getManager();
+              $em->persist($campaign);
+              $em->flush();
 
-                  $logger->debug("Logged in User ID: ".$this->getUser()->getId());
-                  $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($this->getUser()->getId());
-                  $logger->debug("User ID: ".$user->getId());
+              return $this->redirectToRoute('homepage', array('id' => $campaign->getId()));
+          }
 
-                  //TODO: Add custom validation
-                  if ($form->isSubmitted()) {
-                      $logger->debug("Creating new Campaign");
-                      $em = $this->getDoctrine()->getManager();
-                      $em->persist($campaign);
-                      $em->flush();
-
-                      return $this->redirectToRoute('homepage', array('id' => $campaign->getId()));
-                  }
-
-                  return $this->render('campaign/campaign.new.html.twig', array(
-                      'form' => $form->createView(),
-                      'entity' => $entity,
-                  ));
-            }else{
-              return $this->render('campaign/campaign.index.html.twig', array(
-                  'campaigns' => $campaigns,
-                  'entity' => $entity,
-              ));
-            }
-
-        }else{
-          return $this->render('campaign/campaign.index.html.twig', array(
-              'campaigns' => $campaigns,
+          return $this->render('campaign/campaign.new.html.twig', array(
+              'form' => $form->createView(),
               'entity' => $entity,
           ));
-        }
+      }
 
-
-    } else {
-        return $this->redirectToRoute('login');
-    }
+      return $this->render('campaign/campaign.index.html.twig', array(
+          'campaigns' => $campaigns,
+          'entity' => $entity,
+      ));
   }
 
  /**
