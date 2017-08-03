@@ -34,21 +34,35 @@ class CampaignSubscriber implements EventSubscriberInterface
 
 
         /*
-            $session = $this->container->get('session');
+        $session = $this->container->get('session');
 
-            if(!$this->container->get('session')->get('campaign')){
-              // Get the doctrine service
-              $doctrine_service = $this->container->get('doctrine');
-              // Get the entity manager
-              $em = $doctrine_service->getEntityManager();
-              $campaign = $em->getRepository('AppBundle:Campaign')->find(1);
-              $this->container->get('session')->set('campaign', $campaign);
-              $session->save();
-            }else{
-              return;
-            }
+        if(!$this->container->get('session')->get('campaign')){
+          // Get the doctrine service
+          $doctrine_service = $this->container->get('doctrine');
+          // Get the entity manager
+          $em = $doctrine_service->getEntityManager();
+          $campaign = $em->getRepository('AppBundle:Campaign')->findByUrl($this->container->get('session')->get('campaign'));
+          //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+          if(is_null($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+            return $this->redirectToRoute('homepage');
+          }
+
+          //CODE TO PROTECT CONTROLLER FROM USERS WHO ARE NOT IN CAMPAIGNUSER TABLE
+          //TODO: ADD CODE TO ALLOW ADMINS TO ACCESS
+          $query = $em->createQuery('SELECT IDENTITY(cu.campaign) FROM AppBundle:CampaignUser cu where cu.user=?1');
+          $query->setParameter(1, $this->get('security.token_storage')->getToken()->getUser());
+          $results = array_map('current', $query->getScalarResult());
+          if(!in_array($campaign->getId(), $results)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+          }
+
+          $session->save();
+        }else{
+          return;
+        }
         */
-
 
     }
 

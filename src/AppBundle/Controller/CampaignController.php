@@ -28,24 +28,23 @@ class CampaignController extends Controller
       $logger = $this->get('logger');
       $em = $this->getDoctrine()->getManager();
 
+      
+      //CODE TO MAKE SURE THE CAMPAIGN EXISTS
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
       if(is_null($campaign)){
         $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
         return $this->redirectToRoute('homepage');
       }
 
-
-      $qb = $em->createQueryBuilder()->select('c')
-           ->from('AppBundle:Campaign', 'c')
-           ->join('AppBundle:CampaignUser', 'cu')
-           ->where('cu.campaign = c.id')
-           ->andWhere('cu.user = :user')
-           ->setParameter('user', $this->get('security.token_storage')->getToken()->getUser());
-
-      $campaigns = $qb->getQuery()->getResult();
-
-
-
+      //CODE TO PROTECT CONTROLLER FROM USERS WHO ARE NOT IN CAMPAIGNUSER TABLE
+      //TODO: ADD CODE TO ALLOW ADMINS TO ACCESS
+      $query = $em->createQuery('SELECT IDENTITY(cu.campaign) FROM AppBundle:CampaignUser cu where cu.user=?1');
+      $query->setParameter(1, $this->get('security.token_storage')->getToken()->getUser());
+      $results = array_map('current', $query->getScalarResult());
+      if(!in_array($campaign->getId(), $results)){
+        $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+        return $this->redirectToRoute('homepage');
+      }
 
 
       $queryHelper = new QueryHelper($em, $logger);
