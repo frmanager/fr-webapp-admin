@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Campaignaward;
+use AppBundle\Entity\Campaign;
 use AppBundle\Entity\Campaignawardtype;
 use AppBundle\Entity\Campaignawardstyle;
 
@@ -20,14 +21,25 @@ class CampaignawardController extends Controller
     /**
      * Lists all Campaignaward entities.
      *
-     * @Route("/", name="manageCampaignaward_index")
+     * @Route("/", name="campaignaward_index")
      * @Method("GET")
      */
     public function indexAction($campaignUrl)
     {
         $entity = 'Campaignaward';
         $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
 
         $campaignawardtypes = $em->getRepository('AppBundle:Campaignawardtype')->findAll();
         if (empty($campaignawardtypes)) {
@@ -83,14 +95,28 @@ class CampaignawardController extends Controller
     /**
      * Creates a new Campaignaward entity.
      *
-     * @Route("/new", name="manageCampaignaward_new")
+     * @Route("/new", name="campaignaward_new")
      * @Method({"GET", "POST"})
      */
     public function newAction(Request $request, $campaignUrl)
     {
         $logger = $this->get('logger');
         $entity = 'Campaignaward';
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
         $campaignaward = new Campaignaward();
+
         $form = $this->createForm('AppBundle\Form\CampaignawardType', $campaignaward);
         $form->handleRequest($request);
 
@@ -182,15 +208,30 @@ class CampaignawardController extends Controller
     /**
      * Finds and displays a Campaignaward entity.
      *
-     * @Route("/{id}", name="manageCampaignaward_show")
+     * @Route("/{id}", name="campaignaward_show")
      * @Method("GET")
      */
     public function showAction(Campaignaward $campaignaward, $campaignUrl)
     {
         $entity = 'Campaignaward';
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+
         $deleteForm = $this->createDeleteForm($campaignaward, $campaignUrl);
 
-        return $this->render(strtolower($entity).'campaign/campaignAward.show.html.twig', array(
+        return $this->render('campaign/campaignAward.show.html.twig', array(
             'campaignaward' => $campaignaward,
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
@@ -201,14 +242,29 @@ class CampaignawardController extends Controller
     /**
      * Displays a form to edit an existing Campaignaward entity.
      *
-     * @Route("/edit/{id}", name="manageCampaignaward_edit")
+     * @Route("/edit/{id}", name="campaignaward_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, Campaignaward $campaignaward, $campaignUrl)
     {
         $logger = $this->get('logger');
         $entity = 'Campaignaward';
-        $deleteForm = $this->createDeleteForm($campaignaward);
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+
+        $deleteForm = $this->createDeleteForm($campaignaward, $campaignUrl);
         $editForm = $this->createForm('AppBundle\Form\CampaignawardType', $campaignaward);
         $editForm->handleRequest($request);
 
@@ -301,12 +357,27 @@ class CampaignawardController extends Controller
     /**
      * Deletes a Campaignaward entity.
      *
-     * @Route("/delete/{id}", name="manageCampaignaward_delete")
+     * @Route("/delete/{id}", name="campaignaward_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, Campaignaward $campaignaward, $campaignUrl)
     {
         $entity = 'Campaignaward';
+
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
         $form = $this->createDeleteForm($campaignaward, $campaignUrl);
         $form->handleRequest($request);
         $em = $this->getDoctrine()->getManager();
@@ -316,7 +387,7 @@ class CampaignawardController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute('manageCampaignaward_index');
+        return $this->redirectToRoute('campaignaward_index');
     }
 
     /**
@@ -361,5 +432,5 @@ class CampaignawardController extends Controller
         return false;
       }
       return true;
-    }    
+    }
 }

@@ -42,7 +42,7 @@ class CampaignSubscriber implements EventSubscriberInterface
           // Get the entity manager
           $em = $doctrine_service->getEntityManager();
           $campaign = $em->getRepository('AppBundle:Campaign')->findByUrl($this->container->get('session')->get('campaign'));
-          //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+          //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
           if(is_null($campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
             return $this->redirectToRoute('homepage');

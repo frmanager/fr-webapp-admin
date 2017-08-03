@@ -7,9 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Student;
-use AppBundle\Entity\Campaignsetting;
+use AppBundle\Entity\Campaign;
 use AppBundle\Utils\ValidationHelper;
-use AppBundle\Utils\CampaignHelper;
 use AppBundle\Utils\CSVHelper;
 use AppBundle\Utils\QueryHelper;
 use DateTime;
@@ -33,7 +32,20 @@ class StudentController extends Controller
         $entity = 'Student';
 
         $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+
         $queryHelper = new QueryHelper($em, $logger);
         $tempDate = new DateTime();
         $dateString = $tempDate->format('Y-m-d').' 00:00:00';
@@ -56,6 +68,20 @@ class StudentController extends Controller
     public function newAction(Request $request, $campaignUrl)
     {
         $entity = 'Student';
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
         $student = new Student();
         $form = $this->createForm('AppBundle\Form\StudentType', $student);
         $form->handleRequest($request);
@@ -86,11 +112,23 @@ class StudentController extends Controller
     {
         $logger = $this->get('logger');
         $entity = 'Student';
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
         $deleteForm = $this->createDeleteForm($student, $campaignUrl);
         $student = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($student->getId());
         //$logger->debug(print_r($student->getDonations()));
-
-        $em = $this->getDoctrine()->getManager();
 
         $qb = $em->createQueryBuilder()->select('u')
                ->from('AppBundle:Campaignaward', 'u')
@@ -98,7 +136,6 @@ class StudentController extends Controller
 
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         $campaignAwards = $qb->getQuery()->getResult();
-        $campaignSettings = new CampaignHelper($this->getDoctrine()->getRepository('AppBundle:Campaignsetting')->findAll());
 
         $queryHelper = new QueryHelper($em, $logger);
 
@@ -108,7 +145,6 @@ class StudentController extends Controller
             'student_rank' => $queryHelper->getStudentRank($student->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'teacher_rank' => $queryHelper->getTeacherRank($student->getTeacher()->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'campaign_awards' => $campaignAwards,
-            'campaignsettings' => $campaignSettings->getCampaignSettings(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
             'campaign' => $campaign,
@@ -124,7 +160,22 @@ class StudentController extends Controller
     public function editAction(Request $request, Student $student, $campaignUrl)
     {
         $entity = 'Student';
-        $deleteForm = $this->createDeleteForm($student);
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+
+        $deleteForm = $this->createDeleteForm($student, $campaignUrl);
         $editForm = $this->createForm('AppBundle\Form\StudentType', $student);
         $editForm->handleRequest($request);
 
@@ -141,7 +192,7 @@ class StudentController extends Controller
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
+            'campaign' => $campaign,
         ));
     }
 
@@ -154,7 +205,21 @@ class StudentController extends Controller
     public function deleteAction(Request $request, Student $student, $campaignUrl)
     {
         $entity = 'Student';
-        $form = $this->createDeleteForm($student);
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+        $form = $this->createDeleteForm($student, $campaignUrl);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -190,10 +255,24 @@ class StudentController extends Controller
      * @Route("/upload", name="student_upload")
      * @Method({"GET", "POST"})
      */
-    public function uploadForm(Request $request)
+    public function uploadForm(Request $request, $campaignUrl)
     {
         $logger = $this->get('logger');
         $entity = 'Student';
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
         $mode = 'update';
         $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $entity, 'role' => $this->getUser()->getRoles()));
         $form->handleRequest($request);
@@ -388,5 +467,5 @@ class StudentController extends Controller
         return false;
       }
       return true;
-    }    
+    }
 }

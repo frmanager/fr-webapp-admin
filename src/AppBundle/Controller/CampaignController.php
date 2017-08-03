@@ -29,7 +29,7 @@ class CampaignController extends Controller
       $logger = $this->get('logger');
       $em = $this->getDoctrine()->getManager();
 
-      //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
       if(is_null($campaign)){
         $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
@@ -87,7 +87,7 @@ class CampaignController extends Controller
       $entity = 'Campaign';
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
 
-      //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
       if(is_null($campaign)){
         $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
@@ -137,7 +137,7 @@ class CampaignController extends Controller
       $entity = 'Campaign';
 
 
-      //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
       if(is_null($campaign)){
         $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
         return $this->redirectToRoute('homepage');
@@ -260,7 +260,7 @@ class CampaignController extends Controller
   private function campaignCheck(){
     $em = $this->getDoctrine()->getManager();
 
-    //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+    //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
     $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
     if(is_null($campaign)){
       $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');

@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Grade;
+use AppBundle\Entity\Campaign;
 
 /**
  * Manage Grade controller.
@@ -25,7 +26,18 @@ class GradeController extends Controller
     {
         $entity = 'Grade';
         $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
 
         $grades = $em->getRepository('AppBundle:Grade')->findByCampaign($campaign);
 
@@ -67,6 +79,20 @@ class GradeController extends Controller
     {
         $entity = 'Grade';
         $grade = new Grade();
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
         $form = $this->createForm('AppBundle\Form\GradeType', $grade);
         $form->handleRequest($request);
 
@@ -98,6 +124,19 @@ class GradeController extends Controller
         $deleteForm = $this->createDeleteForm($grade, $campaignUrl);
         $em = $this->getDoctrine()->getManager();
 
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+
         return $this->render('campaign/grade.show.html.twig', array(
             'grade' => $grade,
             'delete_form' => $deleteForm->createView(),
@@ -115,6 +154,21 @@ class GradeController extends Controller
     public function editAction(Request $request, Grade $grade, $campaignUrl)
     {
         $entity = 'Grade';
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+
         $deleteForm = $this->createDeleteForm($grade, $campaignUrl);
         $editForm = $this->createForm('AppBundle\Form\GradeType', $grade);
         $editForm->handleRequest($request);
@@ -145,6 +199,21 @@ class GradeController extends Controller
     public function deleteAction(Request $request, Grade $grade, $campaignUrl)
     {
         $entity = 'Grade';
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        if(!$this->campaignPermissionsCheck($campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+
         $form = $this->createDeleteForm($grade, $campaignUrl);
         $form->handleRequest($request);
 
