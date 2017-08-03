@@ -82,10 +82,24 @@ class CampaignController extends Controller
    */
   public function editAction(Request $request, $campaignUrl)
   {
-      $em = $this->getDoctrine()->getManager();
-      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
       $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
       $entity = 'Campaign';
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+
+      //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+        return $this->redirectToRoute('homepage');
+      }
+
+      if(!$this->campaignPermissionsCheck($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
+
+
       $deleteForm = $this->createDeleteForm($campaign);
       $editForm = $this->createForm('AppBundle\Form\CampaignType', $campaign);
       $editForm->handleRequest($request);
@@ -121,6 +135,20 @@ class CampaignController extends Controller
   {
       $logger = $this->get('logger');
       $entity = 'Campaign';
+
+
+      //CODE TO MAKE SURE THE CAMPAIGN EXISTS
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+        return $this->redirectToRoute('homepage');
+      }
+
+      if(!$this->campaignPermissionsCheck($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
+
+
       $form = $this->createDeleteForm($campaign);
       $form->handleRequest($request);
 
