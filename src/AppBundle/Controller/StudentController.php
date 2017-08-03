@@ -132,7 +132,10 @@ class StudentController extends Controller
 
         $qb = $em->createQueryBuilder()->select('u')
                ->from('AppBundle:Campaignaward', 'u')
+               ->where('u.campaign = :campaign')
+               ->setParameter('campaign', $campaign->getId())
                ->orderBy('u.amount', 'DESC');
+
 
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         $campaignAwards = $qb->getQuery()->getResult();
