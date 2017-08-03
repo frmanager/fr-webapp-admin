@@ -10,6 +10,7 @@ use AppBundle\Utils\CampaignHelper;
 use AppBundle\Entity\Teacher;
 use AppBundle\Entity\Campaign;
 use AppBundle\Utils\QueryHelper;
+use Doctrine\ORM\Query\Expr;
 
 use DateTime;
 
@@ -24,8 +25,8 @@ class DefaultController extends Controller
 
       $logger = $this->get('logger');
       $entity = 'Campaign';
+
       $em = $this->getDoctrine()->getManager();
-      $campaigns = $em->getRepository('AppBundle:Campaign')->findAll();
 
       if(null !== $request->query->get('action') && $request->query->get('action') === 'new_campaign'){
           $action = $request->query->get('action');
@@ -52,6 +53,16 @@ class DefaultController extends Controller
               'entity' => $entity,
           ));
       }
+
+
+      $qb = $em->createQueryBuilder()->select('c')
+           ->from('AppBundle:Campaign', 'c')
+           ->join('AppBundle:CampaignUser', 'cu')
+           ->where('cu.campaign = c.id')
+           ->andWhere('cu.user = :user')
+           ->setParameter('user', $this->get('security.token_storage')->getToken()->getUser());
+
+      $campaigns = $qb->getQuery()->getResult();
 
       return $this->render('campaign/campaign.index.html.twig', array(
           'campaigns' => $campaigns,

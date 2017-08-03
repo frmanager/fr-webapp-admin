@@ -128,6 +128,7 @@
       </nav>
     </div>
    {% endif %}
+
     <!-- Main content -->
     <main class="main">
       <!-- Breadcrumb -->
@@ -136,6 +137,22 @@
         </ol>
       -->
       <br/>
+      <!-- Alert -->
+      {% for label, messages in app.flashes %}
+          <div class="container-fluid">
+            <div class="animated fadeIn">
+              {% for message in messages %}
+                  <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                  </div>
+              {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+      <!-- End Alert -->
       <div class="container-fluid">
         <div class="animated fadeIn">
           <br/>

@@ -27,6 +27,27 @@ class CampaignController extends Controller
   {
       $logger = $this->get('logger');
       $em = $this->getDoctrine()->getManager();
+
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+        return $this->redirectToRoute('homepage');
+      }
+
+
+      $qb = $em->createQueryBuilder()->select('c')
+           ->from('AppBundle:Campaign', 'c')
+           ->join('AppBundle:CampaignUser', 'cu')
+           ->where('cu.campaign = c.id')
+           ->andWhere('cu.user = :user')
+           ->setParameter('user', $this->get('security.token_storage')->getToken()->getUser());
+
+      $campaigns = $qb->getQuery()->getResult();
+
+
+
+
+
       $queryHelper = new QueryHelper($em, $logger);
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
 
