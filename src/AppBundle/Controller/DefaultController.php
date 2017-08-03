@@ -59,41 +59,4 @@ class DefaultController extends Controller
       ));
   }
 
- /**
-  * Creates a new Campaign entity.
-  *
-  * @Route("/new", name="campaign_new")
-  * @Method({"GET", "POST"})
-  */
- public function newAction(Request $request)
- {
-     $logger = $this->get('logger');
-     $entity = 'Campaign';
-     $campaign = new Campaign();
-     $form = $this->createForm('AppBundle\Form\CampaignType', $campaign);
-     $form->handleRequest($request);
-
-     $logger->debug("Logged in User ID: ".$this->getUser()->getId());
-     $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($this->getUser()->getId());
-     $logger->debug("User ID: ".$user->getId());
-
-     //TODO: Add custom validation
-     if ($form->isSubmitted()) {
-         $logger->debug("Creating new Campaign");
-         $em = $this->getDoctrine()->getManager();
-         $em->persist($campaign);
-         $em->flush();
-
-         return $this->redirectToRoute('homepage', array('id' => $campaign->getId()));
-     }
-
-     return $this->render('crud/new.html.twig', array(
-         'campaign' => $campaign,
-         'form' => $form->createView(),
-         'entity' => $entity,
-     ));
- }
-
-
-
 }
