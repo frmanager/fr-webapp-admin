@@ -83,7 +83,7 @@
                   <span class="d-md-down-none">{{ app.user.username }}</span>
               </a>
               <div class="dropdown-menu dropdown-menu-right">
-                  <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Profile</a>
+                  <a class="dropdown-item" href="{{ path('profile_edit') }}"><i class="fa fa-user"></i> Profile</a>
                   <div class="divider"></div>
                   <a class="dropdown-item" href="{{ path('logout') }}"><i class="fa fa-lock"></i> Logout</a>
               </div>
