@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-8 offset-md-2">
     <p style="text-align:left;">
       <strong>NOTE:</strong>
       Please contact
@@ -11,7 +11,12 @@
     <hr/>
     <div class="">
       {% if error %}
-        <p class="well-sm bg-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
       {% endif %}
 
       <form action="{{ path("login") }}" method="post" class="form-horizontal" role="form-horizontal">
