@@ -30,15 +30,15 @@ AppBundle\Entity\Campaignawardtype:
 
 
 AppBundle\Entity\TeamType:
-    teamType1:
+    rf_team_type1:
         name: "Student"
         value: "student"
         description: "student"
-    teamType2:
+    rf_team_type2:
         name: "Teacher/Class"
         value: "teacher"
         description: "Teacher/Class"
-    teamType3:
+    rf_team_type3:
         name: "Family"
         value: "family"
         description: "Family"

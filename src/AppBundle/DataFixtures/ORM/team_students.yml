@@ -1,0 +1,5 @@
+AppBundle\Entity\TeamStudent:
+    br_team_student{1..100}:
+        student: '@student*'
+        team: '@team*'
+        name: <firstName()> <lastName()>
