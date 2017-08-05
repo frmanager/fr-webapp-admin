@@ -1,6 +1,6 @@
 AppBundle\Entity\Student:
     student{1..1000}:
-        name: <firstName()> <lastName()>
+        name: <firstName()> <randomLetter()>.
         teacher: '@teacher*'
         __calls:
             - setCampaignFromTeacher:

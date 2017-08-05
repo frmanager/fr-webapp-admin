@@ -2,4 +2,10 @@ AppBundle\Entity\TeamStudent:
     br_team_student{1..100}:
         student: '@student*'
         team: '@team*'
-        name: <firstName()> <lastName()>
+        confirmedFlag: true
+        name: <firstName()> <randomLetter()>.
+    br_team_student{101..120}:
+        student: '@student*'
+        team: '@team*'
+        confirmedFlag: false
+        name: <firstName()> <randomLetter()>.

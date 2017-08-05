@@ -1,6 +1,6 @@
 AppBundle\Entity\Teacher:
     teacher{1..100}:
-        teacherName: '<name()>'
+        teacherName: <title()> <lastName()>
         email: <email()>
         grade: '@grade*'
         __calls:
