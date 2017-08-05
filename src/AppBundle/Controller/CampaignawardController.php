@@ -32,7 +32,7 @@ class CampaignawardController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -45,14 +45,14 @@ class CampaignawardController extends Controller
         if (empty($campaignawardtypes)) {
             $defaultCampaignawardtypes = [];
 
-            array_push($defaultCampaignawardtypes, array('displayName' => 'Teacher/Class', 'value' => 'teacher', 'description' => ''));
-            array_push($defaultCampaignawardtypes, array('displayName' => 'Student/Individual', 'value' => 'student', 'description' => ''));
+            array_push($defaultCampaignawardtypes, array('name' => 'Teacher/Class', 'value' => 'teacher', 'description' => ''));
+            array_push($defaultCampaignawardtypes, array('name' => 'Student/Individual', 'value' => 'student', 'description' => ''));
 
             foreach ($defaultCampaignawardtypes as $defaultCampaignawardtype) {
                 $em = $this->getDoctrine()->getManager();
 
                 $campaignawardtype = new Campaignawardtype();
-                $campaignawardtype->setDisplayName($defaultCampaignawardtype['displayName']);
+                $campaignawardtype->setDisplayName($defaultCampaignawardtype['name']);
                 $campaignawardtype->setValue($defaultCampaignawardtype['value']);
                 $campaignawardtype->setDescription($defaultCampaignawardtype['description']);
 
@@ -65,14 +65,14 @@ class CampaignawardController extends Controller
         if (empty($campaignawardstyles)) {
             $defaultCampaignawardstyles = [];
 
-            array_push($defaultCampaignawardstyles, array('displayName' => 'Place', 'value' => 'place', 'description' => ''));
-            array_push($defaultCampaignawardstyles, array('displayName' => 'Donation Level', 'value' => 'level', 'description' => 'award received if (Teacher/Student) reach donation amount'));
+            array_push($defaultCampaignawardstyles, array('name' => 'Place', 'value' => 'place', 'description' => ''));
+            array_push($defaultCampaignawardstyles, array('name' => 'Donation Level', 'value' => 'level', 'description' => 'award received if (Teacher/Student) reach donation amount'));
 
             foreach ($defaultCampaignawardstyles as $defaultCampaignawardstyle) {
                 $em = $this->getDoctrine()->getManager();
 
                 $campaignawardstyle = new Campaignawardstyle();
-                $campaignawardstyle->setDisplayName($defaultCampaignawardstyle['displayName']);
+                $campaignawardstyle->setDisplayName($defaultCampaignawardstyle['name']);
                 $campaignawardstyle->setValue($defaultCampaignawardstyle['value']);
                 $campaignawardstyle->setDescription($defaultCampaignawardstyle['description']);
 
@@ -106,7 +106,7 @@ class CampaignawardController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -219,7 +219,7 @@ class CampaignawardController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -254,7 +254,7 @@ class CampaignawardController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -369,7 +369,7 @@ class CampaignawardController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 

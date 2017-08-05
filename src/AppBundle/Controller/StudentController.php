@@ -36,7 +36,7 @@ class StudentController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -73,7 +73,7 @@ class StudentController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -117,7 +117,7 @@ class StudentController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -168,7 +168,7 @@ class StudentController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -213,7 +213,7 @@ class StudentController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 
@@ -267,7 +267,7 @@ class StudentController extends Controller
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
         if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
 

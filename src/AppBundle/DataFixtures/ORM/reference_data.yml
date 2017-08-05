@@ -10,20 +10,35 @@ AppBundle\Entity\UserStatus:
 
 AppBundle\Entity\Campaignawardstyle:
     campaignawardstyle1:
-        displayName: "Place"
+        name: "Place"
         value: "place"
         description: "Students compete for first place"
     campaignawardstyle2:
-        displayName: "Donation Level"
+        name: "Donation Level"
         value: "level"
         description: "Award received if (Teacher/Student) reach donation amount"
 
 AppBundle\Entity\Campaignawardtype:
     campaignawardtype1:
-        displayName: "Teacher/Class"
+        name: "Teacher/Class"
         value: "teacher"
         description: "Teacher/Class"
     campaignawardtype2:
-        displayName: "Student/Individual"
+        name: "Student/Individual"
         value: "student"
         description: "Student/Individual"
+
+
+AppBundle\Entity\TeamType:
+    teamType1:
+        name: "Student"
+        value: "student"
+        description: "student"
+    teamType2:
+        name: "Teacher/Class"
+        value: "teacher"
+        description: "Teacher/Class"
+    teamType3:
+        name: "Family"
+        value: "family"
+        description: "Family"

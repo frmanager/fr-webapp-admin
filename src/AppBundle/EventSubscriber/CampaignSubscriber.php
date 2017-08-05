@@ -44,7 +44,7 @@ class CampaignSubscriber implements EventSubscriberInterface
           $campaign = $em->getRepository('AppBundle:Campaign')->findByUrl($this->container->get('session')->get('campaign'));
           //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
           if(is_null($campaign)){
-            $this->get('session')->getFlashBag()->add('warning', 'Campaign does not exist.');
+            $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
             return $this->redirectToRoute('homepage');
           }
 

@@ -52,6 +52,7 @@ class RegistrationController extends Controller
             $password = $passwordEncoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
             $user->setApiKey($password);
+            $user->setCampaignManagerFlag(true);
             $user->setUsername($user->getEmail());
             $user->setEmailConfirmationCode(base64_encode(random_bytes(20)));
             $user->setEmailConfirmationCodeTimestamp(new \DateTime());

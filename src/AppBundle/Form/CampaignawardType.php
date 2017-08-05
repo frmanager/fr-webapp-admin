@@ -22,13 +22,13 @@ class CampaignawardType extends AbstractType
             ->add('name')
             ->add('campaignawardtype', EntityType::class, array(
               'class' => 'AppBundle:Campaignawardtype',
-              'choice_label' => 'displayName',
+              'choice_label' => 'name',
               'label' => 'Type',
               'placeholder' => 'Choose an option',
               ))
               ->add('campaignawardstyle', EntityType::class, array(
                 'class' => 'AppBundle:Campaignawardstyle',
-                'choice_label' => 'displayName',
+                'choice_label' => 'name',
                 'label' => 'Style',
                 'placeholder' => 'Choose an option',
                 ))
