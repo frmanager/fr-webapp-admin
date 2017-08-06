@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Utils\CampaignHelper;
-use AppBundle\Entity\Teacher;
+use AppBundle\Entity\Classroom;
 use AppBundle\Utils\QueryHelper;
 use AppBundle\Entity\Campaign;
 
@@ -47,8 +47,8 @@ class CampaignController extends Controller
 
       // replace this example code with whatever you need
       return $this->render('campaign/dashboard.html.twig', array(
-        'new_teacher_awards' => $queryHelper->getTeacherAwards(array('campaign' => $campaign,'limit' => 10, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
-        'teacher_rankings' => $queryHelper->getTeacherRanks(array('campaign' => $campaign,'limit'=> 10)),
+        'new_classroom_awards' => $queryHelper->getClassroomAwards(array('campaign' => $campaign,'limit' => 10, 'order_by' => array('field' => 'donated_at',  'order' => 'asc'))),
+        'classroom_rankings' => $queryHelper->getClassroomRanks(array('campaign' => $campaign,'limit'=> 10)),
         'student_rankings' => $queryHelper->getStudentRanks(array('campaign' => $campaign,'limit'=> 10)),
         'totals' => $queryHelper->getTotalDonations(array('campaign' => $campaign)),
         'campaign' => $campaign,
@@ -181,13 +181,13 @@ class CampaignController extends Controller
 
 
   /**
-   * @Route("/send_daily_email", name="manage_teacher_daily_email")
+   * @Route("/send_daily_email", name="manage_classroom_daily_email")
    */
   public function sendDailyEmailAction(Request $request, $campaignUrl)
   {
       $logger = $this->get('logger');
       $em = $this->getDoctrine()->getManager();
-      $teachers = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findAll();
+      $classrooms = $this->getDoctrine()->getRepository('AppBundle:Classroom')->findAll();
       $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
       $queryHelper = new QueryHelper($em, $logger);
 
@@ -201,18 +201,18 @@ class CampaignController extends Controller
 
       $logger->info("Sending Daily Email");
       $emailCount = 0;
-      foreach ($teachers as $teacher) {
+      foreach ($classrooms as $classroom) {
       unset($newAwards);
-      $newAwards = $queryHelper->getNewTeacherAwards(array('campaign' => $campaign, 'before_date' => $reportDate, 'id' => $teacher->getId(), 'order_by' => array('field' => 'donation_amount',  'order' => 'asc')));
+      $newAwards = $queryHelper->getNewClassroomAwards(array('campaign' => $campaign, 'before_date' => $reportDate, 'id' => $classroom->getId(), 'order_by' => array('field' => 'donation_amount',  'order' => 'asc')));
       $logger->debug("New Awards for: ".print_r($newAwards, true));
       if(isset($newAwards) && !empty($newAwards) && count($newAwards) > 0){
         if (strcmp($this->container->get('kernel')->getEnvironment(), "dev") == 0){
           $toAddress = 'funrun@lrespto.org';
         }else{
-          $toAddress = $teacher->getEmail();
+          $toAddress = $classroom->getEmail();
         }
         $emailCount ++;
-        $logger->info("Sending Daily Email to: ".$teacher->getTeacherName());
+        $logger->info("Sending Daily Email to: ".$classroom->getClassroomName());
         $message = \Swift_Message::newInstance()
                 ->setSubject('New Fun Run Award Level Reached!')
                 ->setFrom('support@lrespto.org')
@@ -221,9 +221,9 @@ class CampaignController extends Controller
                 ->setBody(
                     $this->renderView(
                         // app/Resources/views/Emails/registration.html.twig
-                        'email/teacherAwards.html.twig',
+                        'email/classroomAwards.html.twig',
                         array(
-                          'teacher' => $teacher,
+                          'classroom' => $classroom,
                           'report_date' => $reportDate,
                           'awards' => $newAwards
                         )
@@ -243,7 +243,7 @@ class CampaignController extends Controller
             ;
             $this->get('mailer')->send($message);
       }else{
-        $logger->info("Teacher ".$teacher->getTeacherName()." did not have any new awards.");
+        $logger->info("Classroom ".$classroom->getClassroomName()." did not have any new awards.");
       }
         }
 

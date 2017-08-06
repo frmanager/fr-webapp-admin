@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use AppBundle\Entity\Teacher;
+use AppBundle\Entity\Classroom;
 use AppBundle\Entity\Grade;
 use AppBundle\Entity\Campaign;
 use AppBundle\Utils\ValidationHelper;
@@ -16,22 +16,22 @@ use AppBundle\Utils\QueryHelper;
 use DateTime;
 
 /**
- * Teacher controller.
+ * Classroom controller.
  *
- * @Route("/{campaignUrl}/teachers")
+ * @Route("/{campaignUrl}/classrooms")
  */
-class TeacherController extends Controller
+class ClassroomController extends Controller
 {
   /**
-   * Lists all Teacher entities.
+   * Lists all Classroom entities.
    *
-   * @Route("/", name="teacher_index")
+   * @Route("/", name="classroom_index")
    * @Method({"GET", "POST"})
    */
-  public function teacherIndexAction($campaignUrl)
+  public function classroomIndexAction($campaignUrl)
   {
       $logger = $this->get('logger');
-      $entity = 'Teacher';
+      $entity = 'Classroom';
       $em = $this->getDoctrine()->getManager();
 
       //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -51,8 +51,8 @@ class TeacherController extends Controller
       $dateString = $tempDate->format('Y-m-d').' 00:00:00';
       $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
       // replace this example code with whatever you need
-      return $this->render('campaign/teacher.index.html.twig', array(
-        'teachers' => $queryHelper->getTeacherRanks(array('campaign' => $campaign, 'limit'=> 0)),
+      return $this->render('campaign/classroom.index.html.twig', array(
+        'classrooms' => $queryHelper->getClassroomRanks(array('campaign' => $campaign, 'limit'=> 0)),
         'entity' => strtolower($entity),
         'campaign' => $campaign,
       ));
@@ -60,14 +60,14 @@ class TeacherController extends Controller
   }
 
     /**
-     * Creates a new Teacher entity.
+     * Creates a new Classroom entity.
      *
-     * @Route("/new", name="teacher_new")
+     * @Route("/new", name="classroom_new")
      * @Method({"GET", "POST"})
      */
     public function newAction(Request $request, $campaignUrl)
     {
-        $entity = 'Teacher';
+        $entity = 'Classroom';
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -82,20 +82,20 @@ class TeacherController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-        $teacher = new Teacher();
-        $form = $this->createForm('AppBundle\Form\TeacherType', $teacher);
+        $classroom = new Classroom();
+        $form = $this->createForm('AppBundle\Form\ClassroomType', $classroom);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($teacher);
+            $em->persist($classroom);
             $em->flush();
 
-            return $this->redirectToRoute('teacher_index', array('id' => $teacher->getId()));
+            return $this->redirectToRoute('classroom_index', array('id' => $classroom->getId()));
         }
 
         return $this->render('crud/new.html.twig', array(
-            'teacher' => $teacher,
+            'classroom' => $classroom,
             'form' => $form->createView(),
             'entity' => $entity,
             'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
@@ -103,15 +103,15 @@ class TeacherController extends Controller
     }
 
     /**
-     * Finds and displays a Teacher entity.
+     * Finds and displays a Classroom entity.
      *
-     * @Route("/{id}", name="teacher_show")
+     * @Route("/{id}", name="classroom_show")
      * @Method("GET")
      */
-    public function showAction(Teacher $teacher, $campaignUrl)
+    public function showAction(Classroom $classroom, $campaignUrl)
     {
         $logger = $this->get('logger');
-        $entity = 'Teacher';
+        $entity = 'Classroom';
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -126,8 +126,8 @@ class TeacherController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-        $deleteForm = $this->createDeleteForm($teacher,$campaignUrl);
-        $teacher = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($teacher->getId());
+        $deleteForm = $this->createDeleteForm($classroom,$campaignUrl);
+        $classroom = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($classroom->getId());
         //$logger->debug(print_r($student->getDonations()));
 
         $qb = $em->createQueryBuilder()->select('u')
@@ -140,9 +140,9 @@ class TeacherController extends Controller
 
         $queryHelper = new QueryHelper($em, $logger);
 
-        return $this->render('campaign/teacher.show.html.twig', array(
-            'teacher' => $teacher,
-            'teacher_rank' => $queryHelper->getTeacherRank($teacher->getId(),array('campaign' => $campaign, 'limit' => 0)),
+        return $this->render('campaign/classroom.show.html.twig', array(
+            'classroom' => $classroom,
+            'classroom_rank' => $queryHelper->getClassroomRank($classroom->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'campaign_awards' => $campaignAwards,
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
@@ -151,14 +151,14 @@ class TeacherController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing Teacher entity.
+     * Displays a form to edit an existing Classroom entity.
      *
-     * @Route("/edit/{id}", name="teacher_edit")
+     * @Route("/edit/{id}", name="classroom_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Teacher $teacher, $campaignUrl)
+    public function editAction(Request $request, Classroom $classroom, $campaignUrl)
     {
-        $entity = 'Teacher';
+        $entity = 'Classroom';
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -173,20 +173,20 @@ class TeacherController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-        $deleteForm = $this->createDeleteForm($teacher, $campaignUrl);
-        $editForm = $this->createForm('AppBundle\Form\TeacherType', $teacher);
+        $deleteForm = $this->createDeleteForm($classroom, $campaignUrl);
+        $editForm = $this->createForm('AppBundle\Form\ClassroomType', $classroom);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($teacher);
+            $em->persist($classroom);
             $em->flush();
 
-            return $this->redirectToRoute('teacher_index', array('id' => $teacher->getId()));
+            return $this->redirectToRoute('classroom_index', array('id' => $classroom->getId()));
         }
 
         return $this->render('crud/edit.html.twig', array(
-            'teacher' => $teacher,
+            'classroom' => $classroom,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
@@ -195,14 +195,14 @@ class TeacherController extends Controller
     }
 
     /**
-     * Deletes a Teacher entity.
+     * Deletes a Classroom entity.
      *
-     * @Route("/delete/{id}", name="teacher_delete")
+     * @Route("/delete/{id}", name="classroom_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, Teacher $teacher, $campaignUrl)
+    public function deleteAction(Request $request, Classroom $classroom, $campaignUrl)
     {
-        $entity = 'Teacher';
+        $entity = 'Classroom';
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -217,12 +217,12 @@ class TeacherController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-        $form = $this->createDeleteForm($teacher);
+        $form = $this->createDeleteForm($classroom);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->remove($teacher);
+            $em->remove($classroom);
             $em->flush();
         }
 
@@ -230,33 +230,33 @@ class TeacherController extends Controller
     }
 
     /**
-     * Creates a form to delete a Teacher entity.
+     * Creates a form to delete a Classroom entity.
      *
-     * @param Teacher $teacher The Teacher entity
+     * @param Classroom $classroom The Classroom entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Teacher $teacher, $campaignUrl)
+    private function createDeleteForm(Classroom $classroom, $campaignUrl)
     {
-        $entity = 'Teacher';
+        $entity = 'Classroom';
 
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('campaign_delete', array('campaignUrl'=> $campaignUrl, 'id' => $teacher->getId())))
+            ->setAction($this->generateUrl('campaign_delete', array('campaignUrl'=> $campaignUrl, 'id' => $classroom->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
     }
 
     /**
-     * Creates a new Teacher entity.
+     * Creates a new Classroom entity.
      *
-     * @Route("/upload", name="teacher_upload")
+     * @Route("/upload", name="classroom_upload")
      * @Method({"GET", "POST"})
      */
     public function uploadForm(Request $request)
     {
         $logger = $this->get('logger');
-        $entity = 'Teacher';
+        $entity = 'Classroom';
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -292,7 +292,7 @@ class TeacherController extends Controller
 
                 $CSVHelper = new CSVHelper();
                 $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
-                $templateFields = array('teachers_name', 'grade', 'email');
+                $templateFields = array('classrooms_name', 'grade', 'email');
 
                 if ($CSVHelper->validateHeaders($templateFields)) {
                     $logger->info('Making changes to database');
@@ -312,7 +312,7 @@ class TeacherController extends Controller
 
                         $this->addFlash(
                             'info',
-                            'The Teachers table has been truncated'
+                            'The Classrooms table has been truncated'
                         );
                     }
 
@@ -340,13 +340,13 @@ class TeacherController extends Controller
                         }
 
                         if (!$failure) {
-                            $teacher = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                      array('grade' => $grade->getId(), 'teacherName' => $item['teachers_name'])
+                            $classroom = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
+                      array('grade' => $grade->getId(), 'classroomName' => $item['classrooms_name'])
                       );
                       //Going to perform "Insert" vs "Update"
-                        if (empty($teacher)) {
+                        if (empty($classroom)) {
                             $logger->debug($entity.' not found....creating new record');
-                            $teacher = new Teacher();
+                            $classroom = new Classroom();
                         } else {
                             $logger->debug($entity.' found....updating existing record');
                             if (strcmp($mode, 'truncate') == 0) {
@@ -355,19 +355,19 @@ class TeacherController extends Controller
                                 $errorMessage = new ValidationHelper(array(
                               'entity' => $entity,
                               'row_index' => ($i + 2),
-                              'error_field' => 'teachers_name',
-                              'error_field_value' => $item['teachers_name'],
-                              'error_message' => 'Duplicate with '.$entity.' #'.$teacher->getId(),
+                              'error_field' => 'classrooms_name',
+                              'error_field_value' => $item['classrooms_name'],
+                              'error_message' => 'Duplicate with '.$entity.' #'.$classroom->getId(),
                               'error_level' => ValidationHelper::$level_warning, ));
                             }
                         }
                             if (!$failure) {
-                                $teacher->setTeacherName($item['teachers_name']);
-                                $teacher->setGrade($grade);
-                                $teacher->setEmail($item['email']);
+                                $classroom->setClassroomName($item['classrooms_name']);
+                                $classroom->setGrade($grade);
+                                $classroom->setEmail($item['email']);
 
                                 $validator = $this->get('validator');
-                                $errors = $validator->validate($teacher);
+                                $errors = $validator->validate($classroom);
 
                                 if (strcmp($mode, 'validate') !== 0) {
                                     if (count($errors) > 0) {
@@ -378,7 +378,7 @@ class TeacherController extends Controller
                                     '[ROW #'.($i + 2).'] Could not add ['.$entity.']: '.$errorsString
                                 );
                                     } else {
-                                        $em->persist($teacher);
+                                        $em->persist($classroom);
                                         $em->flush();
                                         $em->clear();
                                     }

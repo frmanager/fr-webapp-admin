@@ -7,32 +7,32 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="teacher",uniqueConstraints={@ORM\UniqueConstraint(columns={"teacher_name", "grade_id", "campaign_id"})})
+ * @ORM\Table(name="classroom",uniqueConstraints={@ORM\UniqueConstraint(columns={"name", "campaign_id"})})
  */
-class Teacher
+class Classroom
 {
     /**
-     * @ORM\OneToMany(targetEntity="Student", mappedBy="teacher", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Student", mappedBy="classroom", cascade={"remove"})
      */
     private $students;
 
     /**
-     * @ORM\OneToMany(targetEntity="Team", mappedBy="teacher", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Team", mappedBy="classroom", cascade={"remove"})
      */
     private $teams;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="teacher", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Causevoxteam", mappedBy="classroom", cascade={"remove"})
      */
     private $causevoxteams;
 
     /**
-     * @ORM\OneToMany(targetEntity="Causevoxfundraiser", mappedBy="teacher", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Causevoxfundraiser", mappedBy="classroom", cascade={"remove"})
      */
     private $causevoxfundraisers;
 
     /**
-     * @ORM\OneToMany(targetEntity="Donation", mappedBy="teacher", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Donation", mappedBy="classroom", cascade={"remove"})
      */
     private $donations;
 
@@ -40,7 +40,7 @@ class Teacher
     /**
      * @var Campaign
      *
-     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="teachers")
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="classrooms")
      * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */
@@ -57,17 +57,22 @@ class Teacher
     /**
      * @var Grade
      *
-     * @ORM\ManyToOne(targetEntity="Grade", inversedBy="teachers", cascade={"remove"})
-     * @ORM\JoinColumn(name="grade_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Grade", inversedBy="classrooms", cascade={"remove"})
+     * @ORM\JoinColumn(name="grade_id", referencedColumnName="id", nullable=true)
      * @Assert\NotNull()
      */
     private $grade;
 
     /**
      * @ORM\Column(type="string", length=100)
-     * @Assert\NotNull()
      */
     private $teacherName;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotNull()
+     */
+    private $name;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
@@ -76,6 +81,31 @@ class Teacher
      * )
      */
     private $email;
+
+
+    /**
+     * @var User
+     *
+     * Many Campaigns have One User.
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="created_by_id", referencedColumnName="id")
+     *
+     */
+    private $createdBy;
+
+
+   /**
+    * @ORM\Column(type="datetime")
+    */
+   protected $createdAt;
+
+
+   /**
+    * @ORM\Column(type="datetime")
+    */
+   protected $updatedAt;
+
+
 
     /**
      * Get id.
@@ -92,7 +122,7 @@ class Teacher
      *
      * @param string $grade
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function setGrade($grade)
     {
@@ -116,7 +146,7 @@ class Teacher
      *
      * @param string $teacherName
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function setTeacherName($teacherName)
     {
@@ -141,6 +171,16 @@ class Teacher
     {
         $this->students = new \Doctrine\Common\Collections\ArrayCollection();
         $this->causevoxteams = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->createdAt= new \DateTime();
+        $this->updatedAt= new \DateTime();
+    }
+    
+    /**
+     * @ORM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        $this->updatedAt= new \DateTime();
     }
 
     /**
@@ -148,7 +188,7 @@ class Teacher
      *
      * @param \AppBundle\Entity\Student $student
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function addStudent(\AppBundle\Entity\Student $student)
     {
@@ -182,7 +222,7 @@ class Teacher
      *
      * @param \AppBundle\Entity\Causevoxteam $causevoxteams
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function addCausevoxteam(\AppBundle\Entity\Causevoxteam $causevoxteams)
     {
@@ -211,7 +251,7 @@ class Teacher
         return $this->causevoxteams;
     }
 
-    public function getTeacherAndGrade()
+    public function getClassroomAndGrade()
     {
         return sprintf('%s - %s', $this->grade->getName(), $this->teacherName);
     }
@@ -221,7 +261,7 @@ class Teacher
      *
      * @param string $email
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function setEmail($email)
     {
@@ -245,7 +285,7 @@ class Teacher
      *
      * @param \AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function addCausevoxfundraiser(\AppBundle\Entity\Causevoxfundraiser $causevoxfundraiser)
     {
@@ -279,7 +319,7 @@ class Teacher
      *
      * @param \AppBundle\Entity\Donation $donation
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function addDonation(\AppBundle\Entity\Donation $donation)
     {
@@ -313,7 +353,7 @@ class Teacher
      *
      * @param \AppBundle\Entity\Campaign $campaign
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function setCampaign(\AppBundle\Entity\Campaign $campaign = null)
     {
@@ -361,7 +401,7 @@ class Teacher
      *
      * @param \AppBundle\Entity\Team $team
      *
-     * @return Teacher
+     * @return Classroom
      */
     public function addTeam(\AppBundle\Entity\Team $team)
     {
@@ -388,5 +428,101 @@ class Teacher
     public function getTeams()
     {
         return $this->teams;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return Classroom
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return Classroom
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     *
+     * @return Classroom
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param \AppBundle\Entity\User $createdBy
+     *
+     * @return Classroom
+     */
+    public function setCreatedBy(\AppBundle\Entity\User $createdBy = null)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return \AppBundle\Entity\User
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
     }
 }

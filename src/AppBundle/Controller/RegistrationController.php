@@ -9,7 +9,7 @@ use AppBundle\Entity\Campaignawardtype;
 use AppBundle\Entity\Campaignawardstyle;
 use AppBundle\Entity\Campaignaward;
 use AppBundle\Entity\CampaignUser;
-use AppBundle\Entity\Teacher;
+use AppBundle\Entity\Classroom;
 use AppBundle\Entity\Grade;
 use AppBundle\Entity\Student;
 use AppBundle\Entity\UserStatus;
@@ -139,25 +139,25 @@ class RegistrationController extends Controller
       */
 
       //Step 1: Get base ID's
-      $campaignAwardTypeTeacher = $em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('teacher');
+      $campaignAwardTypeClassroom = $em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('classroom');
       $campaignAwardTypeStudent = $em->getRepository('AppBundle:Campaignawardtype')->findOneByValue('student');
       $campaignAwardStyleLevel = $em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('level');
       $campaignAwardStylePlace = $em->getRepository('AppBundle:Campaignawardstyle')->findOneByValue('place');
 
-      //Teacher Place Awards
-      $this->createCampaignAward($campaign, "First Place Teacher Award", "First Place Teacher Award Description", $campaignAwardTypeTeacher, $campaignAwardStylePlace, null, 1);
-      $this->createCampaignAward($campaign, "Second Place Teacher Award", "Second Place Teacher Award Description", $campaignAwardTypeTeacher, $campaignAwardStylePlace, null, 2);
-      $this->createCampaignAward($campaign, "Third Place Teacher Award", "Third Place Teacher Award Description", $campaignAwardTypeTeacher, $campaignAwardStylePlace, null, 3);
+      //Classroom Place Awards
+      $this->createCampaignAward($campaign, "First Place Classroom Award", "First Place Classroom Award Description", $campaignAwardTypeClassroom, $campaignAwardStylePlace, null, 1);
+      $this->createCampaignAward($campaign, "Second Place Classroom Award", "Second Place Classroom Award Description", $campaignAwardTypeClassroom, $campaignAwardStylePlace, null, 2);
+      $this->createCampaignAward($campaign, "Third Place Classroom Award", "Third Place Classroom Award Description", $campaignAwardTypeClassroom, $campaignAwardStylePlace, null, 3);
 
       //Student Place Awards
       $this->createCampaignAward($campaign, "First Place Student Award", "First Place Student Award Description", $campaignAwardTypeStudent, $campaignAwardStylePlace, null, 1);
       $this->createCampaignAward($campaign, "Second Place Student Award", "Second Place Student Award Description", $campaignAwardTypeStudent, $campaignAwardStylePlace, null, 2);
       $this->createCampaignAward($campaign, "Third Place Student Award", "Third Place Student Award Description", $campaignAwardTypeStudent, $campaignAwardStylePlace, null, 3);
 
-      //Teacher Level Awards
-      $this->createCampaignAward($campaign, "First Level Teacher Award", "First Level Teacher Award Description", $campaignAwardTypeTeacher, $campaignAwardStylePlace, 50, null);
-      $this->createCampaignAward($campaign, "Second Level Teacher Award", "Second Level Teacher Award Description", $campaignAwardTypeTeacher, $campaignAwardStylePlace, 100, null);
-      $this->createCampaignAward($campaign, "Third Level Teacher Award", "Third Level Teacher Award Description", $campaignAwardTypeTeacher, $campaignAwardStylePlace, 500, null);
+      //Classroom Level Awards
+      $this->createCampaignAward($campaign, "First Level Classroom Award", "First Level Classroom Award Description", $campaignAwardTypeClassroom, $campaignAwardStylePlace, 50, null);
+      $this->createCampaignAward($campaign, "Second Level Classroom Award", "Second Level Classroom Award Description", $campaignAwardTypeClassroom, $campaignAwardStylePlace, 100, null);
+      $this->createCampaignAward($campaign, "Third Level Classroom Award", "Third Level Classroom Award Description", $campaignAwardTypeClassroom, $campaignAwardStylePlace, 500, null);
 
       //Student Level Awards
       $this->createCampaignAward($campaign, "First Level Student Award", "First Level Student Award Description", $campaignAwardTypeStudent, $campaignAwardStylePlace, 50, null);
@@ -172,108 +172,108 @@ class RegistrationController extends Controller
 
       //Kindergarten
       $grade = $this->createGrade($campaign, 'Kindergarten');
-        $teacher = $this->createTeacher($campaign, $grade, 'Mr. Willis');
-          $student = $this->createStudent($campaign, $grade, $teacher, "John B.");
-          $student = $this->createStudent($campaign, $grade, $teacher, "Chris E.");
-          $student = $this->createStudent($campaign, $grade, $teacher, "Eric F.");
+        $classroom = $this->createClassroom($campaign, $grade, 'Mr. Willis');
+          $student = $this->createStudent($campaign, $grade, $classroom, "John B.");
+          $student = $this->createStudent($campaign, $grade, $classroom, "Chris E.");
+          $student = $this->createStudent($campaign, $grade, $classroom, "Eric F.");
 
-        $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Streep');
-          $student = $this->createStudent($campaign, $grade, $teacher, "Richard I.");
-          $student = $this->createStudent($campaign, $grade, $teacher, "Kelly E.");
-          $student = $this->createStudent($campaign, $grade, $teacher, "Stephanie I.");
+        $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Streep');
+          $student = $this->createStudent($campaign, $grade, $classroom, "Richard I.");
+          $student = $this->createStudent($campaign, $grade, $classroom, "Kelly E.");
+          $student = $this->createStudent($campaign, $grade, $classroom, "Stephanie I.");
 
-        $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Hepburn');
-          $student = $this->createStudent($campaign, $grade, $teacher, "Bellamy O.");
-          $student = $this->createStudent($campaign, $grade, $teacher, "Rodger R.");
-          $student = $this->createStudent($campaign, $grade, $teacher, "Casey K.");
+        $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Hepburn');
+          $student = $this->createStudent($campaign, $grade, $classroom, "Bellamy O.");
+          $student = $this->createStudent($campaign, $grade, $classroom, "Rodger R.");
+          $student = $this->createStudent($campaign, $grade, $classroom, "Casey K.");
 
       //1st Grade
       $grade = $this->createGrade($campaign, '1st Grade');
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Jolie');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Andrew M.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "David C.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Eleanor R.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Jolie');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Andrew M.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "David C.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Eleanor R.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Monroe');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Henry P.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "John B.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Eric F.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Monroe');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Henry P.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "John B.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Eric F.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Portman');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Barbara D.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Thomas C.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Joann R.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Portman');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Barbara D.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Thomas C.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Joann R.");
 
       //2nd Grade
       $grade = $this->createGrade($campaign, '2nd Grade');
-      $teacher = $this->createTeacher($campaign, $grade, 'Mr. Jakcson');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Jessie B.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Christian H.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Sophia M.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mr. Jakcson');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Jessie B.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Christian H.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Sophia M.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Jones');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Trevoyce W.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Ryo P.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Isabelle W.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Jones');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Trevoyce W.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Ryo P.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Isabelle W.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Lawrence');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Rahlena S.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Yasmine V.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Jerry F.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Lawrence');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Rahlena S.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Yasmine V.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Jerry F.");
 
 
       //3rd Grade
       $grade = $this->createGrade($campaign, '3rd Grade');
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Kidman');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Bradley B.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Aiden K.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Candy K.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Kidman');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Bradley B.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Aiden K.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Candy K.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Theron');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Ellen E.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Richard H.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Gregory R.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Theron');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Ellen E.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Richard H.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Gregory R.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Blanchett');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Park L.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Gabrielle B.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Ethan S.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Blanchett');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Park L.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Gabrielle B.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Ethan S.");
 
 
       //4th Grade
       $grade = $this->createGrade($campaign, '4th Grade');
-      $teacher = $this->createTeacher($campaign, $grade, 'Mr. Ryan');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Bishop R.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Juno T.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "John B.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mr. Ryan');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Bishop R.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Juno T.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "John B.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Taylor');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Alexis S.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Kevin O.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Bobbie B.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Taylor');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Alexis S.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Kevin O.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Bobbie B.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Foster');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Hilary C.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Donald T.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "John K.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Foster');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Hilary C.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Donald T.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "John K.");
 
 
       //5th Grade
       $grade = $this->createGrade($campaign, '5th Grade');
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Paltrow');
-        $student = $this->createStudent($campaign, $grade, $teacher, "George W.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "James M.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "William C.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Paltrow');
+        $student = $this->createStudent($campaign, $grade, $classroom, "George W.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "James M.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "William C.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mr. Balboa');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Abraham L.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Barak O.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Andrew J.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mr. Balboa');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Abraham L.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Barak O.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Andrew J.");
 
-      $teacher = $this->createTeacher($campaign, $grade, 'Mrs. Roberts');
-        $student = $this->createStudent($campaign, $grade, $teacher, "Andrew G.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Franklin R.");
-        $student = $this->createStudent($campaign, $grade, $teacher, "Thomas J.");
+      $classroom = $this->createClassroom($campaign, $grade, 'Mrs. Roberts');
+        $student = $this->createStudent($campaign, $grade, $classroom, "Andrew G.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Franklin R.");
+        $student = $this->createStudent($campaign, $grade, $classroom, "Thomas J.");
 
 
       #Save Everything
@@ -316,26 +316,27 @@ class RegistrationController extends Controller
     }
 
 
-    private function createTeacher(Campaign $campaign, Grade $grade, $name){
+    private function createClassroom(Campaign $campaign, Grade $grade, $name){
       $em = $this->getDoctrine()->getManager();
 
-      $teacher = new Teacher();
-      $teacher->setGrade($grade);
-      $teacher->setTeacherName($name);
-      $teacher->setCampaign($campaign);
+      $classroom = new Classroom();
+      $classroom->setGrade($grade);
+      $classroom->setTeacherName($name);
+      $classroom->setName($name.'s classroom');
+      $classroom->setCampaign($campaign);
 
       //Save
-      $em->persist($teacher);
-      return $teacher;
+      $em->persist($classroom);
+      return $classroom;
     }
 
 
-    private function createStudent(Campaign $campaign, Grade $grade, Teacher $teacher,  $name){
+    private function createStudent(Campaign $campaign, Grade $grade, Classroom $classroom,  $name){
       $em = $this->getDoctrine()->getManager();
 
       $student = new Student();
       $student->setGrade($grade);
-      $student->setTeacher($teacher);
+      $student->setClassroom($classroom);
       $student->setName($name);
       $student->setCampaign($campaign);
 

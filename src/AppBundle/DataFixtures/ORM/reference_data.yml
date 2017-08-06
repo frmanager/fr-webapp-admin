@@ -16,13 +16,13 @@ AppBundle\Entity\Campaignawardstyle:
     campaignawardstyle2:
         name: "Donation Level"
         value: "level"
-        description: "Award received if (Teacher/Student) reach donation amount"
+        description: "Award received if (Classroom/Student) reach donation amount"
 
 AppBundle\Entity\Campaignawardtype:
     campaignawardtype1:
-        name: "Teacher/Class"
-        value: "teacher"
-        description: "Teacher/Class"
+        name: "Classroom"
+        value: "classroom"
+        description: "Classroom"
     campaignawardtype2:
         name: "Student/Individual"
         value: "student"
@@ -35,9 +35,9 @@ AppBundle\Entity\TeamType:
         value: "student"
         description: "student"
     rf_team_type2:
-        name: "Teacher/Class"
-        value: "teacher"
-        description: "Teacher/Class"
+        name: "Classroom"
+        value: "classroom"
+        description: "Classroom"
     rf_team_type3:
         name: "Family"
         value: "family"

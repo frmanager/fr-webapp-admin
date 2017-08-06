@@ -1,13 +1,13 @@
 AppBundle\Entity\Donation:
     donation{1..500}:
-        teacher: '@teacher*'
+        classroom: '@classroom*'
         student: null
         team: null
         amount: <randomFloat(2, 1, 50)>
         donatedAt: <dateTimeBetween('-30 days', '0 days')>
         type: "manual"
         __calls:
-            - setCampaignFromTeacher:
+            - setCampaignFromClassroom:
                   0: null
     donation{501..2000}:
         student: '@student*'
@@ -16,13 +16,13 @@ AppBundle\Entity\Donation:
         donatedAt: <dateTimeBetween('-30 days', '0 days')>
         type: "manual"
         __calls:
-            - setTeacherFromStudent:
+            - setClassroomFromStudent:
                   0: null
             - setCampaignFromStudent:
                   0: null
     donation{2001..2500}:
         student: null
-        teacher: null
+        classroom: null
         team: '@team*'
         amount: <randomFloat(2, 1, 50)>
         donatedAt: <dateTimeBetween('-30 days', '0 days')>

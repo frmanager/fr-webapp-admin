@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use AppBundle\Entity\Grade;
 
-class TeacherType extends AbstractType
+class ClassroomType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -21,6 +21,7 @@ class TeacherType extends AbstractType
               'class' => 'AppBundle:Grade',
               'choice_label' => 'name',
               ))
+            ->add('name')
             ->add('teacherName')
             ->add('email')
         ;
@@ -32,7 +33,7 @@ class TeacherType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Teacher',
+            'data_class' => 'AppBundle\Entity\Classroom',
         ));
     }
 }

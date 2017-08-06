@@ -43,9 +43,9 @@ class RegisterControllerTest extends WebTestCase
                 $this->em->remove($student);
               }
 
-              $teachers = $this->em->getRepository('AppBundle:Teacher')->findByCampaign($campaign);
-              foreach($teachers as $teacher){
-                $this->em->remove($teacher);
+              $classrooms = $this->em->getRepository('AppBundle:Classroom')->findByCampaign($campaign);
+              foreach($classrooms as $classroom){
+                $this->em->remove($classroom);
               }
 
               $grades = $this->em->getRepository('AppBundle:Grade')->findByCampaign($campaign);
@@ -59,7 +59,7 @@ class RegisterControllerTest extends WebTestCase
               if (!empty($user)){
                 $this->em->remove($user);
               }
-              
+
               $this->em->flush();
 
             }
@@ -112,9 +112,9 @@ class RegisterControllerTest extends WebTestCase
           $this->em->remove($student);
         }
 
-        $teachers = $this->em->getRepository('AppBundle:Teacher')->findByCampaign($campaign);
-        foreach($teachers as $teacher){
-          $this->em->remove($teacher);
+        $classrooms = $this->em->getRepository('AppBundle:Classroom')->findByCampaign($campaign);
+        foreach($classrooms as $classroom){
+          $this->em->remove($classroom);
         }
 
         $grades = $this->em->getRepository('AppBundle:Grade')->findByCampaign($campaign);

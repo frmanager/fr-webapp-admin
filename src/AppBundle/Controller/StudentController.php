@@ -144,9 +144,9 @@ class StudentController extends Controller
 
         return $this->render('campaign/student.show.html.twig', array(
             'student' => $student,
-            'teacher' => $queryHelper->getTeachersData(array('campaign' => $campaign, 'id' => $student->getTeacher()->getId())),
+            'classroom' => $queryHelper->getClassroomsData(array('campaign' => $campaign, 'id' => $student->getClassroom()->getId())),
             'student_rank' => $queryHelper->getStudentRank($student->getId(),array('campaign' => $campaign, 'limit' => 0)),
-            'teacher_rank' => $queryHelper->getTeacherRank($student->getTeacher()->getId(),array('campaign' => $campaign, 'limit' => 0)),
+            'classroom_rank' => $queryHelper->getClassroomRank($student->getClassroom()->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'campaign_awards' => $campaignAwards,
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
@@ -296,7 +296,7 @@ class StudentController extends Controller
 
                 $CSVHelper = new CSVHelper();
                 $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
-                $templateFields = array('students_name', 'grade', 'teachers_name');
+                $templateFields = array('students_name', 'grade', 'classrooms_name');
 
                 if ($CSVHelper->validateHeaders($templateFields)) {
                     $em = $this->getDoctrine()->getManager();
@@ -341,22 +341,22 @@ class StudentController extends Controller
                         }
 
                         if (!$failure) {
-                            $teacher = $this->getDoctrine()->getRepository('AppBundle:Teacher')->findOneByTeacherName($item['teachers_name']);
-                            if (empty($teacher)) {
+                            $classroom = $this->getDoctrine()->getRepository('AppBundle:Classroom')->findOneByClassroomName($item['classrooms_name']);
+                            if (empty($classroom)) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                               'entity' => $entity,
                               'row_index' => ($i + 2),
-                              'error_field' => 'teachers_name',
-                              'error_field_value' => $item['teachers_name'],
-                              'error_message' => 'Could not find teacher',
+                              'error_field' => 'classrooms_name',
+                              'error_field_value' => $item['classrooms_name'],
+                              'error_message' => 'Could not find classroom',
                               'error_level' => ValidationHelper::$level_error, ));
                             }
                         }
 
                         if (!$failure) {
                             $student = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                        array('teacher' => $teacher, 'name' => $item['students_name'])
+                        array('classroom' => $classroom, 'name' => $item['students_name'])
                         );
                         //Going to perform "Insert" vs "Update"
                           if (empty($student)) {
@@ -376,7 +376,7 @@ class StudentController extends Controller
                           }
                             if (!$failure) {
                                 $student->setName($item['students_name']);
-                                $student->setTeacher($teacher);
+                                $student->setClassroom($classroom);
 
                                 $validator = $this->get('validator');
                                 $errors = $validator->validate($student);
