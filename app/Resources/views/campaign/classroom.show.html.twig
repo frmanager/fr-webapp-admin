@@ -9,10 +9,10 @@
             {% set donation_amount = donation_amount + donation.amount %}
     {% endfor %}
     <div class="row" style="">
-        <div class="col-md-4">
-            <h1>{{ classroom.classroomName }}</h1>
+        <div class="col-md-6">
+            <h1>{{ classroom.name }}</h1>
         </div>
-        <div class="col-md-8" style="text-align:right;">
+        <div class="col-md-6" style="text-align:right;">
             <div style="">
                 <a href="{{ path('classroom_index', { 'campaignUrl': campaign.url }) }}" class="btn btn-default">
                     <i class="glyphicon glyphicon-user"></i>
@@ -54,7 +54,7 @@
                         <tr>
                             <th style="text-align:right;">Name</th>
                             <td>
-                                {{ classroom.teacher_name }}
+                                {{ classroom.teacherName }}
                             </td>
                         </tr>
                         {% if is_granted('ROLE_USER') %}
@@ -92,7 +92,7 @@
                         <div style="text-align:center;">
                             {{ form_start(delete_form) }}
                             <a href="{{ path('classroom_edit', { 'campaignUrl': campaign.url, 'id': classroom.id }) }}" class="btn btn-warning">Edit</a>
-                            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{classroom.classroomName}}?')" class="btn btn-danger">
+                            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{classroom.teacherName}}?')" class="btn btn-danger">
                             {{ form_end(delete_form) }}
                         </div>
                     </div>

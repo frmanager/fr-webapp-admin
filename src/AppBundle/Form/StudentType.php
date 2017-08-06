@@ -18,12 +18,13 @@ class StudentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('teacher', EntityType::class, array(
-              'class' => 'AppBundle:Teacher',
+            ->add('classroom', EntityType::class, array(
+              'class' => 'AppBundle:Classroom',
               'query_builder' => function (EntityRepository $er) {
-                  return $er->createQueryBuilder('u')->orderBy('u.grade, u.teacherName', 'ASC');
+                  return $er->createQueryBuilder('u')
+                  ->orderBy('u.grade, u.teacherName', 'ASC');
               },
-              'choice_label' => 'teacherAndGrade',
+              'choice_label' => 'classroomAndGrade',
               ))
             ->add('name')
         ;

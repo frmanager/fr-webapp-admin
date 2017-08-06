@@ -68,6 +68,7 @@ class QueryHelper
                       t.id as classroom_id,
                       t.email as classroom_email,
                       t.teacherName as teacher_name,
+                      t.name as classroom_name,
                       g.id as grade_id,
                       g.name as grade_name,
                       sum(d.amount) as donation_amount,
@@ -129,6 +130,7 @@ class QueryHelper
 
         $queryString = sprintf('SELECT t.id as id,
                                        t.teacherName as teacher_name,
+                                       t.name as classroom_name,
                                        t.email as classroom_email,
                                        g.id as grade_id,
                                        g.name as grade_name,
@@ -168,6 +170,7 @@ class QueryHelper
 
         $queryString = sprintf('SELECT t.id as id,
                         t.teacherName as teacher_name,
+                        t.name as classroom_name,
                         t.email as classroom_email,
                         g.id as grade_id,
                         g.name as grade_name,

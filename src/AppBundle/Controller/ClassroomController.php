@@ -182,7 +182,7 @@ class ClassroomController extends Controller
             $em->persist($classroom);
             $em->flush();
 
-            return $this->redirectToRoute('classroom_index', array('id' => $classroom->getId()));
+            return $this->redirectToRoute('classroom_index', array('campaignUrl' => $campaign->getUrl()));
         }
 
         return $this->render('crud/edit.html.twig', array(
