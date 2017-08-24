@@ -35,9 +35,9 @@ AppBundle\Entity\TeamType:
         value: "student"
         description: "student"
     rf_team_type2:
-        name: "Classroom"
-        value: "classroom"
-        description: "Classroom"
+        name: "Teacher"
+        value: "teacher"
+        description: "Teacher"
     rf_team_type3:
         name: "Family"
         value: "family"
