@@ -1,0 +1,53 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+<div class="card">
+<div class="card-block">
+        <div class="row">
+            <div class="col-sm-5">
+                <h4 class="card-title mb-0">Grades</h4>
+                <div class="small text-muted">xxxxxxx</div>
+            </div>
+            <!--/.col-->
+        </div>
+        <!--/.row-->
+        <br/>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                    <tr>
+                        <td>{{ team.teamType.name }}</td>
+                        <td>
+                            <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}">{{ team.name }}</a>
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-info">
+                                <i class="glyphicon glyphicon-eye-open"></i>
+                                <span class="hidden-xs hidden-sm">
+                                    View</span>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+  {% endblock %}
+
+
+  {% block javascripts %}
+      <script>
+          $(document).ready(function() {
+              $('.table').DataTable({ "pageLength": 20, "order": [[ 1, "asc" ]]});
+          });
+      </script>
+  {% endblock %}

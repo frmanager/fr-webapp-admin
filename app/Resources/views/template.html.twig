@@ -106,10 +106,13 @@
               Manage Campaign
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaign_edit', {'campaignUrl': campaign.url}) }}"><i class="fa fa-wrench"></i> Campaign Settings</a>
+            <a class="nav-link" href="{{ path('campaign_edit', {'campaignUrl': campaign.url}) }}"><i class="fa fa-wrench" aria-hidden="true"></i> Campaign Settings</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('campaignaward_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-trophy"></i> Awards</a>
+            <a class="nav-link" href="{{ path('campaignaward_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-trophy" aria-hidden="true"></i> Awards</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ path('team_index', {'campaignUrl': campaign.url}) }}"><i class="fa fa-users" aria-hidden="true"></i> Teams</a>
           </li>
           <li class="nav-title">
               Manage School
