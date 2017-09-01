@@ -11,6 +11,7 @@ use AppBundle\Entity\Campaign;
 use AppBundle\Utils\ValidationHelper;
 use AppBundle\Utils\CSVHelper;
 use AppBundle\Utils\QueryHelper;
+use AppBundle\Utils\CampaignHelper;
 use DateTime;
 
 /**
@@ -40,7 +41,9 @@ class StudentController extends Controller
           return $this->redirectToRoute('homepage');
         }
 
-        if(!$this->campaignPermissionsCheck($campaign)){
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
         }
@@ -77,7 +80,9 @@ class StudentController extends Controller
           return $this->redirectToRoute('homepage');
         }
 
-        if(!$this->campaignPermissionsCheck($campaign)){
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
         }
@@ -121,7 +126,9 @@ class StudentController extends Controller
           return $this->redirectToRoute('homepage');
         }
 
-        if(!$this->campaignPermissionsCheck($campaign)){
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
         }
@@ -172,7 +179,9 @@ class StudentController extends Controller
           return $this->redirectToRoute('homepage');
         }
 
-        if(!$this->campaignPermissionsCheck($campaign)){
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
         }
@@ -217,7 +226,9 @@ class StudentController extends Controller
           return $this->redirectToRoute('homepage');
         }
 
-        if(!$this->campaignPermissionsCheck($campaign)){
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
         }
@@ -271,7 +282,9 @@ class StudentController extends Controller
           return $this->redirectToRoute('homepage');
         }
 
-        if(!$this->campaignPermissionsCheck($campaign)){
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
         }
@@ -446,29 +459,4 @@ class StudentController extends Controller
         ));
     }
 
-    /**
-    *
-    * campaignPermissionsCheck takes the campaign that was requested and verifies user has access to it
-    *
-    * Access is verified by looking at the CampaignUser entity and verifying a record exists
-    * for that campaign and user combination
-    *
-    * @param Campaign $campaign
-    *
-    * @return boolean
-    *
-    */
-    private function campaignPermissionsCheck(Campaign $campaign){
-      $em = $this->getDoctrine()->getManager();
-
-      //CODE TO PROTECT CONTROLLER FROM USERS WHO ARE NOT IN CAMPAIGNUSER TABLE
-      //TODO: ADD CODE TO ALLOW ADMINS TO ACCESS
-      $query = $em->createQuery('SELECT IDENTITY(cu.campaign) FROM AppBundle:CampaignUser cu where cu.user=?1');
-      $query->setParameter(1, $this->get('security.token_storage')->getToken()->getUser());
-      $results = array_map('current', $query->getScalarResult());
-      if(!in_array($campaign->getId(), $results)){
-        return false;
-      }
-      return true;
-    }
 }

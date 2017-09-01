@@ -40,6 +40,13 @@ class TeamController extends Controller
         return $this->redirectToRoute('homepage');
       }
 
+      //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+      $campaignHelper = new CampaignHelper($em, $logger);
+      if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
+
       // replace this example code with whatever you need
       return $this->render('team/team.index.html.twig', array(
         'teams' => $em->getRepository('AppBundle:Team')->findByCampaign($campaign),
@@ -67,8 +74,16 @@ class TeamController extends Controller
           $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
+        
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
 
-        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+
+        //CODE TO CHECK TO SEE IF TEAM EXISTS
         $team = $em->getRepository('AppBundle:Team')->findOneBy(array('url'=>$teamUrl, 'campaign' => $campaign));
         if(is_null($team)){
           $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this team.');
@@ -104,7 +119,14 @@ class TeamController extends Controller
           return $this->redirectToRoute('homepage');
         }
 
-        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF TEAM EXISTS
         $team = $em->getRepository('AppBundle:Team')->findOneBy(array('url'=>$teamUrl, 'campaign' => $campaign));
         if(is_null($team)){
           $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this team.');

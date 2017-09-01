@@ -11,6 +11,7 @@ use AppBundle\Entity\Grade;
 use AppBundle\Entity\Student;
 use AppBundle\Utils\CSVHelper;
 use AppBundle\Utils\ValidationHelper;
+use AppBundle\Utils\CampaignHelper;
 
 /**
  * Causevoxfundraiser controller.
