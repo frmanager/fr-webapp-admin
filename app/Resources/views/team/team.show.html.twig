@@ -4,9 +4,21 @@
 <div class="card">
 <div class="card-block">
     <div class="row">
+        <div class="col-sm-12">
+            <h4 class="card-title mb-0" style="text-align:center;">{{ team.name }}</h4>
+        </div>
+        <!--/.col-->
+    </div>
+</div>
+</div>
+<div class="card">
+<div class="card-block">
+
+    <div class="row">
         <div class="col-sm-5">
-            <h4 class="card-title mb-0">{{ team.name }}</h4>
-            <div class="small text-muted">ID #{{ team.id }}</div>
+            <div class="">Team Owner: {{ team.user.firstName }} {{ team.user.lastName }}</div>
+            <div class="">Email Address: {{ team.user.email }}</div>
+            <div class="">Team Type: {{ team.teamType.name }}</div>
         </div>
         <!--/.col-->
     </div>
@@ -14,6 +26,12 @@
     <br/>
 
     {% if team.teamType.value == 'student' or team.teamType.value == 'family' %}
+    <div class="row">
+        <div class="col-sm-5">
+            <h3 class="">Children</h3>
+        </div>
+        <!--/.col-->
+    </div>
       <table class="table table-bordered table-striped table-condensed">
           <thead>
               <tr>
