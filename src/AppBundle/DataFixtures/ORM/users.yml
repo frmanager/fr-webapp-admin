@@ -21,7 +21,7 @@ AppBundle\Entity\User:
         campaignManagerFlag: true
         setEmailConfirmationCodeTimestamp: <dateTime()>
         userStatus: '@userStatus*'
-    user{21..30}:
+    user{21..50}:
         firstName: <firstName()>
         lastName: <lastName()>
         email (unique): <freeEmail()>
