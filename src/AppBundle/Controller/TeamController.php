@@ -74,7 +74,7 @@ class TeamController extends Controller
           $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
           return $this->redirectToRoute('homepage');
         }
-        
+
         //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
         $campaignHelper = new CampaignHelper($em, $logger);
         if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
@@ -107,6 +107,7 @@ class TeamController extends Controller
      */
     public function editAction(Request $request, $campaignUrl, $teamUrl)
     {
+        $logger = $this->get('logger');
         $entity = 'Team';
         $this->denyAccessUnlessGranted('ROLE_USER');
 
@@ -148,5 +149,82 @@ class TeamController extends Controller
             'campaign' => $campaign,
         ));
     }
+
+
+
+
+    /**
+     * Displays a form to edit an existing Team entity.
+     *
+     * @Route("/{teamUrl}/verify_student/{teamStudentId}", name="teamStudent_verify")
+     * @Method({"GET", "POST"})
+     */
+    public function verifyTeamStudentAction(Request $request, $campaignUrl, $teamUrl, $teamStudentId)
+    {
+        $logger = $this->get('logger');
+        $entity = 'Team';
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF TEAM EXISTS
+        $team = $em->getRepository('AppBundle:Team')->findOneBy(array('url'=>$teamUrl, 'campaign' => $campaign));
+        if(is_null($team)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this team.');
+          return $this->redirectToRoute('team_index', array('campaignUrl'=>$campaign->getUrl()));
+        }
+
+        //CODE TO CHECK TO SEE IF TEAMSTUDENT EXISTS
+        $teamStudent = $em->getRepository('AppBundle:TeamStudent')->find($teamStudentId);
+        if(is_null($teamStudent)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this team.');
+          return $this->redirectToRoute('team_show', array('campaignUrl'=>$campaign->getUrl(), 'teamUrl'=>$team->getUrl()));
+        }
+
+
+        if(null !== $request->query->get('action') && null !== $request->query->get('studentId')){
+            $failure = false;
+            $studentId = $request->query->get('studentId');
+            $logger->debug("Linking TeamStudent #".$teamStudent->getId()." with student ".$studentId);
+
+            $student = $em->getRepository('AppBundle:Student')->find($studentId);
+            if(is_null($student)){
+              $logger->debug("Could not find Student");
+              $this->get('session')->getFlashBag()->add('warning', 'We are sorry, There was an issue adding that student.');
+              $failure = true;
+            }
+
+            if(!$failure){
+              $teamStudent->setStudent($student);
+              $teamStudent->setConfirmedFlag(true);
+              $em->persist($teamStudent);
+              $em->flush();
+              return $this->redirectToRoute('team_show', array('campaignUrl'=>$campaign->getUrl(), 'teamUrl'=>$team->getUrl()));
+            }
+        }
+
+        return $this->render('team/team.verify.html.twig', array(
+            'students' => $teamStudent->getClassroom()->getStudents(),
+            'team' => $team,
+            'classroom' => $teamStudent->getClassroom(),
+            'teamStudent' => $teamStudent,
+            'campaign' => $campaign,
+        ));
+    }
+
 
 }

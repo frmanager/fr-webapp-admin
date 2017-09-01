@@ -1,40 +1,64 @@
 {% extends 'template.html.twig' %}
-{% use 'bootstrap_3_horizontal_layout.html.twig' %}
 
 {% block body %}
+<div class="card">
+<div class="card-block">
     <div class="row">
-        <div class="col-md-12">
-            <h1>{{ team.name }}</h1>
-            <hr/>
+        <div class="col-sm-5">
+            <h4 class="card-title mb-0">{{ team.name }}</h4>
+            <div class="small text-muted">ID #{{ team.id }}</div>
         </div>
+        <!--/.col-->
     </div>
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            {% if is_granted('ROLE_USER') %}{% if app.user.id == team.user.id %}<a href="{{ path('team_edit', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}">EDIT</a>{% endif %}{% endif %}
-            <dl class="dl-horizontal">
-                <dt>ID</dt>
-                <dd>{{ team.id }}</dd>
-                <dt>Name</dt>
-                <dd>{{ team.name }}</dd>
-            </dl>
-        </div>
-    </div>
+    <!--/.row-->
+    <br/>
+
     {% if team.teamType.value == 'student' or team.teamType.value == 'family' %}
-    <div class="row">
       <table class="table table-bordered table-striped table-condensed">
           <thead>
               <tr>
                   <th>Name</th>
+                  <th>Grade</th>
+                  <th>Classroom</th>
+                  <th class="col-md-1">Verified?</th>
+                  <th>Actions</th>
               </tr>
           </thead>
           <tbody>
               {% for teamStudent in teamStudents %}
                   <tr>
-                      <td>{{ teamStudents.name }}</td>
+                      <td>{{ teamStudent.name }}</td>
+                      <td>{{ teamStudent.grade.name }}</td>
+                      <td>{{ teamStudent.classroom.name }}</td>
+                      <td>
+                         {% if teamStudent.confirmedFlag %}
+                              <i style="color:green;" class="fa fa-check-circle" aria-hidden="true"></i>
+                         {% else %}
+                              <i style="color:red;" class="fa fa-times-circle" aria-hidden="true"></i>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if not teamStudent.confirmedFlag %}
+                             <a href="{{ path('teamStudent_verify', {'campaignUrl':campaign.url,  'teamUrl': team.url , 'teamStudentId': teamStudent.id}) }}" class="btn btn-sm btn-warning">
+                                 <i class="fa fa-link" aria-hidden="true"></i>
+                                 <span class="">Verify</span>
+                             </a>
+                       {% endif %}
+                          <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-info disabled" aria-disabled="true">
+                              <i class="fa fa-pencil" aria-hidden="true"></i>
+                              <span class="">Edit</span>
+                          </a>
+                          <a href="{{ path('team_show', {'campaignUrl':campaign.url,  'teamUrl': team.url }) }}" class="btn btn-sm btn-danger disabled" aria-disabled="true">
+                              <i class="fa fa-trash" aria-hidden="true"></i>
+                              <span class="">Delete</span>
+                          </a>
+                      </td>
                   </tr>
               {% endfor %}
           </tbody>
       </table>
-    </div>
     {% endif %}
+  </div>
+</div>
+
 {% endblock %}
