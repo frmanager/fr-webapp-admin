@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class CampaignType extends AbstractType
 {
@@ -23,6 +24,7 @@ class CampaignType extends AbstractType
             ->add('name', TextType::class, array('required' => true))
             ->add('description')
             ->add('url')
+            ->add('OnlineFlag', CheckboxType::class, array('label'    => 'Put campaign online', 'required' => false))
             ->add('email', TextType::class, array('required' => true))
             ->add('theme', ChoiceType::class, array(
                   'choices'  => array(
