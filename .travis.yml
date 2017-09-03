@@ -1,0 +1,18 @@
+language: php
+php:
+  - '7.0'
+  - '7.1'
+
+before_script:
+  - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - composer install
+  - php bin/console doctrine:database:create --env=test
+  - php bin/console doctrine:schema:create --env=test
+  - php bin/console hautelook:fixtures:load --env=test
+
+script:
+  - phpunit -c app
+
+notifications:
+  email:
+    -  joinus@theodo.fr 😉
