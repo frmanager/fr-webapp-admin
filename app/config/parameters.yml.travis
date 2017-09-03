@@ -2,3 +2,9 @@ parameters:
     database_user: travis
     database_password: ~
     secret: DontForgetThatThisIsOnlyForTravisCISucka!
+    main_app_url: http://fr-webapp
+    admin_app_url: http://fr-webapp-admin
+    mailer_transport: gmail
+    mailer_host: null
+    mailer_user: test@test.com
+    mailer_password: ThisisATest
