@@ -1,8 +1,4 @@
-[![Build Status](https://travis-ci.org/frmanager/fr-webapp-admin.svg?branch=master)](https://travis-ci.org/frmanager/fr-webapp-admin)
-
-[![Quality Status](https://sonarcloud.io/api/badges/gate?key=fr-webapp-admin)](https://sonarcloud.io/api/badges/gate?key=fr-webapp-admin)
-
-
+[![Build Status](https://travis-ci.org/frmanager/fr-webapp-admin.svg?branch=master)](https://travis-ci.org/frmanager/fr-webapp-admin) [![Quality Status](https://sonarcloud.io/api/badges/gate?key=fr-webapp-admin)](https://sonarcloud.io/dashboard?id=fr-webapp-admin)
 
 #LRES PTO Superhero Fun Run Management Website
 This Symphony2 Application is used to manage the "LRES PTO" FunRun, which is a school fundraiser where classes and students compete to raise donations for the PTO. This portal handles the daily data ingest, analytics, calculations, and notifications.
