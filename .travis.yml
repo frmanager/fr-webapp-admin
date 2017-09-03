@@ -2,6 +2,12 @@ language: php
 php:
   - '7.1'
 
+services:
+  - mysql
+
+before_install:
+  - mysql -e 'CREATE DATABASE frmanager_test;'
+
 before_script:
   - cp app/config/parameters.yml.travis app/config/parameters.yml
   - composer install

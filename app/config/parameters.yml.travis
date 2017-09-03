@@ -1,4 +1,8 @@
 parameters:
+    database_driver: pdo_mysql
+    database_host: localhost
+    database_port: 33060
+    database_name: frmanager_test
     database_user: travis
     database_password: ~
     secret: DontForgetThatThisIsOnlyForTravisCISucka!
