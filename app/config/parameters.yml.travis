@@ -3,7 +3,7 @@ parameters:
     database_host: 127.0.0.1
     database_port: 33060
     database_name: frmanager_test
-    database_user: travis
+    database_user: root
     database_password: ~
     secret: DontForgetThatThisIsOnlyForTravisCISucka!
     main_app_url: http://fr-webapp
