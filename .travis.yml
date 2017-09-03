@@ -5,15 +5,12 @@ php:
 services:
   - mysql
 
-before_install:
-  - mysql -e 'CREATE DATABASE frmanager_test;'
-
 before_script:
   - cp app/config/parameters.yml.travis app/config/parameters.yml
   - composer install
-  - php bin/console doctrine:database:create --env=test
-  - php bin/console doctrine:schema:create --env=test
-  - php bin/console hautelook:fixtures:load --env=test
+  - php bin/console doctrine:database:create --env=dev
+  - php bin/console doctrine:schema:create --env=dev
+  - php bin/console hautelook:fixtures:load --env=dev
 
 script:
   - phpunit -c app
