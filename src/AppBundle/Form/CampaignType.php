@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class CampaignType extends AbstractType
@@ -24,7 +25,8 @@ class CampaignType extends AbstractType
             ->add('name', TextType::class, array('required' => true))
             ->add('description')
             ->add('url')
-            ->add('OnlineFlag', CheckboxType::class, array('label'    => 'Put campaign online', 'required' => false))
+            ->add('onlineFlag', CheckboxType::class, array('label'    => 'Put campaign online', 'required' => false))
+            ->add('teamsFlag', CheckboxType::class, array('label'    => 'Enable Teams', 'required' => false))
             ->add('email', TextType::class, array('required' => true))
             ->add('theme', ChoiceType::class, array(
                   'choices'  => array(
@@ -49,6 +51,9 @@ class CampaignType extends AbstractType
             ->add('start_date', DateType::class, array('widget' => 'single_text' ))
             ->add('endDate', DateType::class, array('widget' => 'single_text'))
             ->add('fundingGoal', MoneyType::class, array('required' => true, 'currency' => 'USD'))
+            ->add('donationFlag', CheckboxType::class, array('label'    => 'Enable Donations', 'required' => false))
+            ->add('tippingFlag', CheckboxType::class, array('label'    => 'Enable Tipping', 'required' => false, 'disabled' => true))
+            ->add('paypalEmail', EmailType::class, array('required' => false))
         ;
     }
 
