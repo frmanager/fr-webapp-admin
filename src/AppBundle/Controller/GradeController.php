@@ -27,6 +27,7 @@ class GradeController extends Controller
     public function indexAction($campaignUrl)
     {
         $entity = 'Grade';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -84,6 +85,7 @@ class GradeController extends Controller
     {
         $entity = 'Grade';
         $grade = new Grade();
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -128,6 +130,7 @@ class GradeController extends Controller
     public function showAction(Grade $grade, $campaignUrl)
     {
         $entity = 'Grade';
+        $logger = $this->get('logger');
         $deleteForm = $this->createDeleteForm($grade, $campaignUrl);
         $em = $this->getDoctrine()->getManager();
 
@@ -163,6 +166,7 @@ class GradeController extends Controller
     public function editAction(Request $request, Grade $grade, $campaignUrl)
     {
         $entity = 'Grade';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -210,6 +214,7 @@ class GradeController extends Controller
     public function deleteAction(Request $request, Grade $grade, $campaignUrl)
     {
         $entity = 'Grade';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS

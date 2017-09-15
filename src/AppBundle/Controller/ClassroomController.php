@@ -70,6 +70,7 @@ class ClassroomController extends Controller
     public function newAction(Request $request, $campaignUrl)
     {
         $entity = 'Classroom';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -165,6 +166,7 @@ class ClassroomController extends Controller
     public function editAction(Request $request, Classroom $classroom, $campaignUrl)
     {
         $entity = 'Classroom';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -211,6 +213,7 @@ class ClassroomController extends Controller
     public function deleteAction(Request $request, Classroom $classroom, $campaignUrl)
     {
         $entity = 'Classroom';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -249,7 +252,7 @@ class ClassroomController extends Controller
     private function createDeleteForm(Classroom $classroom, $campaignUrl)
     {
         $entity = 'Classroom';
-
+        $logger = $this->get('logger');
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('campaign_delete', array('campaignUrl'=> $campaignUrl, 'id' => $classroom->getId())))
             ->setMethod('DELETE')
