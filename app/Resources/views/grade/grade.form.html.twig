@@ -1,0 +1,50 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+{% if app.request.attributes.get('_route')=='grade_edit'%}
+{% set formType = "edit" %}
+{% else %}
+{% set formType = "new" %}
+{% endif %}
+
+  <div class="row">
+    <div class="col-sm-8 offset-sm-2">
+      <div class="card">
+        <div class="card-block">
+          <h4 class="card-title">{{ formType == "new" ? "Create new Grade" : "Edit " ~ grade.name }}</h4>
+          <form name="classroom" method="post" class="">
+            <div class="form-group">
+              <div class="col-sm-6">
+                <label for="grade_name" class="required">Grade Name</label>
+                <input class="form-control" type="text" id="grade_name" name="grade[name]" placeholder="Kindergarten" value="{{ formType == "edit" ?  grade.name : '' }}" required>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col">
+                <button type="submit" id="submit" class="btn btn-primary">{{ formType == 'new' ? 'Create Grade' : 'Update Grade' }}</button>
+              </div><!-- ./col -->
+            </div><!-- ./row -->
+          </form><!-- ./form -->
+        </div>
+        <!-- ./card-block -->
+      </div>
+      <!-- ./card -->
+    </div>
+    <!-- ./col -->
+    </div>
+    <!-- ./row -->
+  {% endblock body %}
+
+  {% block javascript %}
+    <script type="text/javascript">
+      $('#user_terms_of_service').click(function() {
+        if ($(this).attr('checked') == false) {
+          $('#submit').attr("disabled", "disabled");
+        } else {
+          $('#submit').removeAttr('disabled');
+        }
+      });
+    </script>
+  {% endblock %}

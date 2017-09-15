@@ -14,7 +14,7 @@
                 <button type="button" disabled class="btn btn-primary float-right"><i class="icon-cloud-download"></i>
                 </button>
                 <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="btn-group mr-3" data-toggle="buttons" aria-label="First group">
+                    <div class="btn-group mr-3" aria-label="First group">
                         <a href="{{ path('grade_new', {'campaignUrl':campaign.url}) }}" class="btn btn-outline-secondary">
                             <i class="fa fa-plus"></i>
                             Add New</a>
@@ -37,16 +37,11 @@
                   {% for grade in grades %}
                   <tr>
                       <td>
-                          <a href="{{ path('grade_show', {'campaignUrl':campaign.url,  'id': grade.id }) }}">{{ grade.id }}</a>
+                        {{ grade.id }}
                       </td>
                       <td>{{ grade.name }}</td>
                       <td style="text-align:center;">
-                          <a href="{{ path('grade_show', {'campaignUrl':campaign.url, 'id': grade.id }) }}" class="btn btn-sm btn-info">
-                              <i class="glyphicon glyphicon-eye-open"></i>
-                              <span class="hidden-xs hidden-sm">
-                                  View</span>
-                          </a>
-                          <a href="{{ path('grade_edit', {'campaignUrl':campaign.url,  'id': grade.id }) }}" class="btn btn-sm btn-warning">
+                          <a href="{{ path('grade_edit', {'campaignUrl':campaign.url,  'gradeId': grade.id }) }}" class="btn btn-sm btn-warning">
                               <i class="glyphicon glyphicon-edit"></i>
                               <span class="hidden-xs hidden-sm">
                                   Edit</span>

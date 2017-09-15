@@ -138,7 +138,7 @@ class ClassroomController extends Controller
 
         return $this->render('classroom/classroom.form.html.twig', array(
             'classroom' => $classroom,
-            'grades' => $grades = $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
+            'grades' => $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
             'campaign' => $campaign,
         ));
     }
@@ -196,10 +196,10 @@ class ClassroomController extends Controller
     /**
      * Displays a form to edit an existing Classroom entity.
      *
-     * @Route("/edit/{id}", name="classroom_edit")
+     * @Route("/edit/{classroomId}", name="classroom_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Classroom $classroom, $campaignUrl)
+    public function editAction(Request $request, $campaignUrl, $classroomId)
     {
         $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
@@ -218,6 +218,12 @@ class ClassroomController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
+        //CODE TO CHECK TO SEE IF CLASSROOM EXISTS
+        $classroom = $em->getRepository('AppBundle:Classroom')->find($classroomId);
+        if(is_null($classroom)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
+          return $this->redirectToRoute('homepage');
+        }
 
         if ($request->isMethod('POST')) {
             $params = $request->request->all();
@@ -267,7 +273,7 @@ class ClassroomController extends Controller
 
         return $this->render('classroom/classroom.form.html.twig', array(
             'classroom' => $classroom,
-            'grades' => $grades = $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
+            'grades' => $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
             'campaign' => $campaign,
         ));
     }

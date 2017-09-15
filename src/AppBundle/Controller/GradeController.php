@@ -68,7 +68,7 @@ class GradeController extends Controller
             );
         }
 
-        return $this->render('campaign/grade.index.html.twig', array(
+        return $this->render('grade/grade.index.html.twig', array(
             'grades' => $grades,
             'entity' => $entity,
             'campaign' => $campaign,
@@ -83,89 +83,63 @@ class GradeController extends Controller
      */
     public function newAction(Request $request, $campaignUrl)
     {
-        $entity = 'Grade';
+        $logger = $this->get('logger');
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
         $grade = new Grade();
-        $logger = $this->get('logger');
-        $em = $this->getDoctrine()->getManager();
 
-        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
-        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
-        if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
-          return $this->redirectToRoute('homepage');
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
+
+            if(!$fail && empty($params['grade']['name'])){
+              $this->addFlash('warning','Grade name is required');
+              $fail = true;
+            }
+
+
+            if(!$fail){
+
+              $grade->setName($params['grade']['name']);
+              $grade->setCampaign($campaign);
+
+              $em->persist($grade);
+              $em->flush();
+              return $this->redirectToRoute('grade_index', array('campaignUrl'=> $campaignUrl));
+
+            }
+
         }
 
-        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
-        $campaignHelper = new CampaignHelper($em, $logger);
-        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
-            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
-            return $this->redirectToRoute('homepage');
-        }
-
-        $form = $this->createForm('AppBundle\Form\GradeType', $grade);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($grade);
-            $em->flush();
-
-            return $this->redirectToRoute('grade_index', array('campaignUrl' => $campaignUrl, 'id' => $grade->getId()));
-        }
-
-        return $this->render('crud/new.html.twig', array(
+        return $this->render('grade/grade.form.html.twig', array(
             'grade' => $grade,
-            'form' => $form->createView(),
-            'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
+            'campaign' => $campaign,
         ));
     }
 
-    /**
-     * Finds and displays a Grade entity.
-     *
-     * @Route("/{id}", name="grade_show")
-     * @Method("GET")
-     */
-    public function showAction(Grade $grade, $campaignUrl)
-    {
-        $entity = 'Grade';
-        $logger = $this->get('logger');
-        $deleteForm = $this->createDeleteForm($grade, $campaignUrl);
-        $em = $this->getDoctrine()->getManager();
-
-        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
-        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
-        if(is_null($campaign)){
-          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
-          return $this->redirectToRoute('homepage');
-        }
-
-        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
-        $campaignHelper = new CampaignHelper($em, $logger);
-        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
-            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
-            return $this->redirectToRoute('homepage');
-        }
-
-
-        return $this->render('campaign/grade.show.html.twig', array(
-            'grade' => $grade,
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl)
-        ));
-    }
 
     /**
      * Displays a form to edit an existing Grade entity.
      *
-     * @Route("/edit/{id}", name="grade_edit")
+     * @Route("/edit/{gradeId}", name="grade_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Grade $grade, $campaignUrl)
+    public function editAction(Request $request, $campaignUrl, $gradeId)
     {
-        $entity = 'Grade';
         $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
@@ -183,25 +157,38 @@ class GradeController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-
-        $deleteForm = $this->createDeleteForm($grade, $campaignUrl);
-        $editForm = $this->createForm('AppBundle\Form\GradeType', $grade);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($grade);
-            $em->flush();
-
-            return $this->redirectToRoute('grade_index', array('campaignUrl'=> $campaignUrl, 'id' => $grade->getId()));
+        //CODE TO CHECK TO SEE IF GRADE EXISTS
+        $grade = $em->getRepository('AppBundle:Grade')->find($gradeId);
+        if(is_null($grade)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this grade.');
+          return $this->redirectToRoute('homepage');
         }
 
-        return $this->render('crud/edit.html.twig', array(
+
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
+
+            if(!$fail && empty($params['grade']['name'])){
+              $this->addFlash('warning','Grade name is required');
+              $fail = true;
+            }
+
+            if(!$fail){
+
+              $grade->setName($params['grade']['name']);
+              $grade->setCampaign($campaign);
+
+              $em->persist($grade);
+              $em->flush();
+              return $this->redirectToRoute('grade_index', array('campaignUrl'=> $campaignUrl));
+
+            }
+        }
+
+        return $this->render('grade/grade.form.html.twig', array(
             'grade' => $grade,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
+            'campaign' => $campaign,
         ));
     }
 
