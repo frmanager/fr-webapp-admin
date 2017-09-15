@@ -19,10 +19,13 @@
   <!-- Datatables styles -->
   <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 
-  <!-- Main styles for this application -->
+  <!-- MainStylesheet for coreUI -->
   <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
 
+  <!-- Modifications -->
+  <link href="{{ asset('assets/css/template.css') }}" rel="stylesheet">
 
+  {% block css %}{% endblock %}
 
 
   <!-- GOOGLE ANALYTICS -->
