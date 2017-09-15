@@ -28,7 +28,7 @@
             </dl>
             {{ form_start(delete_form) }}
             <a href="{{ path('campaignaward_index', {'campaignUrl': campaign.url }) }}" class="btn btn-info">Back</a>
-            <a href="{{ path('campaignaward_edit', {'campaignUrl': campaign.url, 'id': campaignaward.id }) }}" class="btn btn-primary">Edit</a>
+            <a href="{{ path('campaignaward_edit', {'campaignUrl': campaign.url, 'campaignAwardID': campaignaward.id }) }}" class="btn btn-primary">Edit</a>
             <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete {{campaignaward.id}}?')" class="btn btn-danger">
             {{ form_end(delete_form) }}
         </div>

@@ -30,6 +30,7 @@ class CampaignawardController extends Controller
     {
         $entity = 'Campaignaward';
         $em = $this->getDoctrine()->getManager();
+        $logger = $this->get('logger');
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
@@ -49,7 +50,7 @@ class CampaignawardController extends Controller
         $campaignawardstyles = $em->getRepository('AppBundle:Campaignawardstyle')->findAll();
         $campaignawards = $em->getRepository('AppBundle:'.$entity)->findByCampaign($campaign);
 
-        return $this->render('campaign/campaignAward.index.html.twig', array(
+        return $this->render('campaignAward/campaignAward.index.html.twig', array(
             'campaignawards' => $campaignawards,
             'entity' => $entity,
             'campaign' => $campaign,
@@ -65,6 +66,7 @@ class CampaignawardController extends Controller
     public function newAction(Request $request, $campaignUrl)
     {
         $logger = $this->get('logger');
+        $em = $this->getDoctrine()->getManager();
         $entity = 'Campaignaward';
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -81,73 +83,83 @@ class CampaignawardController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-        $campaignaward = new Campaignaward();
+        $campaignAward = new Campaignaward();
 
-        $form = $this->createForm('AppBundle\Form\CampaignawardType', $campaignaward);
-        $form->handleRequest($request);
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $failure = false;
-            $em = $this->getDoctrine()->getManager();
+            if(!$fail && empty($params['campaignAward']['name'])){
+              $this->addFlash('warning','Award name is required');
+              $fail = true;
+            }
 
-            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'level') == 0) {
-                if (null == $campaignaward->getAmount()) {
-                    $failure = true;
+            if(!$fail && empty($params['campaignAward']['campaignAwardTypeId'])){
+              $this->addFlash('warning','Award Type is required');
+              $fail = true;
+            }else{
+              $campaignAwardType = $em->getRepository('AppBundle:Campaignawardtype')->find($params['campaignAward']['campaignAwardTypeId']);
+              if(is_null($campaignAwardType)){
+                $this->addFlash('warning','No Valid Award Type was selected');
+                $fail = true;
+              }
+            }
+
+            if(!$fail && empty($params['campaignAward']['campaignAwardStyleId'])){
+              $this->addFlash('warning','Award Style is required');
+              $fail = true;
+            }else{
+              $campaignAwardStyle = $em->getRepository('AppBundle:Campaignawardstyle')->find($params['campaignAward']['campaignAwardStyleId']);
+              if(is_null($campaignAwardStyle)){
+                $this->addFlash('warning','No Valid Award Style was selected');
+                $fail = true;
+              }
+            }
+
+            if (!$fail && $campaignAwardStyle->getValue() == 'level') {
+                if (empty($params['campaignAward']['amount'])) {
+                    $fail = true;
                     $this->addFlash(
                     'danger',
-                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated amount'
+                    'If '.$campaignAwardStyle->getDisplayName().' is selected, you must have an associated amount'
                 );
                 } else {
-                    if ($campaignaward->getAmount() < 0.01) {
-                        $failure = true;
+                    if ($params['campaignAward']['amount'] < 0.01) {
+                        $fail = true;
                         $this->addFlash(
                       'danger',
                       'Amount must be greater than $0.01'
                   );
                     }
-                    $campaignaward->setPlace(null);
+                    $params['campaignAward']['place'] = null;
                 }
             }
 
-            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'place') == 0) {
-                if (null == $campaignaward->getPlace()) {
-                    $failure = true;
+            if (!$fail && $campaignAwardStyle->getValue() == 'place') {
+                if (empty($params['campaignAward']['place'])) {
+                    $fail = true;
                     $this->addFlash(
                     'danger',
-                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated place'
+                    'If '.$campaignAwardStyle->getDisplayName().' is selected, you must have an associated place'
                 );
                 } else {
-                    if ($campaignaward->getPlace() < 1) {
-                        $failure = true;
+                    if ($params['campaignAward']['place'] < 1) {
+                        $fail = true;
                         $this->addFlash(
                       'danger',
                       'Place must be greater than 0'
                   );
                     }
-                    $campaignaward->setAmount(null);
+                    $params['campaignAward']['amount'] = null;
                 }
             }
 
-            if (!$failure) {
-                $validator = $this->get('validator');
-                $errors = $validator->validate($campaignaward);
-                if (count($errors) > 0) {
-                    $failure = true;
-                    $errorsString = (string) $errors;
-                    $logger->error('Could not update ['.$entity.']: '.$errorsString);
-                    $this->addFlash(
-                  'danger',
-                  'Could not update ['.$entity.']: '.$errorsString
-              );
-                }
-            }
-
-            if (!$failure) {
-                $campaignawardCheck = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-          array('campaignawardtype' => $campaignaward->getCampaignawardtype(), 'campaignawardstyle' => $campaignaward->getCampaignawardstyle(), 'amount' => $campaignaward->getAmount(), 'place' => $campaignaward->getPlace())
+            if (!$fail) {
+                $campaignAwardCheck = $this->getDoctrine()->getRepository('AppBundle:CampaignAward')->findOneBy(
+          array('campaignawardtype' => $campaignAwardType, 'campaignawardstyle' => $campaignAwardStyle, 'amount' => $params['campaignAward']['amount'], 'place' => $params['campaignAward']['place'])
           );
-                if (!empty($campaignawardCheck) && $campaignawardCheck->getId() !== $campaignaward->getId()) {
-                    $failure = true;
+                if (!empty($campaignAwardCheck) && $campaignAwardCheck->getId() !== $campaignAward->getId()) {
+                    $fail = true;
                     $this->addFlash(
                             'danger',
                             'This combination for an award [Type/Style/Place/Amount] already exists'
@@ -155,32 +167,46 @@ class CampaignawardController extends Controller
                 }
             }
 
-            if (!$failure) {
-                $em->persist($campaignaward);
-                $em->flush();
+            if(!$fail){
 
-                return $this->redirectToRoute('campaignaward_index', array('campaignUrl'=> $campaignUrl, 'id' => $campaignaward->getId()));
+              $campaignAward->setName($params['campaignAward']['name']);
+              $campaignAward->setCampaign($campaign);
+              $campaignAward->setCampaignAwardStyle($campaignAwardStyle);
+              $campaignAward->setCampaignAwardType($campaignAwardType);
+              $campaignAward->setAmount($params['campaignAward']['amount']);
+              $campaignAward->setPlace($params['campaignAward']['place']);
+
+              if(!empty($params['campaignAward']['description'])){
+                $campaignAward->setDescription($params['campaignAward']['description']);
+              }
+
+              $em->persist($campaignAward);
+              $em->flush();
+              return $this->redirectToRoute('campaignaward_index', array('campaignUrl'=> $campaignUrl));
+
             }
+
         }
 
-        return $this->render('crud/new.html.twig', array(
-            'campaignaward' => $campaignaward,
-            'form' => $form->createView(),
-            'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl)
+        return $this->render('campaignAward/campaignAward.form.html.twig', array(
+            'campaignaward' => $campaignAward,
+            'campaignAwardStyles' => $em->getRepository('AppBundle:Campaignawardstyle')->findAll(),
+            'campaignAwardTypes' => $em->getRepository('AppBundle:Campaignawardtype')->findAll(),
+            'campaign' => $campaign,
         ));
     }
 
     /**
      * Finds and displays a Campaignaward entity.
      *
-     * @Route("/{id}", name="campaignaward_show")
+     * @Route("/{campaignAwardID}", name="campaignaward_show")
      * @Method("GET")
      */
-    public function showAction(Campaignaward $campaignaward, $campaignUrl)
+    public function showAction($campaignUrl, $campaignAwardID)
     {
-        $entity = 'Campaignaward';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
+        $entity = 'Campaignaward';
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
@@ -196,11 +222,18 @@ class CampaignawardController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
+        //CODE TO CHECK TO SEE IF CAMpAIGNAWARD EXISTS
+        $campaignAward = $em->getRepository('AppBundle:campaignaward')->find($campaignAwardID);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this award');
+          return $this->redirectToRoute('homepage');
+        }
 
-        $deleteForm = $this->createDeleteForm($campaignaward, $campaignUrl);
 
-        return $this->render('campaign/campaignAward.show.html.twig', array(
-            'campaignaward' => $campaignaward,
+        $deleteForm = $this->createDeleteForm($campaignAward, $campaignUrl);
+
+        return $this->render('campaignAward/campaignAward.show.html.twig', array(
+            'campaignaward' => $campaignAward,
             'delete_form' => $deleteForm->createView(),
             'entity' => $entity,
             'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl)
@@ -210,10 +243,10 @@ class CampaignawardController extends Controller
     /**
      * Displays a form to edit an existing Campaignaward entity.
      *
-     * @Route("/edit/{id}", name="campaignaward_edit")
+     * @Route("/edit/{campaignAwardID}", name="campaignaward_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Campaignaward $campaignaward, $campaignUrl)
+    public function editAction(Request $request, $campaignUrl, $campaignAwardID)
     {
         $logger = $this->get('logger');
         $entity = 'Campaignaward';
@@ -234,72 +267,89 @@ class CampaignawardController extends Controller
         }
 
 
-        $deleteForm = $this->createDeleteForm($campaignaward, $campaignUrl);
-        $editForm = $this->createForm('AppBundle\Form\CampaignawardType', $campaignaward);
-        $editForm->handleRequest($request);
+        //CODE TO CHECK TO SEE IF CAMpAIGNAWARD EXISTS
+        $campaignAward = $em->getRepository('AppBundle:campaignaward')->find($campaignAwardID);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this award');
+          return $this->redirectToRoute('homepage');
+        }
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $failure = false;
-            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'level') == 0) {
-                if (null == $campaignaward->getAmount()) {
-                    $failure = true;
+
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
+
+            if(!$fail && empty($params['campaignAward']['name'])){
+              $this->addFlash('warning','Award name is required');
+              $fail = true;
+            }
+
+            if(!$fail && empty($params['campaignAward']['campaignAwardTypeId'])){
+              $this->addFlash('warning','Award Type is required');
+              $fail = true;
+            }else{
+              $campaignAwardType = $em->getRepository('AppBundle:Campaignawardtype')->find($params['campaignAward']['campaignAwardTypeId']);
+              if(is_null($campaignAwardType)){
+                $this->addFlash('warning','No Valid Award Type was selected');
+                $fail = true;
+              }
+            }
+
+            if(!$fail && empty($params['campaignAward']['campaignAwardStyleId'])){
+              $this->addFlash('warning','Award Style is required');
+              $fail = true;
+            }else{
+              $campaignAwardStyle = $em->getRepository('AppBundle:Campaignawardstyle')->find($params['campaignAward']['campaignAwardStyleId']);
+              if(is_null($campaignAwardStyle)){
+                $this->addFlash('warning','No Valid Award Style was selected');
+                $fail = true;
+              }
+            }
+
+            if (!$fail && $campaignAwardStyle->getValue() == 'level') {
+                if (empty($params['campaignAward']['amount'])) {
+                    $fail = true;
                     $this->addFlash(
                     'danger',
-                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated amount'
+                    'If '.$campaignAwardStyle->getDisplayName().' is selected, you must have an associated amount'
                 );
                 } else {
-                    if ($campaignaward->getAmount() < 0.01) {
-                        $failure = true;
+                    if ($params['campaignAward']['amount'] < 0.01) {
+                        $fail = true;
                         $this->addFlash(
                       'danger',
                       'Amount must be greater than $0.01'
                   );
                     }
-                    $campaignaward->setPlace(null);
+                    $params['campaignAward']['place'] = null;
                 }
             }
 
-            if (strcmp($campaignaward->getCampaignawardstyle()->getValue(), 'place') == 0) {
-                if (null == $campaignaward->getPlace()) {
-                    $failure = true;
+            if (!$fail && $campaignAwardStyle->getValue() == 'place') {
+                if (empty($params['campaignAward']['place'])) {
+                    $fail = true;
                     $this->addFlash(
                     'danger',
-                    'If '.$campaignaward->getCampaignawardstyle()->getDisplayName().' is selected, you must have an associated place'
+                    'If '.$campaignAwardStyle->getDisplayName().' is selected, you must have an associated place'
                 );
                 } else {
-                    if ($campaignaward->getPlace() < 1) {
-                        $failure = true;
+                    if ($params['campaignAward']['place'] < 1) {
+                        $fail = true;
                         $this->addFlash(
                       'danger',
                       'Place must be greater than 0'
                   );
                     }
-
-                    $campaignaward->setAmount(null);
+                    $params['campaignAward']['amount'] = null;
                 }
             }
 
-            if (!$failure) {
-                $validator = $this->get('validator');
-                $errors = $validator->validate($campaignaward);
-                if (count($errors) > 0) {
-                    $failure = true;
-                    $errorsString = (string) $errors;
-                    $logger->error('Could not update ['.$entity.']: '.$errorsString);
-                    $this->addFlash(
-                  'danger',
-                  'Could not update ['.$entity.']: '.$errorsString
-              );
-                }
-            }
-
-            if (!$failure) {
-                $campaignawardCheck = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-          array('campaignawardtype' => $campaignaward->getCampaignawardtype(), 'campaignawardstyle' => $campaignaward->getCampaignawardstyle(), 'amount' => $campaignaward->getAmount(), 'place' => $campaignaward->getPlace())
+            if (!$fail) {
+                $campaignAwardCheck = $this->getDoctrine()->getRepository('AppBundle:CampaignAward')->findOneBy(
+          array('campaignawardtype' => $campaignAwardType, 'campaignawardstyle' => $campaignAwardStyle, 'amount' => $params['campaignAward']['amount'], 'place' => $params['campaignAward']['place'])
           );
-                if (!empty($campaignawardCheck) && $campaignawardCheck->getId() !== $campaignaward->getId()) {
-                    $failure = true;
+                if (!empty($campaignAwardCheck) && $campaignAwardCheck->getId() !== $campaignAward->getId()) {
+                    $fail = true;
                     $this->addFlash(
                             'danger',
                             'This combination for an award [Type/Style/Place/Amount] already exists'
@@ -307,20 +357,32 @@ class CampaignawardController extends Controller
                 }
             }
 
-            if (!$failure) {
-                $em->persist($campaignaward);
-                $em->flush();
+            if(!$fail){
 
-                return $this->redirectToRoute('campaignaward_index', array('campaignUrl'=> $campaignUrl, 'id' => $campaignaward->getId()));
+              $campaignAward->setName($params['campaignAward']['name']);
+              $campaignAward->setCampaign($campaign);
+              $campaignAward->setCampaignAwardStyle($campaignAwardStyle);
+              $campaignAward->setCampaignAwardType($campaignAwardType);
+              $campaignAward->setAmount($params['campaignAward']['amount']);
+              $campaignAward->setPlace($params['campaignAward']['place']);
+
+              if(!empty($params['campaignAward']['description'])){
+                $campaignAward->setDescription($params['campaignAward']['description']);
+              }
+
+              $em->persist($campaignAward);
+              $em->flush();
+              return $this->redirectToRoute('campaignaward_index', array('campaignUrl'=> $campaignUrl));
+
             }
+
         }
 
-        return $this->render('crud/edit.html.twig', array(
-            'campaignaward' => $campaignaward,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl)
+        return $this->render('campaignAward/campaignAward.form.html.twig', array(
+            'campaignAward' => $campaignAward,
+            'campaignAwardStyles' => $em->getRepository('AppBundle:Campaignawardstyle')->findAll(),
+            'campaignAwardTypes' => $em->getRepository('AppBundle:Campaignawardtype')->findAll(),
+            'campaign' => $campaign,
         ));
     }
 
@@ -332,9 +394,9 @@ class CampaignawardController extends Controller
      */
     public function deleteAction(Request $request, Campaignaward $campaignaward, $campaignUrl)
     {
-        $entity = 'Campaignaward';
-
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
+        $entity = 'Campaignaward';
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);

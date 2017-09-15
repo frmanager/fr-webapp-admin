@@ -1,0 +1,94 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+{% if app.request.attributes.get('_route')=='campaignaward_edit'%}
+{% set formType = "edit" %}
+{% else %}
+{% set formType = "new" %}
+{% endif %}
+
+  <div class="row">
+    <div class="col-sm-8 offset-sm-2">
+      <div class="card">
+        <div class="card-block">
+          <h4 class="card-title">{{ formType == "new" ? "Create new Award" : "Edit " ~ campaignAward.name }}</h4>
+          <form name="classroom" method="post" class="">
+            <div class="form-group">
+              <div class="col-sm-6">
+                <label for="campaignAward_name" class="required">Award Name</label>
+                <input class="form-control" type="text" id="campaignAward_name" name="campaignAward[name]" placeholder="Popsicle Party" value="{{ formType == "edit" ?  campaignAward.name : '' }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-8">
+                <label for="Campaignaward_campaignAwardTypeId" required>Type</label>
+                <select id="Campaignaward_campaignAwardTypeId" name="campaignAward[campaignAwardTypeId]" class="form-control" required>
+                  <option {{ formType == 'new' ? 'selected="selected"' : '' }}>Select Type</option>
+                  {% for campaignAwardType in campaignAwardTypes %}
+                    <option value="{{ campaignAwardType.id }}" {% if formType == 'edit' and campaignAward.campaignAwardType.id == campaignAwardType.id %}selected{% endif %}>{{campaignAwardType.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-8">
+                <label for="Campaignaward_campaignAwardStyleId" class="required">Style</label>
+                <select id="Campaignaward_campaignAwardStyleId" name="campaignAward[campaignAwardStyleId]" class="form-control" required>
+                  <option {{ formType == 'new' ? 'selected="selected"' : '' }}>Select Style</option>
+                  {% for campaignAwardStyle in campaignAwardStyles %}
+                    <option value="{{ campaignAwardStyle.id }}" {% if formType == 'edit' and campaignAward.campaignAwardStyle.id == campaignAwardStyle.id %}selected{% endif %}>{{campaignAwardStyle.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="campaigAaward_amount">Amount</label>
+              <div class="input-group col-sm-6">
+                <span class="input-group-addon" id="basic-addon1">
+                  <i class="fa fa-usd" aria-hidden="true"></i>
+                </span>
+                <input type="number" class="form-control form-control-lg" style="text-align:right;" min="0" id="campaignAward_amount" value="{{ formType == "edit" ?  campaignAward.amount : '' }}" name="campaignAward[amount]">
+                <span class="input-group-addon" id="basic-addon1">.00</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-6">
+                <label for="campaignAward_place">Place</label>
+                <input class="form-control" type="number" id="campaignAward_place" min="0" name="campaignAward[place]" placeholder="1" value="{{ formType == "edit" ?  campaignAward.place : '' }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-6">
+                <label for="campaignAward_description">Description</label>
+                <input class="form-control" type="text" id="campaignAward_description" name="campaignAward[description]" placeholder="A party involved popsicles!" value="{{ formType == "edit" ?  campaignAward.name : '' }}">
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col">
+                <button type="submit" id="submit" class="btn btn-primary">{{ formType == 'new' ? 'Create Award' : 'Update Award' }}</button>
+              </div><!-- ./col -->
+            </div><!-- ./row -->
+          </form><!-- ./form -->
+        </div>
+        <!-- ./card-block -->
+      </div>
+      <!-- ./card -->
+    </div>
+    <!-- ./col -->
+    </div>
+    <!-- ./row -->
+  {% endblock body %}
+
+  {% block javascript %}
+    <script type="text/javascript">
+      $('#user_terms_of_service').click(function() {
+        if ($(this).attr('checked') == false) {
+          $('#submit').attr("disabled", "disabled");
+        } else {
+          $('#submit').removeAttr('disabled');
+        }
+      });
+    </script>
+  {% endblock %}

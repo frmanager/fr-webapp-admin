@@ -41,10 +41,10 @@
                       </td>
                       <td>{{ grade.name }}</td>
                       <td style="text-align:center;">
-                          <a href="{{ path('grade_edit', {'campaignUrl':campaign.url,  'gradeId': grade.id }) }}" class="btn btn-sm btn-warning">
-                              <i class="glyphicon glyphicon-edit"></i>
+                          <a href="{{ path('grade_show', {'campaignUrl':campaign.url, 'id': grade.id }) }}" class="btn btn-sm btn-info">
+                              <i class="glyphicon glyphicon-eye-open"></i>
                               <span class="hidden-xs hidden-sm">
-                                  Edit</span>
+                                  View</span>
                           </a>
                       </td>
                   </tr>
