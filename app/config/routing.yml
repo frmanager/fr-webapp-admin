@@ -11,3 +11,8 @@ register:
     resource: "@AppBundle/Controller/RegistrationController.php"
     prefix:   /account
     type:     annotation
+
+secure:
+    path:     /
+    defaults: { _controller: AppBundle:Main:secure }
+    schemes:  [https]

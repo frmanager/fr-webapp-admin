@@ -32,9 +32,9 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-    access_control:    
+    access_control:
         - { path: ^/account/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/account/logout$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/account/signup, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/account/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/, roles: ROLE_USER, requires_channel: https }
