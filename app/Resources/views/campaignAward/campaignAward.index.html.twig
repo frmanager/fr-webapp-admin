@@ -6,7 +6,7 @@
 <div class="card-block">
         <div class="row">
             <div class="col-sm-5">
-                <h4 class="card-title mb-0">Grades</h4>
+                <h4 class="card-title mb-0">Awards</h4>
                 <div class="small text-muted">xxxxxxx</div>
             </div>
             <!--/.col-->
@@ -14,8 +14,8 @@
                 <button type="button" disabled class="btn btn-primary float-right"><i class="icon-cloud-download"></i>
                 </button>
                 <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="btn-group mr-3" data-toggle="buttons" aria-label="First group">
-                        <a href="{{ path('grade_new', {'campaignUrl':campaign.url}) }}" class="btn btn-outline-secondary">
+                    <div class="btn-group mr-3" aria-label="First group">
+                        <a href="{{ path('campaignaward_new', {'campaignUrl':campaign.url}) }}" class="btn btn-outline-secondary">
                             <i class="fa fa-plus"></i>
                             Add New</a>
                     </div>
@@ -30,23 +30,31 @@
                   <tr>
                     <th>Id</th>
                     <th>Name</th>
+                    <th>Type</th>
+                    <th>Style</th>
+                    <th>Place</th>
+                    <th>Amount</th>
                     <th class="col-md-2 col-sm-1">Actions</th>
                   </tr>
               </thead>
               <tbody>
-                  {% for grade in grades %}
+                  {% for campaignaward in campaignawards %}
                   <tr>
                       <td>
-                          <a href="{{ path('grade_show', {'campaignUrl':campaign.url,  'id': grade.id }) }}">{{ grade.id }}</a>
+                          <a href="{{ path('campaignaward_show', {'campaignUrl':campaign.url,  'campaignAwardID': campaignaward.id }) }}">{{ campaignaward.id }}</a>
                       </td>
-                      <td>{{ grade.name }}</td>
+                      <td>{{ campaignaward.name }}</td>
+                      <td>{% if campaignaward.campaignawardtype is defined %}{{ campaignaward.campaignawardtype.value }}{% endif %}</td>
+                      <td>{% if campaignaward.campaignawardstyle is defined %}{{ campaignaward.campaignawardstyle.value }}{% endif %}</td>
+                      <td>{% if campaignaward.campaignawardstyle.value == 'place' %}{{ campaignaward.place }}{% else %}N/A{% endif %}</td>
+                      <td>{% if campaignaward.campaignawardstyle.value == 'level' %}${{ campaignaward.amount|number_format(2, '.', ',') }}{% else %}N/A{% endif %}</td>
                       <td style="text-align:center;">
-                          <a href="{{ path('grade_show', {'campaignUrl':campaign.url, 'id': grade.id }) }}" class="btn btn-sm btn-info">
+                          <a href="{{ path('campaignaward_show', {'campaignUrl':campaign.url, 'campaignAwardID': campaignaward.id }) }}" class="btn btn-sm btn-info">
                               <i class="glyphicon glyphicon-eye-open"></i>
                               <span class="hidden-xs hidden-sm">
                                   View</span>
                           </a>
-                          <a href="{{ path('grade_edit', {'campaignUrl':campaign.url,  'id': grade.id }) }}" class="btn btn-sm btn-warning">
+                          <a href="{{ path('campaignaward_edit', {'campaignUrl':campaign.url,  'campaignAwardID': campaignaward.id }) }}" class="btn btn-sm btn-warning">
                               <i class="glyphicon glyphicon-edit"></i>
                               <span class="hidden-xs hidden-sm">
                                   Edit</span>

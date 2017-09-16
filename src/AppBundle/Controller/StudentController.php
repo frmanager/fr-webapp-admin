@@ -55,7 +55,7 @@ class StudentController extends Controller
         $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
         // replace this example code with whatever you need
 
-        return $this->render('campaign/student.index.html.twig', array(
+        return $this->render('student/student.index.html.twig', array(
             'students' => $queryHelper->getStudentRanks(array('campaign' => $campaign,'limit'=> 0)),
             'entity' => $entity,
             'campaign' => $campaign,
@@ -70,8 +70,8 @@ class StudentController extends Controller
      */
     public function newAction(Request $request, $campaignUrl)
     {
-        $entity = 'Student';
         $em = $this->getDoctrine()->getManager();
+        $logger = $this->get('logger');
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
         $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
@@ -88,22 +88,47 @@ class StudentController extends Controller
         }
 
         $student = new Student();
-        $form = $this->createForm('AppBundle\Form\StudentType', $student);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($student);
-            $em->flush();
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
 
-            return $this->redirectToRoute(strtolower($entity).'_show', array('id' => $student->getId()));
+            if(!$fail && empty($params['student']['name'])){
+              $this->addFlash('warning','Student name is required');
+              $fail = true;
+            }
+
+            if(!$fail && empty($params['student']['classroomId'])){
+              $this->addFlash('warning','Classroom is required');
+              $fail = true;
+            }else{
+              $classroom = $em->getRepository('AppBundle:Classroom')->findOneBy(array('id'=>$params['student']['classroomId'], 'campaign' => $campaign));
+              if(is_null($classroom)){
+                $this->addFlash('warning','No Valid Classroom was selected');
+                $fail = true;
+              }
+            }
+
+
+            if(!$fail){
+
+              $student->setName($params['student']['name']);
+              $student->setClassroom($classroom);
+              $student->setGrade($classroom->getGrade());
+              $student->setCampaign($campaign);
+
+              $em->persist($student);
+              $em->flush();
+              return $this->redirectToRoute('student_index', array('campaignUrl'=> $campaignUrl));
+
+            }
+
         }
 
-        return $this->render('crud/new.html.twig', array(
+        return $this->render('student/student.form.html.twig', array(
             'student' => $student,
-            'form' => $form->createView(),
-            'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
+            'classrooms' => $em->getRepository('AppBundle:Classroom')->findBy(array("campaign"=>$campaign)),
+            'campaign' => $campaign,
         ));
     }
 
@@ -116,7 +141,7 @@ class StudentController extends Controller
     public function showAction(Student $student, $campaignUrl)
     {
         $logger = $this->get('logger');
-        $entity = 'Student';
+        $entity = "student";
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -149,7 +174,7 @@ class StudentController extends Controller
 
         $queryHelper = new QueryHelper($em, $logger);
 
-        return $this->render('campaign/student.show.html.twig', array(
+        return $this->render('student/student.show.html.twig', array(
             'student' => $student,
             'classroom' => $queryHelper->getClassroomsData(array('campaign' => $campaign, 'id' => $student->getClassroom()->getId())),
             'student_rank' => $queryHelper->getStudentRank($student->getId(),array('campaign' => $campaign, 'limit' => 0)),
@@ -164,12 +189,12 @@ class StudentController extends Controller
     /**
      * Displays a form to edit an existing Student entity.
      *
-     * @Route("/edit/{id}", name="student_edit")
+     * @Route("/edit/{studentId}", name="student_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Student $student, $campaignUrl)
+    public function editAction(Request $request, $campaignUrl, $studentId)
     {
-        $entity = 'Student';
+        $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
         //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
@@ -186,24 +211,51 @@ class StudentController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-
-        $deleteForm = $this->createDeleteForm($student, $campaignUrl);
-        $editForm = $this->createForm('AppBundle\Form\StudentType', $student);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($student);
-            $em->flush();
-
-            return $this->redirectToRoute(strtolower($entity).'_show', array('id' => $student->getId()));
+        //CODE TO CHECK TO SEE IF STUDENT EXISTS
+        $student = $em->getRepository('AppBundle:Student')->find($studentId);
+        if(is_null($student)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this student.');
+          return $this->redirectToRoute('homepage');
         }
 
-        return $this->render('crud/edit.html.twig', array(
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
+
+            if(!$fail && empty($params['student']['name'])){
+              $this->addFlash('warning','Classroom name is required');
+              $fail = true;
+            }
+
+            if(!$fail && empty($params['student']['classroomId'])){
+              $this->addFlash('warning','Classroom is required');
+              $fail = true;
+            }else{
+              $classroom = $em->getRepository('AppBundle:Classroom')->findOneBy(array('id'=>$params['student']['classroomId'], 'campaign' => $campaign));
+              if(is_null($classroom)){
+                $this->addFlash('warning','No Valid Classroom was selected');
+                $fail = true;
+              }
+            }
+
+            if(!$fail){
+
+              $student->setName($params['student']['name']);
+              $student->setClassroom($classroom);
+              $student->setGrade($classroom->getGrade());
+              $student->setCampaign($campaign);
+
+              $em->persist($student);
+              $em->flush();
+              return $this->redirectToRoute('student_index', array('campaignUrl'=> $campaignUrl));
+
+            }
+
+        }
+
+        return $this->render('student/student.form.html.twig', array(
             'student' => $student,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
+            'classrooms' => $em->getRepository('AppBundle:Classroom')->findBy(array("campaign"=>$campaign)),
             'campaign' => $campaign,
         ));
     }

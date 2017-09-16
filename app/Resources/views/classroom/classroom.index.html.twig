@@ -10,11 +10,11 @@
                 <div class="small text-muted">xxxxxxx</div>
             </div>
             <!--/.col-->
-            <div class="col-sm-7 hidden-sm-down">
-                <button type="button" disabled class="btn btn-primary float-right"><i class="icon-cloud-download"></i>
+            <div class="col-sm-7">
+                <button type="button" class="hidden-sm-down btn btn-primary float-right"><i class="icon-cloud-download"></i>
                 </button>
                 <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="btn-group mr-3" data-toggle="buttons" aria-label="First group">
+                    <div class="btn-group mr-3" aria-label="First group">
                         <a href="{{ path('classroom_new', {'campaignUrl':campaign.url}) }}" class="btn btn-outline-secondary">
                             <i class="fa fa-plus"></i>
                             Add New</a>
@@ -51,7 +51,7 @@
                                   <span class="hidden-xs hidden-sm">
                                       View</span>
                               </a>
-                              <a href="{{ path('classroom_edit', {'campaignUrl': campaign.url, 'id': classroom.id }) }}" class="btn btn-sm btn-warning">
+                              <a href="{{ path('classroom_edit', {'campaignUrl': campaign.url, 'classroomId': classroom.id }) }}" class="btn btn-sm btn-warning">
                                   <i class="glyphicon glyphicon-edit"></i>
                                   <span class="hidden-xs hidden-sm">
                                       Edit</span>

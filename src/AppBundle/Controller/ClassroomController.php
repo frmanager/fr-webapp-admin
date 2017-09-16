@@ -53,7 +53,7 @@ class ClassroomController extends Controller
       $dateString = $tempDate->format('Y-m-d').' 00:00:00';
       $reportDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
       // replace this example code with whatever you need
-      return $this->render('campaign/classroom.index.html.twig', array(
+      return $this->render('classroom/classroom.index.html.twig', array(
         'classrooms' => $queryHelper->getClassroomRanks(array('campaign' => $campaign, 'limit'=> 0)),
         'entity' => strtolower($entity),
         'campaign' => $campaign,
@@ -88,22 +88,58 @@ class ClassroomController extends Controller
         }
 
         $classroom = new Classroom();
-        $form = $this->createForm('AppBundle\Form\ClassroomType', $classroom);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($classroom);
-            $em->flush();
 
-            return $this->redirectToRoute('classroom_index', array('id' => $classroom->getId()));
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
+
+            if(!$fail && empty($params['classroom']['name'])){
+              $this->addFlash('warning','Classroom name is required');
+              $fail = true;
+            }
+
+            if(!$fail && empty($params['classroom']['gradeId'])){
+              $this->addFlash('warning','Grade is required');
+              $fail = true;
+            }else{
+              $grade = $em->getRepository('AppBundle:Grade')->findOneBy(array('id'=>$params['classroom']['gradeId'], 'campaign' => $campaign));
+              if(is_null($grade)){
+                $this->addFlash('warning','No Valid Grade was selected');
+                $fail = true;
+              }
+            }
+
+            if(!$fail && empty($params['classroom']['teacherName'])){
+              $this->addFlash('warning','Teachers name is required');
+              $fail = true;
+            }
+
+            if(!$fail){
+
+              $classroom->setName($params['classroom']['name']);
+              $classroom->setGrade($grade);
+              $classroom->setTeacherName($params['classroom']['teacherName']);
+
+              if(!empty($params['classroom']['email'])){
+                $classroom->setEmail($params['classroom']['email']);
+              }
+
+              $classroom->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
+              $classroom->setCampaign($campaign);
+
+              $em->persist($classroom);
+              $em->flush();
+              return $this->redirectToRoute('classroom_index', array('campaignUrl'=> $campaignUrl));
+
+            }
+
         }
 
-        return $this->render('crud/new.html.twig', array(
+        return $this->render('classroom/classroom.form.html.twig', array(
             'classroom' => $classroom,
-            'form' => $form->createView(),
-            'entity' => $entity,
-            'campaign' => $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl),
+            'grades' => $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
+            'campaign' => $campaign,
         ));
     }
 
@@ -147,7 +183,7 @@ class ClassroomController extends Controller
 
         $queryHelper = new QueryHelper($em, $logger);
 
-        return $this->render('campaign/classroom.show.html.twig', array(
+        return $this->render('classroom/classroom.show.html.twig', array(
             'classroom' => $classroom,
             'classroom_rank' => $queryHelper->getClassroomRank($classroom->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'campaign_awards' => $campaignAwards,
@@ -160,12 +196,11 @@ class ClassroomController extends Controller
     /**
      * Displays a form to edit an existing Classroom entity.
      *
-     * @Route("/edit/{id}", name="classroom_edit")
+     * @Route("/edit/{classroomId}", name="classroom_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Classroom $classroom, $campaignUrl)
+    public function editAction(Request $request, $campaignUrl, $classroomId)
     {
-        $entity = 'Classroom';
         $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
 
@@ -183,24 +218,63 @@ class ClassroomController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-        $deleteForm = $this->createDeleteForm($classroom, $campaignUrl);
-        $editForm = $this->createForm('AppBundle\Form\ClassroomType', $classroom);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($classroom);
-            $em->flush();
-
-            return $this->redirectToRoute('classroom_index', array('campaignUrl' => $campaign->getUrl()));
+        //CODE TO CHECK TO SEE IF CLASSROOM EXISTS
+        $classroom = $em->getRepository('AppBundle:Classroom')->find($classroomId);
+        if(is_null($classroom)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
+          return $this->redirectToRoute('homepage');
         }
 
-        return $this->render('crud/edit.html.twig', array(
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $fail = false;
+
+            if(!$fail && empty($params['classroom']['name'])){
+              $this->addFlash('warning','Classroom name is required');
+              $fail = true;
+            }
+
+            if(!$fail && empty($params['classroom']['gradeId'])){
+              $this->addFlash('warning','Grade is required');
+              $fail = true;
+            }else{
+              $grade = $em->getRepository('AppBundle:Grade')->findOneBy(array('id'=>$params['classroom']['gradeId'], 'campaign' => $campaign));
+              if(is_null($grade)){
+                $this->addFlash('warning','No Valid Grade was selected');
+                $fail = true;
+              }
+            }
+
+            if(!$fail && empty($params['classroom']['teacherName'])){
+              $this->addFlash('warning','Teachers name is required');
+              $fail = true;
+            }
+
+            if(!$fail){
+
+              $classroom->setName($params['classroom']['name']);
+              $classroom->setGrade($grade);
+              $classroom->setTeacherName($params['classroom']['teacherName']);
+
+              if(!empty($params['classroom']['email'])){
+                $classroom->setEmail($params['classroom']['email']);
+              }
+
+              $classroom->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
+              $classroom->setCampaign($campaign);
+
+              $em->persist($classroom);
+              $em->flush();
+              return $this->redirectToRoute('classroom_index', array('campaignUrl'=> $campaignUrl));
+
+            }
+
+        }
+
+        return $this->render('classroom/classroom.form.html.twig', array(
             'classroom' => $classroom,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
-            'campaign' => $campaign
+            'grades' => $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
+            'campaign' => $campaign,
         ));
     }
 
