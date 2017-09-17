@@ -69,7 +69,7 @@
                         <tr>
                             <th style="text-align:right;">Grade</th>
                             <td>
-                                <a href="{{ path('grade_show', {'campaignUrl':campaign.url, 'id': student.classroom.grade.id }) }}">{{ student.classroom.grade.name }}</a>
+                                {{ student.classroom.grade.name }}
                             </td>
                         </tr>
                         <tr>
