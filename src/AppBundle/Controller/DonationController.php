@@ -173,6 +173,7 @@ class DonationController extends Controller
      * @Route("/upload", name="donation_upload")
      * @Method({"GET", "POST"})
      */
+     /*
     public function uploadForm(Request $request)
     {
         $logger = $this->get('logger');
@@ -513,8 +514,11 @@ class DonationController extends Controller
                                 'error_message' => 'A donation for this student and date already exists #'.$donation->getId(),
                                 'error_level' => ValidationHelper::$level_error, ));
                               */
+                              /*
                           }
                         }
+                        */
+                        /*
                         if (!$failure) {
                             if (strcmp($fileType, 'Causevoxdonation') == 0) {
                                 //a lot more information is collected from causevox....
@@ -603,5 +607,5 @@ class DonationController extends Controller
           'entity' => $entity,
       ));
     }
-
+*/
 }
