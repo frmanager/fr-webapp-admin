@@ -40,21 +40,20 @@
               <tbody>
                   {% for campaignaward in campaignawards %}
                   <tr>
-                      <td>{{ campaignaward.name }}</td>
+                      <td><a href="{{ path('campaignaward_show', {'campaignUrl':campaign.url, 'campaignAwardID': campaignaward.id }) }}">{{ campaignaward.name }}</a></td>
                       <td>{% if campaignaward.campaignawardtype is defined %}{{ campaignaward.campaignawardtype.value }}{% endif %}</td>
                       <td>{% if campaignaward.campaignawardstyle is defined %}{{ campaignaward.campaignawardstyle.value }}{% endif %}</td>
                       <td>{% if campaignaward.campaignawardstyle.value == 'place' %}{{ campaignaward.place }}{% else %}N/A{% endif %}</td>
                       <td>{% if campaignaward.campaignawardstyle.value == 'level' %}${{ campaignaward.amount|number_format(2, '.', ',') }}{% else %}N/A{% endif %}</td>
                       <td style="text-align:center;">
-                          <a href="{{ path('campaignaward_show', {'campaignUrl':campaign.url, 'campaignAwardID': campaignaward.id }) }}" class="btn btn-sm btn-info">
-                              <i class="glyphicon glyphicon-eye-open"></i>
-                              <span class="hidden-xs hidden-sm">
-                                  View</span>
-                          </a>
                           <a href="{{ path('campaignaward_edit', {'campaignUrl':campaign.url,  'campaignAwardID': campaignaward.id }) }}" class="btn btn-sm btn-warning">
                               <i class="glyphicon glyphicon-edit"></i>
                               <span class="hidden-xs hidden-sm">
                                   Edit</span>
+                          </a>
+                          <a href="{{ path('campaignaward_edit', {'campaignUrl':campaign.url,  'campaignAwardID': campaignaward.id, 'action': 'delete_campaignAward'}) }}" class="btn btn-sm btn-danger delete_record disabled" aria-disabled="true">
+                              <i class="fa fa-trash" aria-hidden="true"></i>
+                              <span class="">Delete</span>
                           </a>
                       </td>
                   </tr>

@@ -196,12 +196,12 @@ class TeamController extends Controller
         }
 
 
-        if(null !== $request->query->get('action') && null !== $request->query->get('studentId')){
+        if(null !== $request->query->get('action') && null !== $request->query->get('studentID')){
             $failure = false;
-            $studentId = $request->query->get('studentId');
-            $logger->debug("Linking TeamStudent #".$teamStudent->getId()." with student ".$studentId);
+            $studentID = $request->query->get('studentID');
+            $logger->debug("Linking TeamStudent #".$teamStudent->getId()." with student ".$studentID);
 
-            $student = $em->getRepository('AppBundle:Student')->find($studentId);
+            $student = $em->getRepository('AppBundle:Student')->find($studentID);
             if(is_null($student)){
               $logger->debug("Could not find Student");
               $this->get('session')->getFlashBag()->add('warning', 'We are sorry, There was an issue adding that student.');

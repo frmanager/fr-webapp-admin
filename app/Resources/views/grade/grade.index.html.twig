@@ -30,7 +30,7 @@
                   <tr>
                     <th>Id</th>
                     <th>Name</th>
-                    <th class="col-md-2 col-sm-1">Actions</th>
+                    <th>Actions</th>
                   </tr>
               </thead>
               <tbody>
@@ -40,12 +40,9 @@
                         {{ grade.id }}
                       </td>
                       <td>{{ grade.name }}</td>
-                      <td style="text-align:center;">
-                          <a href="{{ path('grade_show', {'campaignUrl':campaign.url, 'id': grade.id }) }}" class="btn btn-sm btn-info">
-                              <i class="glyphicon glyphicon-eye-open"></i>
-                              <span class="hidden-xs hidden-sm">
-                                  View</span>
-                          </a>
+                      <td class="text-center">
+                         <a href="{{ path('grade_index', {'campaignUrl':campaign.url, 'gradeID': grade.id}) }}" class="btn btn-info disabled"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i> Edit</a>
+                         <a href="{{ path('grade_index', {'campaignUrl':campaign.url, 'action': 'delete_grade', 'gradeID':grade.id}) }}" class="btn btn-danger disabled"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
                       </td>
                   </tr>
                   {% endfor %}
@@ -57,9 +54,4 @@
 
 
   {% block javascripts %}
-      <script>
-          $(document).ready(function() {
-              $('.table').DataTable({ "pageLength": 20, "order": [[ 1, "asc" ]]});
-          });
-      </script>
   {% endblock %}

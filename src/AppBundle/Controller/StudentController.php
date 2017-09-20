@@ -98,11 +98,11 @@ class StudentController extends Controller
               $fail = true;
             }
 
-            if(!$fail && empty($params['student']['classroomId'])){
+            if(!$fail && empty($params['student']['classroomID'])){
               $this->addFlash('warning','Classroom is required');
               $fail = true;
             }else{
-              $classroom = $em->getRepository('AppBundle:Classroom')->findOneBy(array('id'=>$params['student']['classroomId'], 'campaign' => $campaign));
+              $classroom = $em->getRepository('AppBundle:Classroom')->findOneBy(array('id'=>$params['student']['classroomID'], 'campaign' => $campaign));
               if(is_null($classroom)){
                 $this->addFlash('warning','No Valid Classroom was selected');
                 $fail = true;
@@ -189,10 +189,10 @@ class StudentController extends Controller
     /**
      * Displays a form to edit an existing Student entity.
      *
-     * @Route("/edit/{studentId}", name="student_edit")
+     * @Route("/edit/{studentID}", name="student_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, $campaignUrl, $studentId)
+    public function editAction(Request $request, $campaignUrl, $studentID)
     {
         $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
@@ -212,7 +212,7 @@ class StudentController extends Controller
         }
 
         //CODE TO CHECK TO SEE IF STUDENT EXISTS
-        $student = $em->getRepository('AppBundle:Student')->find($studentId);
+        $student = $em->getRepository('AppBundle:Student')->find($studentID);
         if(is_null($student)){
           $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this student.');
           return $this->redirectToRoute('homepage');
@@ -227,11 +227,11 @@ class StudentController extends Controller
               $fail = true;
             }
 
-            if(!$fail && empty($params['student']['classroomId'])){
+            if(!$fail && empty($params['student']['classroomID'])){
               $this->addFlash('warning','Classroom is required');
               $fail = true;
             }else{
-              $classroom = $em->getRepository('AppBundle:Classroom')->findOneBy(array('id'=>$params['student']['classroomId'], 'campaign' => $campaign));
+              $classroom = $em->getRepository('AppBundle:Classroom')->findOneBy(array('id'=>$params['student']['classroomID'], 'campaign' => $campaign));
               if(is_null($classroom)){
                 $this->addFlash('warning','No Valid Classroom was selected');
                 $fail = true;
