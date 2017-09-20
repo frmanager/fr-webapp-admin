@@ -293,10 +293,10 @@ class DonationController extends Controller
 
                     foreach ($CSVHelper->getData() as $i => $item) {
                         $failure = false;
-                        unset($studentId);
+                        unset($studentID);
                         unset($errorMessage);
                         unset($student);
-                        unset($studentIdAlt);
+                        unset($studentIDAlt);
                         unset($grade);
                         unset($classroom);
                         $teamPageFlag = false;
@@ -310,8 +310,8 @@ class DonationController extends Controller
                                 $logger->debug('QueryString: '.$queryString);
                                 $result = $em->createQuery($queryString)->getResult();
                                 if (!empty($result)) {
-                                    $classroomId = $result[0]['classroom_id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found classroom [#'.$classroomId.'] using associated Causevoxteam URL "'.$item['donation_page'].'"');
+                                    $classroomID = $result[0]['classroom_id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found classroom [#'.$classroomID.'] using associated Causevoxteam URL "'.$item['donation_page'].'"');
                                 } else {
                                     $failure = true;
                                     $errorMessage = new ValidationHelper(array(
@@ -330,8 +330,8 @@ class DonationController extends Controller
                                 $logger->debug('QueryString: '.$queryString);
                                 $result = $em->createQuery($queryString)->getResult();
                                 if (!empty($result)) {
-                                    $studentId = $result[0]['student_id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentId.'] using associated Causevoxfundraiser URL "'.$item['donation_page'].'"');
+                                    $studentID = $result[0]['student_id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentID.'] using associated Causevoxfundraiser URL "'.$item['donation_page'].'"');
                                 }
                             }
                         }
@@ -382,7 +382,7 @@ class DonationController extends Controller
                         if (!$failure) {
                             $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
 
-                            if (empty($grade) && !isset($studentId) && !$teamPageFlag) {
+                            if (empty($grade) && !isset($studentID) && !$teamPageFlag) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
@@ -399,9 +399,9 @@ class DonationController extends Controller
                             $queryString = sprintf("SELECT u.id FROM AppBundle:Classroom u WHERE u.classroomName = '%s'", $item['classrooms_name']);
                             $result = $em->createQuery($queryString)->getResult();
                             if (!empty($result)) {
-                                $classroomId = $result[0]['id'];
-                                $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found classroom "'.$item['classrooms_name'].'" [#'.$classroomId.'] using name "'.$item['classrooms_name'].'"');
-                            } else if(empty($result) && !isset($studentId) && !isset($classroomId) && !$teamPageFlag) {
+                                $classroomID = $result[0]['id'];
+                                $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found classroom "'.$item['classrooms_name'].'" [#'.$classroomID.'] using name "'.$item['classrooms_name'].'"');
+                            } else if(empty($result) && !isset($studentID) && !isset($classroomID) && !$teamPageFlag) {
                                 $failure = true;
                                 $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
@@ -415,41 +415,41 @@ class DonationController extends Controller
 
                         //Here is our find student logic. We try a lot of different methods to try and find it....
                         if (!$failure && isset($grade) && isset($classroom)) {
-                            if (!isset($studentIdAlt)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomId, $item['students_name']);
+                            if (!isset($studentIDAlt)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomID, $item['students_name']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
-                                    $studentIdAlt = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIdAlt.'] using provided name');
+                                    $studentIDAlt = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIDAlt.'] using provided name');
                                 }
                             }
 
-                            if (!isset($studentIdAlt)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomId, $item['students_first_name']);
+                            if (!isset($studentIDAlt)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomID, $item['students_first_name']);
                                 $result = $em->createQuery($queryString)->getResult();
                                 if (!empty($result)) {
-                                    $studentIdAlt = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIdAlt.'] using first name fuzzy match "'.$item['students_first_name'].'"');
+                                    $studentIDAlt = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIDAlt.'] using first name fuzzy match "'.$item['students_first_name'].'"');
                                 }
                             }
 
-                            if (!isset($studentIdAlt)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomId, $item['students_name_with_initial']);
+                            if (!isset($studentIDAlt)) {
+                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomID, $item['students_name_with_initial']);
                                 $result = $em->createQuery($queryString)->getResult();
 
                                 if (!empty($result)) {
-                                    $studentIdAlt = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIdAlt.'] using first name + last initial fuzzy match "'.$item['students_name_with_initial'].'"');
+                                    $studentIDAlt = $result[0]['id'];
+                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIDAlt.'] using first name + last initial fuzzy match "'.$item['students_name_with_initial'].'"');
                                 }
                             }
 
-                          if(isset($studentIdAlt)){
-                            $studentId = $studentIdAlt;
+                          if(isset($studentIDAlt)){
+                            $studentID = $studentIDAlt;
                           }
 
                           //If it is not a team page and we didn't find a student, it is a failure
-                          if (!isset($studentId) && !$teamPageFlag) {
+                          if (!isset($studentID) && !$teamPageFlag) {
                               $failure = true;
                               $errorMessage = new ValidationHelper(array(
                                   'entity' => $entity,
@@ -463,12 +463,12 @@ class DonationController extends Controller
 
                         if (!$failure) {
                             if ($teamPageFlag) {
-                                $classroom = $em->find('AppBundle:Classroom', $classroomId);
-                                if(isset($studentId)){
-                                   $student = $em->find('AppBundle:Student', $studentId);
+                                $classroom = $em->find('AppBundle:Classroom', $classroomID);
+                                if(isset($studentID)){
+                                   $student = $em->find('AppBundle:Student', $studentID);
                                 }
                             } else {
-                                $student = $em->find('AppBundle:Student', $studentId);
+                                $student = $em->find('AppBundle:Student', $studentID);
                                 $classroom = $em->find('AppBundle:Classroom', $student->getClassroom());
                             }
 

@@ -23,7 +23,7 @@
             <div class="form-group">
               <div class="col-sm-8">
                 <label for="student_classroom" required>Classroom</label>
-                <select id="student_classroom" name="student[classroomId]" class="form-control" required>
+                <select id="student_classroom" name="student[classroomID]" class="form-control" required>
                   <option {{ formType == 'new' ? 'selected="selected"' : '' }}>Select Grade</option>
                   {% for classroom in classrooms %}
                     <option value="{{ classroom.id }}" {% if formType == 'edit' and student.classroom.id == classroom.id %}selected{% endif %}>{{classroom.grade.name}} - {{classroom.name}}</option>

@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Classroom;
 use AppBundle\Entity\Grade;
+use AppBundle\Entity\Student;
 use AppBundle\Entity\Campaign;
 use AppBundle\Utils\ValidationHelper;
 use AppBundle\Utils\CSVHelper;
 use AppBundle\Utils\CampaignHelper;
 use AppBundle\Utils\QueryHelper;
+use AppBundle\Utils\DonationHelper;
 use DateTime;
 
 /**
@@ -143,13 +145,94 @@ class ClassroomController extends Controller
         ));
     }
 
+
+    /**
+     * Creates a new Classroom entity.
+     *
+     * @Route("/{classroomID}/add_students", name="classroom_students_new")
+     * @Method({"GET", "POST"})
+     */
+    public function newStudentsAction(Request $request, $campaignUrl, $classroomID)
+    {
+        $entity = 'Classroom';
+        $logger = $this->get('logger');
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF CLASSROOM EXISTS
+        $classroom = $em->getRepository('AppBundle:Classroom')->find($classroomID);
+        if(is_null($classroom)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
+          return $this->redirectToRoute('homepage');
+        }
+
+
+        if ($request->isMethod('POST')) {
+            $params = $request->request->all();
+            $failure = false;
+
+            foreach($params['classroom']['students'] as $key => $newStudent){
+              if(!$failure && !empty($newStudent['name'])){
+                $student = new Student();
+                $studentCheck = $em->getRepository('AppBundle:Student')->findOneBy(array('campaign'=>$campaign, 'classroom' => $classroom, 'name' => $newStudent['name']));
+
+                if(!is_null($studentCheck)){
+                  $this->get('session')->getFlashBag()->add('warning', 'A student with the name '.$newStudent['name'].' already exists');
+                  $failure = true;
+                }
+                if(!$failure){
+                  $student->setClassroom($classroom);
+                  $student->setName($newStudent['name']);
+                  $student->setGrade($classroom->getGrade());
+                  $student->setCampaign($campaign);
+                  $em->persist($student);
+                }
+              }
+            }
+
+            if(!$failure){
+              $em->flush();
+              $this->get('session')->getFlashBag()->add('success', 'Successfully added students!');
+              return $this->redirectToRoute('classroom_show', array('campaignUrl'=> $campaignUrl, 'classroomID' => $classroom->getId()));
+            }else{
+              return $this->render('classroom/classroom.students.form.html.twig', array(
+                  'students' => $params['classroom']['students'],
+                  'classroom' => $classroom,
+                  'grades' => $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
+                  'campaign' => $campaign,
+              ));
+            }
+        }
+
+        return $this->render('classroom/classroom.students.form.html.twig', array(
+            'classroom' => $classroom,
+            'grades' => $em->getRepository('AppBundle:Grade')->findBy(array("campaign"=>$campaign)),
+            'campaign' => $campaign,
+        ));
+    }
+
+
+
     /**
      * Finds and displays a Classroom entity.
      *
-     * @Route("/{id}", name="classroom_show")
+     * @Route("/{classroomID}", name="classroom_show")
      * @Method("GET")
      */
-    public function showAction(Classroom $classroom, $campaignUrl)
+    public function showAction(Request $request, $campaignUrl, $classroomID)
     {
         $logger = $this->get('logger');
         $entity = 'Classroom';
@@ -169,14 +252,50 @@ class ClassroomController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
-        $deleteForm = $this->createDeleteForm($classroom,$campaignUrl);
-        $classroom = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($classroom->getId());
-        //$logger->debug(print_r($student->getDonations()));
+        $classroom = $this->getDoctrine()->getRepository('AppBundle:'.strtolower($entity))->findOneById($classroomID);
+        //CODE TO CHECK TO SEE IF CLASSROOM EXISTS
+        $classroom = $em->getRepository('AppBundle:Classroom')->find($classroomID);
+        if(is_null($classroom)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
+          return $this->redirectToRoute('campaign_index', array('campaignUrl' => $campaignUrl));
+        }
+
+
+        if(null !== $request->query->get('action')){
+            $action = $request->query->get('action');
+
+            if($action === 'delete_student'){
+              $logger->debug("Performing delete_student");
+              if(null == $request->query->get('studentID')){
+                $this->get('session')->getFlashBag()->add('warning', 'Could not delete student, ID not provided');
+                return $this->redirectToRoute('classroom_show', array('campaignUrl' => $campaign->getUrl(), 'classroomID' => $classroom->getId()));
+              }
+
+              $student = $em->getRepository('AppBundle:Student')->find($request->query->get('studentID'));
+              if(empty($student)){
+                $this->get('session')->getFlashBag()->add('warning', 'Could not find student to delete');
+                return $this->redirectToRoute('classroom_show', array('campaignUrl' => $campaign->getUrl(), 'classroom_ID' => $classroomID));
+              }
+
+              $logger->debug("Removing Student #".$student->getId());
+              $em->remove($student);
+              $logger->debug("Flushing");
+              $em->flush();
+
+              $logger->debug("Doing a Donation Database Refresh");
+              $donationHelper = new DonationHelper($em, $logger);
+              $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+              $this->get('session')->getFlashBag()->add('info', 'Student has been removed');
+              return $this->redirectToRoute('classroom_show', array('campaignUrl' => $campaign->getUrl(), 'classroomID' => $classroomID));
+            }
+        }
+
 
         $qb = $em->createQueryBuilder()->select('u')
                ->from('AppBundle:Campaignaward', 'u')
-               ->andWhere('u.campaign = :campaignId')
-               ->setParameter('campaignId', $campaign->getId())
+               ->andWhere('u.campaign = :campaignID')
+               ->setParameter('campaignID', $campaign->getId())
                ->orderBy('u.amount', 'DESC');
 
         $campaignAwards = $qb->getQuery()->getResult();
@@ -185,10 +304,9 @@ class ClassroomController extends Controller
 
         return $this->render('classroom/classroom.show.html.twig', array(
             'classroom' => $classroom,
+            'donations' => $queryHelper->getClassroomsData(array('campaign' => $campaign, 'id' => $classroom->getId(), 'limit' => 0)),
             'classroom_rank' => $queryHelper->getClassroomRank($classroom->getId(),array('campaign' => $campaign, 'limit' => 0)),
             'campaign_awards' => $campaignAwards,
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
             'campaign' => $campaign,
         ));
     }
@@ -196,10 +314,10 @@ class ClassroomController extends Controller
     /**
      * Displays a form to edit an existing Classroom entity.
      *
-     * @Route("/edit/{classroomId}", name="classroom_edit")
+     * @Route("/edit/{classroomID}", name="classroom_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, $campaignUrl, $classroomId)
+    public function editAction(Request $request, $campaignUrl, $classroomID)
     {
         $logger = $this->get('logger');
         $em = $this->getDoctrine()->getManager();
@@ -219,7 +337,7 @@ class ClassroomController extends Controller
         }
 
         //CODE TO CHECK TO SEE IF CLASSROOM EXISTS
-        $classroom = $em->getRepository('AppBundle:Classroom')->find($classroomId);
+        $classroom = $em->getRepository('AppBundle:Classroom')->find($classroomID);
         if(is_null($classroom)){
           $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
           return $this->redirectToRoute('homepage');
@@ -314,24 +432,6 @@ class ClassroomController extends Controller
         }
 
         return $this->redirectToRoute('homepage');
-    }
-
-    /**
-     * Creates a form to delete a Classroom entity.
-     *
-     * @param Classroom $classroom The Classroom entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(Classroom $classroom, $campaignUrl)
-    {
-        $entity = 'Classroom';
-        $logger = $this->get('logger');
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('campaign_delete', array('campaignUrl'=> $campaignUrl, 'id' => $classroom->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
     }
 
     /**

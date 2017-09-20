@@ -27,7 +27,7 @@
                       <td>{{ student.grade.name }} - {{ student.classroom.teacherName }}</td>
                       <td>{{ student.name }}</td>
                       <td style="text-align:center;vertical-align: middle;">
-                          <a href="{{ path('teamStudent_verify', { 'campaignUrl': campaign.url, 'teamUrl': team.url, 'teamStudentId': teamStudent.id, 'action':'link', 'studentId': student.id}) }}" class="btn btn-sm btn-warning">
+                          <a href="{{ path('teamStudent_verify', { 'campaignUrl': campaign.url, 'teamUrl': team.url, 'teamStudentId': teamStudent.id, 'action':'link', 'studentID': student.id}) }}" class="btn btn-sm btn-warning">
                               <i class="fa fa-link" aria-hidden="true"></i>
                               <span>Link</span>
                           </a>

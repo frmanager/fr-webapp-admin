@@ -1,0 +1,45 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-sm-8 offset-sm-2">
+      <div class="card">
+        <div class="card-block">
+          <h4 class="card-title">Add students to {{classroom.name}}</h4>
+          <hr>
+          <form name="classroom" method="post" class="">
+            <div class="row">
+              <div class="col-sm-12">
+                  {% for i in 1..10 %}
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="classroom_students_{{loop.index}}_classroomID">Child
+                      {{ loop.index }}</label>
+                    <div class="col">
+                        <input type="text" id="classroom_students_{{loop.index}}_classroomName" name="classroom[students][{{loop.index}}][classroomName]" class="form-control" readonly value="{{ classroom.name }}">
+                    </div>
+                    <div class="col">
+                      <input type="text" id="classroom_students_{{loop.index}}_name" placeholder="David L." value="{{ (students[loop.index] is defined) ? students[loop.index]['name'] }}" name="classroom[students][{{loop.index}}][name]" class="form-control">
+                    </div>
+                  </div>
+                  {% endfor %}
+            <hr>
+            <div class="row">
+              <div class="col">
+                <button type="submit" id="submit" class="btn btn-primary">Add Students</button>
+                <a href="{{ path('classroom_show', {'campaignUrl':campaign.url,  'classroomID': classroom.id }) }}" class="btn btn btn-info pull-right" aria-disabled="true">Cancel</a>
+              </div><!-- ./col -->
+            </div><!-- ./row -->
+          </form><!-- ./form -->
+        </div>
+        <!-- ./card-block -->
+      </div>
+      <!-- ./card -->
+    </div>
+    <!-- ./col -->
+    </div>
+    <!-- ./row -->
+  {% endblock body %}
+
+  {% block javascript %}
+
+  {% endblock %}
