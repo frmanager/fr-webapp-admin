@@ -278,12 +278,14 @@ class ClassroomController extends Controller
               }
 
               //we don't delete the student, only remove the reference.
-              foreach($teamStudent in $student->getTeamStudents()){
+              foreach($student->getTeamStudents() as $teamStudent){
+                $logger->debug("Updating TeamStudent #".$teamStudent->getId());
                 $teamStudent->setStudent(null);
+                $teamStudent->setConfirmedFlag(false);
+                $em->flush();
               }
-              $em->flush();
 
-
+              $student = $em->getRepository('AppBundle:Student')->find($request->query->get('studentID'));
               $logger->debug("Removing Student #".$student->getId());
               $em->remove($student);
               $logger->debug("Flushing");
