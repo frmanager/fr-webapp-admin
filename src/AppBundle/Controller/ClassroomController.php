@@ -277,6 +277,13 @@ class ClassroomController extends Controller
                 return $this->redirectToRoute('classroom_show', array('campaignUrl' => $campaign->getUrl(), 'classroom_ID' => $classroomID));
               }
 
+              //we don't delete the student, only remove the reference.
+              foreach($teamStudent in $student->getTeamStudents()){
+                $teamStudent->setStudent(null);
+              }
+              $em->flush();
+
+
               $logger->debug("Removing Student #".$student->getId());
               $em->remove($student);
               $logger->debug("Flushing");
