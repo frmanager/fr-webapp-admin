@@ -29,63 +29,214 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
  */
 class RegistrationController extends Controller
 {
-    /**
-     * @Route("/signup", name="user_registration")
-     */
-    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        $logger = $this->get('logger');
-        $em = $this->getDoctrine()->getManager();
 
-        // 1) build the form
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+  /**
+   * @Route("/signup", name="user_registration")
+   */
+  public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+  {
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
 
-        // 2) handle the submit (will only happen on POST)
-        $form->handleRequest($request);
-        if ($form->isSubmitted()) {
+      //Verifying if user is logged in, if their account is confirmed, and if their team already exists
+      $securityContext = $this->container->get('security.authorization_checker');
+      if ($securityContext->isGranted('ROLE_USER')) {
+        $logger->debug("User is already logged in and has an account. Checking for email confirmation");
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        if($user->getUserStatus()->getName() !== "Confirmed"){
+          return $this->redirectToRoute('confirm_email');
+        }else{
+          return $this->redirectToRoute('homepage');
+        }
+      }
 
-            //$logger->debug(print_r($user));
+      if ($request->isMethod('POST')) {
+          $params = $request->request->all();
+          $fail = false;
 
-            //TODO: Verify passwords match
-            // 3) Encode the password (you could also do this via Doctrine listener)
-            $password = $passwordEncoder->encodePassword($user, $user->getPassword());
+          if(!$fail && empty($params['user']['firstName'])){
+            $this->addFlash('warning','First name is required');
+            $fail = true;
+          }
+
+          if(!$fail && empty($params['user']['lastName'])){
+            $this->addFlash('warning','Last name is required');
+            $fail = true;
+          }
+
+          if(!$fail && empty($params['user']['email'])){
+            $this->addFlash('warning','Email is required');
+            $fail = true;
+          }
+
+          if(!$fail && empty($params['user']['Password']['first'])){
+            $this->addFlash('warning','Password is required');
+            $fail = true;
+          }
+
+          if(!$fail && empty($params['user']['Password']['second'])){
+            $this->addFlash('warning','Confirmation Password is required');
+            $fail = true;
+          }
+
+          if(!$fail && $params['user']['Password']['first'] !== $params['user']['Password']['second']){
+            $this->addFlash('warning','Passwords do not match');
+            $fail = true;
+          }
+
+          if(!$fail){
+            $userCheck = $em->getRepository('AppBundle:User')->findOneByEmail($params['user']['email']);
+            if(!is_null($userCheck)){
+              $this->get('session')->getFlashBag()->add('warning', 'We apologize, an account already exists with this email.');
+              return $this->render('registration/register.html.twig');
+            }
+
+            $user = new User();
+            $password = $passwordEncoder->encodePassword($user, $params['user']['Password']['first']);
             $user->setPassword($password);
             $user->setApiKey($password);
-            $user->setCampaignManagerFlag(true);
-            $user->setUsername($user->getEmail());
-            $user->setEmailConfirmationCode(base64_encode(random_bytes(20)));
+            $user->setEmail($params['user']['email']);
+            $user->setFirstName($params['user']['firstName']);
+            $user->setLastName($params['user']['lastName']);
+            $user->setUsername($params['user']['email']);
+            $user->setFundraiserFlag(true);
+            $user->setEmailConfirmationCode(strtoupper($this->generateRandomString(8)));
             $user->setEmailConfirmationCodeTimestamp(new \DateTime());
             //Get User Status
             $userStatus = $em->getRepository('AppBundle:UserStatus')->findOneByName('Registered');
 
             if(!empty($userStatus)){
-              $user->setUserStatus($userStatus);
-            }else{
               $logger->debug('UserStatus of Registered could not be found');
-              //TODO: Create generic flash message so user can contact support;
+              $fail = true;
             }
+
+            $user->setUserStatus($userStatus);
 
             // 4) save the User!
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
 
-            $campaign = $this->createCampaign($user);
 
-            $this->authenticateUser($user);
+            //Send Confirmation Email
+            //Send Email
+            $message = (new \Swift_Message("FR Manager account activation code"))
+              ->setFrom('funrun@lrespto.org') //TODO: Change this to parameter for support email
+              ->setTo($user->getEmail())
+              ->setContentType("text/html")
+              ->setBody(
+                  $this->renderView('email/email_confirmation.email.twig', array('user' => $user))
+              );
+
+            $this->get('mailer')->send($message);
+
+            //Create demo campaign for user
+            $campaign = $this->createCampaign($user);
 
             // ... do any other work - like sending them an email, etc
             // maybe set a "flash" success message for the user
+            $this->authenticateUser($user);
+            $this->addFlash('success','Thanks for registering. You should receive an email with instructions on how to fully activate your account.');
 
-            return $this->redirectToRoute('campaign_index', array('campaignUrl' => $campaign->getUrl()));
-        }
+            return $this->redirectToRoute('confirm_email');
+          }
+      }
 
-        return $this->render('registration/register.html.twig',
-            array(
-              'form' => $form->createView(),
-            )
-        );
-    }
+      return $this->render('registration/register.html.twig');
+
+  }
+
+
+
+    /**
+     * Confirms Email Address
+     *
+     * @Route("/confirm_email", name="confirm_email")
+     *
+     */
+      public function emailConfirmationAction(Request $request)
+      {
+
+          $logger = $this->get('logger');
+          $logger->debug("Entering RegistrationController->emailConfirmationAction");
+          $em = $this->getDoctrine()->getManager();
+
+          $this->denyAccessUnlessGranted('ROLE_USER');
+
+          $user = $this->get('security.token_storage')->getToken()->getUser();
+          if(null !== $request->query->get('action')){
+              $action = $request->query->get('action');
+
+              if($action === 'resend_email_confirmation'){
+                $user->setEmailConfirmationCode($this->generateRandomString(8));
+                $user->setEmailConfirmationCodeTimestamp(new \DateTime());
+                $em->persist($user);
+                $em->flush();
+
+                //Send Email
+                $message = (new \Swift_Message("FR Manager account activation code"))
+                  ->setFrom('funrun@lrespto.org') //TODO: Change this to parameter for support email
+                  ->setTo($user->getEmail())
+                  ->setContentType("text/html")
+                  ->setBody(
+                      $this->renderView('email/email_confirmation.email.twig', array('user' => $user))
+                  );
+
+                $this->get('mailer')->send($message);
+
+                $this->get('session')->getFlashBag()->add('info', 'New code has been sent to your email, please check your inbox');
+                return $this->redirectToRoute('confirm_email');
+              }
+          }
+
+          if ($request->isMethod('POST')) {
+              $fail = false;
+              $params = $request->request->all();
+
+              if(empty($params['user']['emailConfirmationCode'])){
+                $this->addFlash('warning','Please input the Email Confirmation Code');
+                $fail = true;
+              }else{
+                $confirmationCode = $params['user']['emailConfirmationCode'];
+              }
+
+              //see if the emailConfirmationCode is still Valid
+              //Its only valid for 30 minutes
+              //We take the timestamp in the database, add 30 minutes, and see if it is still greater than Now...
+              $dateNow = (new \DateTime());
+              $userEmailConfirmationCodeTimestamp = $user->getEmailConfirmationCodeTimestamp()->modify('+30 minutes');
+              if(!$fail && $userEmailConfirmationCodeTimestamp < $dateNow){
+                $logger->debug("Code is expired");
+                $this->addFlash('warning','This confirmation code is expired');
+                $fail = true;
+              }
+
+              if(!$fail && $user->getEmailConfirmationCode() !== $confirmationCode){
+                $logger->debug("Code does not match what is in the database");
+                $this->addFlash('warning','Confirmation code does not match our records');
+                $fail = true;
+              }
+
+              if(!$fail){
+                $this->addFlash('warning','Thank you for confirming your account');
+                $user->setEmailConfirmationCode = null;
+                $userStatus =  $em->getRepository('AppBundle:UserStatus')->findOneByName("CONFIRMED");
+                $user->setUserStatus($userStatus);
+                $user->setIsActive(true);
+                $em->persist($user);
+                $em->flush();
+
+                return $this->redirectToRoute('homepage');
+
+              }
+
+          }
+
+          return $this->render('registration/confirmed.html.twig', array('user' => $user));
+      }
+
+
+
+
 
 
     private function authenticateUser(User $user)
@@ -94,6 +245,8 @@ class RegistrationController extends Controller
         $this->get('security.token_storage')->setToken($token);
         $this->get('session')->set('_security_main', serialize($token));
     }
+
+
 
 
 
@@ -110,7 +263,7 @@ class RegistrationController extends Controller
       $campaign->setTheme('cerulean');
 
       //TODO: Verify this does not already exist
-      $campaign->setUrl($this->generateRandomString(12));
+      $campaign->setUrl(strtolower($this->generateRandomString(12)));
       $campaign->setEmail($user->getEmail());
       $campaign->setFundingGoal(10000);
       $campaign->setCreatedBy($user);

@@ -1,0 +1,36 @@
+{% extends 'template.email.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4">Thank you!</h1>
+        </div><!-- ./column -->
+    </div><!-- ./row -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+        <div class="card">
+          <div class="card-header">
+            Donation Summary
+          </div>
+          <div class="card-block">
+            <p class="card-text">Please Keep this email for your records</p>
+            <hr>
+            <p class="card-text">The {{campaign.name}} campaign thanks you for your generous donation.</p>
+            {% if donation.type == 'teacher' %}
+              <p class="card-text">Donation to: {{campaign.name}}</p>
+            {% elseif donation.type == 'student' %}
+              <p class="card-text">Donation to: {{donation.classroom.name}} - {{donation.studentName}}</p>
+            {% elseif donation.type == 'team' %}
+              <p class="card-text">Donation to: {{donation.team.name}}</p>
+            {% else %}
+            {% endif %}
+            <p class="card-text">Donation Date {{donation.donatedAt|date('Y/m/d')}}</p>
+            <p class="card-text">Donation Amount: ${{donation.amount}}</p>
+            <p class="card-text">Payment Method: {{donation.paymentMethod}}</p>
+            <p class="card-text">Payment Status: {{donation.donationStatus}}</p>
+            <p class="card-text">FRManager Transaction ID: {{donation.transactionId}}</p>
+          </div>
+        </div><!-- ./card -->
+    </div><!-- ./column -->
+</div><!-- ./row -->
+{% endblock %}

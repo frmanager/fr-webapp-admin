@@ -150,8 +150,7 @@ Class Campaign
   /**
    *  @var blob
    *
-   * @ORM\Column(type="blob", nullable=false)
-   * @Assert\NotNull()
+   * @ORM\Column(type="blob", nullable=true)
    */
   private $donationReceiptText;
 
@@ -904,5 +903,73 @@ Class Campaign
     public function getPaypalSandboxFlag()
     {
         return $this->paypalSandboxFlag;
+    }
+
+    /**
+     * Add team
+     *
+     * @param \AppBundle\Entity\Team $team
+     *
+     * @return Campaign
+     */
+    public function addTeam(\AppBundle\Entity\Team $team)
+    {
+        $this->teams[] = $team;
+
+        return $this;
+    }
+
+    /**
+     * Remove team
+     *
+     * @param \AppBundle\Entity\Team $team
+     */
+    public function removeTeam(\AppBundle\Entity\Team $team)
+    {
+        $this->teams->removeElement($team);
+    }
+
+    /**
+     * Get teams
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTeams()
+    {
+        return $this->teams;
+    }
+
+    /**
+     * Add donationDatabase
+     *
+     * @param \AppBundle\Entity\DonationDatabase $donationDatabase
+     *
+     * @return Campaign
+     */
+    public function addDonationDatabase(\AppBundle\Entity\DonationDatabase $donationDatabase)
+    {
+        $this->donationDatabases[] = $donationDatabase;
+
+        return $this;
+    }
+
+    /**
+     * Remove donationDatabase
+     *
+     * @param \AppBundle\Entity\DonationDatabase $donationDatabase
+     */
+    public function removeDonationDatabase(\AppBundle\Entity\DonationDatabase $donationDatabase)
+    {
+        $this->donationDatabases->removeElement($donationDatabase);
+    }
+
+    /**
+     * Get donationDatabases
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDonationDatabases()
+    {
+        return $this->donationDatabases;
     }
 }

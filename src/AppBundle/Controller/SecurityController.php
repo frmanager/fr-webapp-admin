@@ -45,11 +45,19 @@ class SecurityController extends Controller
    */
   public function loginRedirectAction(Request $request)
   {
-      $authUtils = $this->get('security.authentication_utils');
-
       $logger = $this->get('logger');
-      /** @var $session \Symfony\Component\HttpFoundation\Session\Session */
+
+      $authUtils = $this->get('security.authentication_utils');
       $session = $request->getSession();
+
+      $logger->debug("Checking to see if user is confirmed");
+      $user = $this->get('security.token_storage')->getToken()->getUser();
+      //CODE TO CHECK TO SEE IF A USERS TEAM EXISTS, IF NOT, THEY NEED TO CREATE ONE
+      if($user->getUserStatus()->getName() !== "Confirmed"){
+        $logger->debug("User is not fully registered, sending to confirm_email");
+        $this->get('session')->getFlashBag()->add('warning', 'Hi, it looks like you have not confirmed your email yet.');
+        return $this->redirectToRoute('confirm_email', array('campaignUrl' => $campaign->getUrl()));
+      }
 
       return $this->redirectToRoute('homepage', array('action' => 'list_campaigns'));
   }
