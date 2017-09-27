@@ -8,6 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -23,7 +24,7 @@ class CampaignType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, array('required' => true))
-            ->add('description')
+            ->add('description', TextareaType::class, array( 'attr' => array('class' => 'tinymce')))
             ->add('url')
             ->add('onlineFlag', CheckboxType::class, array('label'    => 'Put campaign online', 'required' => false))
             ->add('teamsFlag', CheckboxType::class, array('label'    => 'Enable Teams', 'required' => false))
