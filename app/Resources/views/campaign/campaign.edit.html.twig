@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12">
             {{ form_start(edit_form) }}
             {{ form_widget(edit_form) }}
             <hr/>
@@ -27,4 +27,20 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script type='application/javascript' src="{{ asset('assets/js/libs/tinymce/tinymce.min.js') }}"></script>
+<script>
+// Prevent Bootstrap dialog from blocking focusin
+$(document).on('focusin', function(e) {
+  if ($(e.target).closest(".mce-window").length) {
+    e.stopImmediatePropagation();
+  }
+});
+
+tinymce.init({
+  selector: '#campaign_description'
+});
+</script>
 {% endblock %}
