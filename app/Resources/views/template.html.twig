@@ -3,9 +3,8 @@
 <head>
   <base target="_parent" />
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 
   <title>{% block title %}{% endblock %}</title>
 
@@ -117,6 +116,9 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ path('team_index', {'campaignUrl': campaign.url}) }}"><i class="fa fa-users" aria-hidden="true"></i> Teams</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ path('donation_index', {'campaignUrl': campaign.url}) }}"><i class="fa fa-usd" aria-hidden="true"></i> Donations</a>
+          </li>
           <li class="nav-title">
               Manage School
           </li>
@@ -216,6 +218,9 @@
         });
         $(".clickable-row").css('cursor', 'pointer');
 
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
     });
   </script>
 

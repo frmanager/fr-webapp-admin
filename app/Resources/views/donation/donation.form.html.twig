@@ -1,0 +1,126 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+{% if app.request.attributes.get('_route')=='donation_reassign'%}
+{% set formType = "reassign" %}
+{% else %}
+{% set formType = "new" %}
+{% endif %}
+
+  <div class="row">
+    <div class="col-sm-8 offset-sm-2">
+      <div class="card">
+        <div class="card-block">
+          <h4 class="card-title">{{ formType == "new" ? "Create new " ~ type ~" donation" : "Reassign " ~ donation.transactionId }}</h4>
+          <form name="donation" method="post" class="">
+            {% if type == 'classroom' %}
+            <div class="form-group">
+              <div class="col-sm-8">
+                <label for="donation_classroomID" required>Classroom</label>
+                <select id="donations_classroomID" name="donation[classroomID]" class="form-control">
+                  {% if null == donation.classroom %}
+                    <option selected="selected">Select Classroom</option>
+                  {% endif %}
+                  {% for classroom in classrooms %}
+                    <option value="{{classroom.id}}" {% if null != donation.classroom and donation.classroom.id == classroom.id %}selected{% endif %}>{{classroom.grade.name}} - {{classroom.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div><!-- ./form-group -->
+            {% elseif type == 'student' %}
+            <div class="form-group">
+              <div class="col-sm-8">
+                <label for="donation_classroomID" required>Classroom</label>
+                <select id="donations_classroomID" name="donation[classroomID]" class="form-control" {% if null != donation.classroom %}disabled{% endif %} required>
+                  {% if null == donation.classroom %}
+                    <option selected="selected">Select Classroom</option>
+                  {% endif %}
+                  {% for classroom in classrooms %}
+                    <option value="{{classroom.id}}" {% if null != donation.classroom and donation.classroom.id == classroom.id %}selected{% endif %}>{{classroom.grade.name}} - {{classroom.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div><!-- ./form-group -->
+            {% elseif type == 'team' %}
+            <div class="form-group">
+              <div class="col-sm-8">
+                <label for="donation_teamID" required>Team</label>
+                <select id="donation_teamID" name="donation[teamID]" class="form-control">
+                  {% if null == donation.classroom %}
+                    <option selected="selected">Select Team</option>
+                  {% endif %}
+                  {% for team in teams %}
+                    <option value="{{team.id}}" {% if null != donation.team and donation.team.id == team.id %}selected{% endif %}>{{team.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div><!-- ./form-group -->
+            {% endif %}
+            {% if type == 'student' and null != donation.classroom %}
+            <div class="form-group">
+              <div class="col-sm-8">
+                <label for="donation_studentID" required>Student</label>
+                <select id="donations_studentID" name="donation[studentID]" class="form-control">
+                    <option selected="selected">Select Student</option>
+                  {% for student in donation.classroom.students %}
+                    <option value="{{student.id}}" {% if null != donation.student and donation.student.id == student.id %}selected{% endif %}>{{student.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div><!-- ./form-group -->
+            {% endif %}
+            {% if ((type == 'student' and null != donation.classroom) or type in ['campaign','classroom','team']) and formType != "reassign" %}
+            <div class="form-group">
+              <div class="col-sm-8">
+                <label class="control-label required" for="donation_amount">Donation Amount:
+                  <small>U.S. Dollar (USD)</small>
+                </label>
+                <div class="input-group col-sm-6">
+                  <span class="input-group-addon" id="basic-addon1">
+                    <i class="fa fa-usd" aria-hidden="true"></i>
+                  </span>
+                  <input type="number" class="form-control" style="text-align:right;" min="0" id="donation_amount" value="{% if null != donation.amount %}5{% else %}{{ donation.amount }}{% endif %}" name="donation[amount]" required>
+                  <span class="input-group-addon" id="basic-addon1">.00</span>
+                </div>
+              </div>
+            </div><!-- ./form-group -->
+            {% endif %}
+            <hr>
+            <div class="row">
+              <div class="col">
+                {% if formType == 'new' %}
+                <a href="{{ path('donation_index', {'campaignUrl': campaign.url}) }}" class="btn btn-warning">Cancel</a>
+                {% else %}
+                <a href="{{ path('donation_show', {'campaignUrl': campaign.url, 'id': donation.id}) }}" class="btn btn-warning">Cancel</a>
+                {% endif %}
+                {% if type == 'student' and null == donation.classroom %}
+                <input type="hidden" id="setClassroomFlag" name="setClassroomFlag" value="true"/>
+                <button type="submit" id="submit" class="btn btn-primary">Select Classroom</button>
+                {% else %}
+                <button type="submit" id="submit" class="btn btn-primary">{{ formType == 'new' ? 'Create Donation' : 'Update Donation' }}</button>
+                {% endif %}
+              </div><!-- ./col -->
+            </div><!-- ./row -->
+          </form><!-- ./form -->
+        </div>
+        <!-- ./card-block -->
+      </div>
+      <!-- ./card -->
+    </div>
+    <!-- ./col -->
+    </div>
+    <!-- ./row -->
+  {% endblock body %}
+
+  {% block javascript %}
+    <script type="text/javascript">
+      $('#user_terms_of_service').click(function() {
+        if ($(this).attr('checked') == false) {
+          $('#submit').attr("disabled", "disabled");
+        } else {
+          $('#submit').removeAttr('disabled');
+        }
+      });
+    </script>
+  {% endblock %}

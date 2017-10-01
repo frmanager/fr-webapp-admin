@@ -15,15 +15,20 @@
 <div class="card-block">
 
     <div class="row">
-        <div class="col-sm-5">
-            <div class="">Team Owner: {{ team.user.firstName }} {{ team.user.lastName }}</div>
-            <div class="">Email Address: {{ team.user.email }}</div>
-            <div class="">Team Type: {{ team.teamType.name }}</div>
+        <div class="col-sm-6">
+            <p class="">Team Owner: {{ team.user.firstName }} {{ team.user.lastName }}</p>
+            <p class="">Email Address: {{ team.user.email }}</p>
+            <p class="">Team Type: {{ team.teamType.name }}</p>
+        </div>
+        <!--/.col-->
+        <div class="col-sm-6">
+            <p class="">Funds Raised: ${{ team.fundsRaised|number_format(2, '.', ',') }}</p>
+            <p class="">Donations: {{ team.donations|length }}</p>
         </div>
         <!--/.col-->
     </div>
     <!--/.row-->
-    <br/>
+    <hr>
 
     {% if team.teamType.value == 'student' or team.teamType.value == 'family' %}
     <div class="row">
@@ -74,9 +79,65 @@
                   </tr>
               {% endfor %}
           </tbody>
-      </table>
+      </table><!-- ./table -->
     {% endif %}
-  </div>
-</div>
+
+    {% if team.donations is defined %}
+    <br>
+    <hr>
+    <div class="row">
+        <div class="col-sm-5">
+            <h3 class="">Donations</h3>
+        </div>
+        <!--/.col-->
+    </div><!-- ./row -->
+    <table class="table table-sm table-responsive table-hover table-outline mb-0">
+         <thead>
+             <tr>
+                 <th>Date</th>
+                 <th>Donor</th>
+                 <th>Method</th>
+                 <th>Amt</th>
+                 <th>Status</th>
+                 <th>Actions</th>
+             </tr>
+         </thead>
+         <tbody>
+             {% for donation in team.donations %}
+                 <tr>
+                     <td>{{ donation.donatedAt|date("m/d")  }}</td>
+                     <td>{% if donation.donorEmail is defined %}{{ donation.donorEmail }}{% endif %}
+                     <td class="text-center">
+                       {% if donation.paymentMethod is defined %}
+                         {% if donation.paymentMethod == 'cc' %}
+                          <i class="fa fa-credit-card" aria-hidden="true"></i>
+                         {% elseif donation.paymentMethod == 'paypal' %}
+                          <i class="fa fa-paypal" aria-hidden="true"></i>
+                         {% else %}
+                          <i class="fa fa-money" aria-hidden="true"></i>
+                         {% endif %}
+                       {% endif %}
+                     </td>
+                     <td style="text-align:right;">${{ donation.amount|number_format(2, '.', ',')  }}</td>
+                     <td class="text-center">
+                       {% if donation.donationStatus is defined %}
+                       <span class="badge badge-{{ donation.donationStatus == 'PENDING'? 'info' }}{{ donation.donationStatus == 'ACCEPTED'? 'success' }}{{ donation.donationStatus == 'AUTHORIZED'? 'primary' }}{{ donation.donationStatus == 'FAILED'? 'danger' }}">{{ donation.donationStatus }}</span>
+                       {% endif %}
+                     </td>
+                     <td style="text-align:center;">
+                         <a href="{{ path('donation_show', {'campaignUrl':campaign.url, 'id': donation.id }) }}" class="btn btn-sm btn-info">
+                             <i class="fa fa-eye" aria-hidden="true"></i><span class="hidden-xs hidden-sm"> View</span>
+                         </a>
+                         {% if donation.type == "manual" %}
+                          <a href="{{ path('donation_edit', {'campaignUrl':campaign.url, 'action': 'delete_donation', 'donationID': donation.id }) }}" class="btn btn-primary"><i class="fa fa-trash" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Delete</span></a>
+                         {% endif %}
+                     </td>
+                 </tr>
+             {% endfor %}
+         </tbody>
+     </table><!-- ./table -->
+    {% endif %}
+  </div><!-- ./card-block -->
+</div><!-- ./card -->
 
 {% endblock %}

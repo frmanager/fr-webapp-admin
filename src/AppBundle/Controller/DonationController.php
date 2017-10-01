@@ -13,13 +13,14 @@ use AppBundle\Utils\CSVHelper;
 use AppBundle\Utils\CampaignHelper;
 use AppBundle\Entity\Donation;
 use AppBundle\Utils\ValidationHelper;
+use AppBundle\Utils\DonationHelper;
 use \DateTime;
 use \DateTimeZone;
 
 /**
  * Donation controller.
  *
- * @Route("/donation")
+ * @Route("{campaignUrl}/donations")
  */
 class DonationController extends Controller
 {
@@ -29,16 +30,31 @@ class DonationController extends Controller
      * @Route("/", name="donation_index")
      * @Method("GET")
      */
-    public function indexAction()
+    public function indexAction($campaignUrl)
     {
-        $entity = 'Donation';
-        $em = $this->getDoctrine()->getManager();
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
 
-        $donations = $em->getRepository('AppBundle:Donation')->findAll();
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+        return $this->redirectToRoute('homepage');
+      }
 
-        return $this->render(strtolower($entity).'/index.html.twig', array(
+      //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+      $campaignHelper = new CampaignHelper($em, $logger);
+      if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
+
+
+        $donations = $em->getRepository('AppBundle:Donation')->findByCampaign($campaign);
+
+        return $this->render('donation/donation.index.html.twig', array(
             'donations' => $donations,
-            'entity' => $entity,
+            'campaign' => $campaign
         ));
     }
 
@@ -48,34 +64,380 @@ class DonationController extends Controller
      * @Route("/new", name="donation_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $campaignUrl)
     {
-        $entity = 'Donation';
-        $donation = new Donation();
-        $date = new DateTime();
-        $dateString = $date->format('Y-m-d').' 00:00:00';
-        $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-        $donation->setDonatedAt(new DateTime($date->format('Y-m-d')));
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
 
-        $donation->setType('manual');
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+        return $this->redirectToRoute('homepage');
+      }
 
-        $form = $this->createForm('AppBundle\Form\DonationType', $donation);
-        $form->handleRequest($request);
+      //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+      $campaignHelper = new CampaignHelper($em, $logger);
+      if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($donation);
-            $em->flush();
+      $donation = new Donation();
+      $classroom = null;
 
-            return $this->redirectToRoute(strtolower($entity).'_index');
-        }
+      if(null !== $request->query->get('type')){
+          $type = $request->query->get('type');
 
-        return $this->render('crud/new.html.twig', array(
-            'donation' => $donation,
-            'form' => $form->createView(),
-            'entity' => $entity,
-        ));
+          if(!in_array($type, array('classroom','student','campaign','team'))){
+            $this->get('session')->getFlashBag()->add('warning', $type.' is not a valid donation type');
+            return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+          }
+
+      }else{
+        $this->get('session')->getFlashBag()->add('warning', 'You need to select a donation type');
+        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+      }
+
+      if ($request->isMethod('POST')) {
+          $params = $request->request->all();
+          $failure = false;
+
+          if(!empty($params['setClassroomFlag'])){
+            $donation->setClassroom($em->getRepository('AppBundle:Classroom')->find($params['donation']['classroomID']));
+          }
+
+          if($type == 'team'){
+            if(null !== $params['donation']['teamID']){
+              $team = $em->getRepository('AppBundle:Team')->find($params['donation']['teamID']);
+              if(is_null($team)){
+                $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this team.');
+              }else{
+                if(null !== $params['donation']['amount']){
+                  $donation->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
+                  $donation->setAmount($params['donation']['amount']);
+                  $donation->setType("team");
+                  $donation->setTeam($team);
+                  $donation->setDonatedAt(new DateTime('now'));
+                  $donation->setCampaign($campaign);
+                  $donation->setPaymentMethod("cash");
+                  $donation->setDonationStatus("ACCEPTED");
+                  $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
+
+                  $donationHelper = new DonationHelper($em, $logger);
+                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+                  $em->persist($donation);
+                  $em->flush();
+                  $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
+                  return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
+                }else{
+                  $this->get('session')->getFlashBag()->add('warning', 'Donation Amount is required.');
+                }
+              }
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Team is required');
+            }
+          }elseif($type == 'campaign'){
+            if(null !== $params['donation']['amount']){
+              $donation->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
+              $donation->setAmount($params['donation']['amount']);
+              $donation->setType("campaign");
+              $donation->setCampaign($campaign);
+              $donation->setDonatedAt(new DateTime('now'));
+              $donation->setPaymentMethod("cash");
+              $donation->setDonationStatus("ACCEPTED");
+              $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
+
+              $em->persist($donation);
+              $em->flush();
+
+              $donationHelper = new DonationHelper($em, $logger);
+              $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+              $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
+              return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Donation Amount is required.');
+            }
+
+          }elseif($type == 'classroom'){
+            if(null !== $params['donation']['classroomID']){
+              $classroom = $em->getRepository('AppBundle:Classroom')->find($params['donation']['classroomID']);
+              if(is_null($classroom)){
+                $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
+              }else{
+                if(null !== $params['donation']['amount']){
+                  $donation->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
+                  $donation->setAmount($params['donation']['amount']);
+                  $donation->setType("classroom");
+                  $donation->setDonatedAt(new DateTime('now'));
+                  $donation->setClassroom($classroom);
+                  $donation->setCampaign($campaign);
+                  $donation->setPaymentMethod("cash");
+                  $donation->setDonationStatus("ACCEPTED");
+                  $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
+
+                  $em->persist($donation);
+                  $em->flush();
+
+                  $donationHelper = new DonationHelper($em, $logger);
+                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+                  $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
+                  return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
+                }else{
+                  $this->get('session')->getFlashBag()->add('warning', 'Donation Amount is required.');
+                }
+              }
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Classroom is required');
+              $failure = true;
+            }
+
+          }elseif($type == 'student' && empty($params['setClassroomFlag'])){
+            if(null !== $params['donation']['studentID']){
+              $student = $em->getRepository('AppBundle:Student')->find($params['donation']['studentID']);
+              if(is_null($student)){
+                $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this student.');
+              }else{
+                if(null !== $params['donation']['amount']){
+                  $donation->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
+                  $donation->setAmount($params['donation']['amount']);
+                  $donation->setType("student");
+                  $donation->setStudent($student);
+                  $donation->setClassroom($student->getClassroom());
+                  $donation->setDonatedAt(new DateTime('now'));
+                  $donation->setCampaign($campaign);
+                  $donation->setPaymentMethod("cash");
+                  $donation->setStudentConfirmedFlag(true);
+                  $donation->setDonationStatus("ACCEPTED");
+                  $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
+
+                  $em->persist($donation);
+                  $em->flush();
+
+                  $donationHelper = new DonationHelper($em, $logger);
+                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+                  $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
+                  return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
+                }else{
+                  $this->get('session')->getFlashBag()->add('warning', 'Donation Amount is required.');
+                }
+              }
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Student is required');
+            }
+
+
+
+
+
+          }
+
+
+
+
+
+      }
+
+
+      return $this->render('donation/donation.form.html.twig', array(
+          'donation' => $donation,
+          'campaign' => $campaign,
+          'teams' => $em->getRepository('AppBundle:Team')->findBy(array('campaign' => $campaign)),
+          'type' => $type,
+          'classrooms' => $em->getRepository('AppBundle:Classroom')->findBy(array('campaign' => $campaign), array('grade' => 'asc', 'name'=>'asc'))
+      ));
+
     }
+
+
+
+
+
+    /**
+     * Reassignes a donation Entity.
+     *
+     * @Route("/{donationID}/reassign", name="donation_reassign")
+     * @Method({"GET", "POST"})
+     */
+    public function reassignAction(Request $request, $campaignUrl, $donationID)
+    {
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
+
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+        return $this->redirectToRoute('homepage');
+      }
+
+      //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+      $campaignHelper = new CampaignHelper($em, $logger);
+      if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
+
+
+      //CODE TO CHECK TO SEE IF DONATION EXISTS
+      $donation = $em->getRepository('AppBundle:Donation')->find($donationID);
+      if(is_null($donation)){
+        $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+      }
+
+
+      if(null !== $request->query->get('type')){
+          $type = $request->query->get('type');
+
+          if(!in_array($type, array('classroom','student','campaign','team'))){
+            $this->get('session')->getFlashBag()->add('warning', $type.' is not a valid donation type');
+            return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+          }
+
+      }else{
+        $this->get('session')->getFlashBag()->add('warning', 'You need to select a donation type');
+        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+      }
+
+
+
+      if($type == 'campaign'){
+        $donation->setType("campaign");
+
+        $em->persist($donation);
+        $em->flush();
+
+        $donationHelper = new DonationHelper($em, $logger);
+        $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+        $this->get('session')->getFlashBag()->add('success', 'Donation Reassigned Successfully');
+        return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+      }
+
+
+      //Since we are re-assigning, we blank this out till we get the new data
+      $donation->setStudent(null);
+      $donation->setClassroom(null);
+      $donation->setTeam(null);
+      $donation->setSTudentConfirmedFlag(false);
+
+      if ($request->isMethod('POST')) {
+          $params = $request->request->all();
+          $failure = false;
+
+          if(!empty($params['setClassroomFlag'])){
+            if("" == $params['donation']['classroomID'] || null == $params['donation']['classroomID']){
+              $this->get('session')->getFlashBag()->add('warning', 'Please select a classroom');
+            }else{
+              //CODE TO CHECK TO SEE IF DONATION EXISTS
+              $classroom = $em->getRepository('AppBundle:Classroom')->find($params['donation']['classroomID']);
+
+              if(is_null($classroom)){
+                $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
+              }else{
+                $donation->setClassroom($em->getRepository('AppBundle:Classroom')->find($classroom->getId()));
+              }
+            }
+          }
+
+          if($type == 'team'){
+            if(null !== $params['donation']['teamID']){
+              $team = $em->getRepository('AppBundle:Team')->find($params['donation']['teamID']);
+              if(is_null($team)){
+                $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this team.');
+              }else{
+
+                  $donation->setTeam($team);
+                  $donation->setType("team");
+
+                  $donationHelper = new DonationHelper($em, $logger);
+                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+                  $em->persist($donation);
+                  $em->flush();
+
+                  $this->get('session')->getFlashBag()->add('success', 'Donation Reassigned Successfully');
+                  return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+              }
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Team is required');
+            }
+          }elseif($type == 'classroom'){
+            if(null !== $params['donation']['classroomID']){
+              $classroom = $em->getRepository('AppBundle:Classroom')->find($params['donation']['classroomID']);
+              if(is_null($classroom)){
+                $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this classroom.');
+              }else{
+                  $donation->setType("classroom");
+                  $donation->setClassroom($classroom);
+
+                  $em->persist($donation);
+                  $em->flush();
+
+                  $donationHelper = new DonationHelper($em, $logger);
+                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+                  $this->get('session')->getFlashBag()->add('success', 'Donation Reassigned Successfully');
+                  return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+              }
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Classroom is required');
+              $failure = true;
+            }
+
+          }elseif($type == 'student' && empty($params['setClassroomFlag'])){
+            if(null !== $params['donation']['studentID']){
+              $student = $em->getRepository('AppBundle:Student')->find($params['donation']['studentID']);
+              if(is_null($student)){
+                $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this student.');
+              }else{
+                  $donation->setType("student");
+                  $donation->setStudent($student);
+                  $donation->setClassroom($student->getClassroom());
+                  $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
+                  $donation->setStudentConfirmedFlag(true);
+                  
+                  $em->persist($donation);
+                  $em->flush();
+
+                  $donationHelper = new DonationHelper($em, $logger);
+                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+
+                  $this->get('session')->getFlashBag()->add('success', 'Donation Reassigned Successfully');
+                  return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+              }
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Student is required');
+            }
+
+          }
+
+      }
+
+      return $this->render('donation/donation.form.html.twig', array(
+          'donation' => $donation,
+          'campaign' => $campaign,
+          'teams' => $em->getRepository('AppBundle:Team')->findBy(array('campaign' => $campaign)),
+          'type' => $type,
+          'classrooms' => $em->getRepository('AppBundle:Classroom')->findBy(array('campaign' => $campaign), array('grade' => 'asc', 'name'=>'asc'))
+      ));
+
+    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Finds and displays a Donation entity.
@@ -83,48 +445,75 @@ class DonationController extends Controller
      * @Route("/show/{id}", name="donation_show")
      * @Method("GET")
      */
-    public function showAction(Donation $donation)
+    public function showAction(Donation $donation, $campaignUrl)
     {
-        $entity = 'Donation';
-        $deleteForm = $this->createDeleteForm($donation);
+      $logger = $this->get('logger');
+      $em = $this->getDoctrine()->getManager();
 
-        return $this->render(strtolower($entity).'/show.html.twig', array(
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+        return $this->redirectToRoute('homepage');
+      }
+
+      //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+      $campaignHelper = new CampaignHelper($em, $logger);
+      if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
+
+
+        return $this->render('donation/donation.show.html.twig', array(
             'donation' => $donation,
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
+            'campaign' => $campaign
         ));
     }
 
     /**
      * Displays a form to edit an existing Donation entity.
      *
-     * @Route("/edit/{id}", name="donation_edit")
+     * @Route("/edit/{donationID}", name="donation_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Donation $donation)
+    public function editAction(Request $request, $donationID)
     {
-        $entity = 'Donation';
-        $deleteForm = $this->createDeleteForm($donation);
-        $editForm = $this->createForm('AppBundle\Form\DonationType', $donation);
-        $editForm->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $dateString = $donation->getDonatedAt()->format('Y-m-d').' 00:00:00';
-            $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
+      $logger = $this->get('logger');
+      $this->denyAccessUnlessGranted('ROLE_USER');
 
-            $donation->setDonatedAt($date);
-            $em->persist($donation);
-            $em->flush();
+      $em = $this->getDoctrine()->getManager();
 
-            return $this->redirectToRoute(strtolower($entity).'_index', array('id' => $donation->getId()));
-        }
+      //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+      $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+      if(is_null($campaign)){
+        $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+        return $this->redirectToRoute('homepage');
+      }
 
-        return $this->render('crud/edit.html.twig', array(
+      //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+      $campaignHelper = new CampaignHelper($em, $logger);
+      if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+          return $this->redirectToRoute('homepage');
+      }
+
+      //CODE TO CHECK TO SEE IF DONATION EXISTS
+      $donation = $em->getRepository('AppBundle:Donation')->findOneBy(array('id'=>$donationID, 'campaign' => $campaign));
+      if(is_null($donation)){
+        $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this donation.');
+        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
+      }
+
+
+      if ($request->isMethod('POST')) {
+          $params = $request->request->all();
+      }
+
+        return $this->render('donation/donation.form.html.twig', array(
             'donation' => $donation,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-            'entity' => $entity,
+            'campaign' => $campaign
         ));
     }
 
@@ -167,13 +556,98 @@ class DonationController extends Controller
         ;
     }
 
+
+
+
+
+
+    /**
+     * Displays a form to edit an existing Team entity.
+     *
+     * @Route("/show/{donationID}/verify_student/", name="donation_student_verify")
+     * @Method({"GET", "POST"})
+     */
+    public function verifyStudentAction(Request $request, $campaignUrl, $donationID)
+    {
+        $logger = $this->get('logger');
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $em = $this->getDoctrine()->getManager();
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF DONATION EXISTS
+        $donation = $em->getRepository('AppBundle:Donation')->findOneBy(array('id'=>$donationID, 'campaign' => $campaign));
+        if(is_null($donation)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this donation.');
+          return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
+        }
+
+
+        if(null !== $request->query->get('action') && null !== $request->query->get('studentID')){
+            $failure = false;
+            $studentID = $request->query->get('studentID');
+            $logger->debug("Linking Donation #".$donation->getId()." with student ".$studentID);
+
+            $student = $em->getRepository('AppBundle:Student')->find($studentID);
+            if(is_null($student)){
+              $logger->debug("Could not find Student");
+              $this->get('session')->getFlashBag()->add('warning', 'We are sorry, There was an issue adding that student.');
+              $failure = true;
+            }
+
+            if(!$failure){
+              $donation->setStudent($student);
+              $donation->setStudentConfirmedFlag(true);
+              $em->persist($donation);
+              $em->flush();
+              return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+            }
+        }
+
+        return $this->render('donation/donation.verify.html.twig', array(
+            'students' => $donation->getClassroom()->getStudents(),
+            'classroom' => $donation->getClassroom(),
+            'donation' => $donation,
+            'campaign' => $campaign,
+        ));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Upload multiple Donation via CSV File.
      *
      * @Route("/upload", name="donation_upload")
      * @Method({"GET", "POST"})
      */
-     /*
+
     public function uploadForm(Request $request)
     {
         $logger = $this->get('logger');
@@ -505,7 +979,7 @@ class DonationController extends Controller
                           } else {
                               $logger->debug($entity.' found....updating.');
                               $failure = true;
-                              /*
+
                               $errorMessage = new ValidationHelper(array(
                                 'entity' => $entity,
                                 'row_index' => ($i + 2 + $fileIndexOffset),
@@ -513,12 +987,12 @@ class DonationController extends Controller
                                 'error_field_value' => 'N/A',
                                 'error_message' => 'A donation for this student and date already exists #'.$donation->getId(),
                                 'error_level' => ValidationHelper::$level_error, ));
-                              */
-                              /*
+
+
                           }
                         }
-                        */
-                        /*
+
+
                         if (!$failure) {
                             if (strcmp($fileType, 'Causevoxdonation') == 0) {
                                 //a lot more information is collected from causevox....
@@ -607,5 +1081,5 @@ class DonationController extends Controller
           'entity' => $entity,
       ));
     }
-*/
+
 }
