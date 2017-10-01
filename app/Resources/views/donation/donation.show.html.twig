@@ -1,0 +1,129 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+<div class="card">
+  <div class="card-block">
+    <div class="row">
+        <div class="col-sm-5">
+            <h4 class="card-title mb-0">Donation</h4>
+            <div class="small text-muted">{{donation.transactionId}}</div>
+        </div>
+        <!--/.col-->
+        <div class="col-sm-7">
+            <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
+                  <div class="dropdown pull-right">
+                    <button class="btn btn-outline-info btn-inline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa fa-cog" aria-hidden="true"></i> Reassign Donation
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a  href="{{ path('donation_reassign', {'campaignUrl':campaign.url, 'donationID': donation.id, 'type':'campaign' }) }} "class="dropdown-item" href="#"> To Campaign</a>
+                      <a  href="{{ path('donation_reassign', {'campaignUrl':campaign.url, 'donationID': donation.id, 'type':'classroom' }) }} "class="dropdown-item" href="#"><i class="fa fa-child"></i> To Classroom</a>
+                      <a  href="{{ path('donation_reassign', {'campaignUrl':campaign.url, 'donationID': donation.id, 'type':'student' }) }} "class="dropdown-item" href="#"><i class="fa fa-users"></i> To Student</a>
+                      <a  href="{{ path('donation_reassign', {'campaignUrl':campaign.url, 'donationID': donation.id, 'type':'team' }) }} "class="dropdown-item" href="#"><i class="fa fa-users"></i> To Team</a>
+                    </div>
+                  </div>
+                    {% if donation.paymentMethod == 'paypal' or donation.paymentMethod == 'cc' %}
+                      <button class="btn btn-outline-danger" data-placement="top" data-toggle="tooltip" title="You cannot delete PayPal or Credit Card Donations"><i class="fa fa-trash"></i></a>
+                      Delete</a>
+                      {% else %}
+                      <a href="{{ path('donation_show', {'campaignUrl': campaign.url, 'id': donation.id, 'action':'delete_donation'}) }}" class="btn btn-outline-danger delete_record" id="{{donation.id}}">
+                        <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                      </a>
+                      {% endif %}
+            </div>
+        </div>
+        <!--/.col-->
+    </div><!-- ./row -->
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Donated At:</strong> {{ donation.donatedAt|date("m/d/Y") }}</p>
+            <p><strong>Amount:</strong> ${{ donation.amount|number_format(2, '.', ',') }}</p>
+            <p><strong>Status:</strong> <span class="badge badge-{{ donation.donationStatus == 'PENDING'? 'info' }}{{ donation.donationStatus == 'ACCEPTED'? 'success' }}{{ donation.donationStatus == 'AUTHORIZED'? 'primary' }}{{ donation.donationStatus == 'FAILED'? 'danger' }}">{{ donation.donationStatus }}</span></p>
+            <p><strong>Transaction ID:</strong> {{ donation.transactionId }}</p>
+            <p><strong>Payment Method:</strong> {{ donation.paymentMethod|capitalize }}</p>
+        </div><!-- ./col -->
+        <div class="col-md-6">
+            <p>
+              <strong>Donation Type:</strong> {{ donation.type|capitalize }}
+            </p>
+            {% if donation.type == "team" %}
+              <p>
+                <strong>Team Name:</strong> <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl':donation.team.url}) }}">{{ donation.team.name }}</a>
+              </p>
+              <p><strong>Team Type:</strong> {{ donation.team.teamType.name }}</p>
+            {% elseif donation.type == "classroom" %}
+              <p><strong>Grade:</strong> {{ donation.classroom.grade.name }}</p>
+              <p><strong>Classroom:</strong> <a href="{{ path('classroom_show', {'campaignUrl':campaign.url, 'classroomID':donation.classroom.id}) }}">{{ donation.classroom.name }}</a></p>
+            {% elseif donation.type == "student" %}
+              <p><strong>Name:</strong>
+                {% if donation.student is not null %}
+                <a href="{{ path('student_show', {'campaignUrl':campaign.url, 'id':donation.student.id}) }}">{{ donation.student.name }}</a></p>
+                {% else %}
+                {{ donation.studentName }}
+                {% endif %}
+              <p><strong>Verified?:</strong>
+                {% if donation.studentConfirmedFlag %}
+                     <i style="color:green;" class="fa fa-check-circle" aria-hidden="true"></i>
+                {% else %}
+                     <a href="{{ path('donation_student_verify', {'campaignUrl':campaign.url, 'donationID':donation.id}) }}" class="btn btn-sm btn-warning">
+                         <i class="fa fa-link" aria-hidden="true"></i>
+                         <span class="">Verify</span>
+                     </a>
+               {% endif %}
+              </p>
+              <p><strong>Grade:</strong> {{ donation.classroom.grade.name }}</p>
+              <p><strong>Classroom:</strong> <a href="{{ path('classroom_show', {'campaignUrl':campaign.url, 'classroomID':donation.classroom.id}) }}">{{ donation.classroom.name }}</a></p>
+            {% endif %}
+        </div><!-- ./col -->
+      </div><!-- ./row -->
+      {% if donation.paymentMethod == 'cc' or donation.paymentMethod == 'paypal'%}
+      <hr>
+      <h4>Payment Information</h4>
+      <div class="row">
+          <div class="col-md-6">
+            {% if donation.paymentMethod == 'paypal' %}
+              <p><strong>Payment Method:</strong> Paypal <i class="fa fa-paypal" aria-hidden="true"></i></p>
+              <p><strong>PayPal Payer ID:</strong> {{ donation.paypalPayerId }}</p>
+              <p><strong>PayPal Payment ID:</strong> {{ donation.paypalPaymentId }}</p>
+              <p><strong>PayPal Payment Details:</strong><br>
+              <small><pre>{% if donation.paypalAuthorization is defined %}{{ donation.paypalPaymentDetails|json_encode }}{% endif %}</pre></small></p>
+            {% elseif donation.paymentMethod == 'cc' %}
+            <p><strong>Payment Method:</strong> Credit Card <i class="fa fa-credit-card" aria-hidden="true"></i></p>
+            <p><strong>PayPal Credit Card Authorization Details:</strong><br>
+            <small><pre>{% if donation.paypalAuthorization is defined %}{{ donation.paypalAuthorization|json_encode }}{% endif %}</pre></small></p>
+            {% endif %}
+        </div><!-- ./col -->
+        <div class="col-md-6">
+            <p><strong>Donor Email:</strong> {{ donation.donorEmail }}</p>
+            <p><strong>Donor Name:</strong> {{ donation.donorFirstName }} {{ donation.donorLastName }}</p>
+            <p>
+            <strong>Donor Comment:</strong><br>
+             {% if donation.donorComment is defined %}{{ donation.donorComment }}{% endif %}
+             </p>
+        </div><!-- ./col -->
+      </div><!-- ./row -->
+      {% endif %}
+  </div><!-- ./card-block -->
+</div><!-- ./card -->
+{% endblock %}
+
+
+{% block javascripts %}
+
+  <script type="text/javascript">
+
+    $(document).ready(function() {
+      $('.delete_record').click(function() {
+        event.preventDefault();
+        var r = confirm("Are you sure you want to delete?");
+        if (r == true) {
+          window.location = $(this).attr('href');
+        }
+      });
+
+    });
+
+
+  </script>
+{% endblock %}

@@ -27,6 +27,17 @@
                         <td>{{ team.teamType.name }}</td>
                         <td>
                             <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}">{{ team.name }}</a>
+                            {% if team.teamType.value == "student" or team.teamType.value == "family" %}
+                              {% set invalid = 0 %}
+                              {% for teamStudent in team.teamStudents %}
+                                {% if teamStudent.confirmedFlag == false %}
+                                  {% set invalid = invalid + 1 %}
+                                {% endif %}
+                              {% endfor %}
+                              {% if invalid > 0 %}
+                                <span class="badge badge-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                              {% endif %}
+                            {% endif %}
                         </td>
                         <td style="text-align:center;">
                             <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-info">
