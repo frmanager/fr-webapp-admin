@@ -35,9 +35,8 @@
            <h4><div id="track"  data-countdown="{{ campaign.endDate|date('Y/m/d') }}"></div><h4>
          </div>
        </div>
-    </div>
-</div>
-<!--/.row -->
+    </div><!-- ./card-block -->
+</div><!-- /.card -->
 
 <div class="row">
     <div class="col-sm-12">
@@ -58,9 +57,20 @@
                 <canvas id="card-chart1" class="chart" x height="70"></canvas>
             </div>
         </div>
-    </div>
-    <!--/.col-->
-</div>
+    </div><!--/.col-->
+</div><!-- ./row -->
+
+
+
+<div class="card mb-3">
+  <div class="card-block">
+         <a href="{{ path('campaign_index', {'campaignUrl':campaign.url, "action":"reload_donation_database"}) }}" class="btn btn-success"><i class="fa fa-download" aria-hidden="true"></i> Reload Donation Database</a>
+         <a href="{{ path('campaign_index', {'campaignUrl':campaign.url, "action":"download_donation_ledger"}) }}" target="_blank" class="btn btn-success"><i class="fa fa-refresh" aria-hidden="true"></i> Download Donation Ledger</a>
+</div><!-- ./card-block -->
+</div><!--/.card -->
+
+
+
 
 
 
@@ -83,8 +93,7 @@
                  </label>
              </div>
          </div>
-     </div>
-     <!--/.col-->
+     </div><!--/.col-->
  </div><!-- ./row -->
  <br/>
    {% if new_classroom_awards is defined and new_classroom_awards | length > 0 %}
@@ -127,9 +136,8 @@
             </div>
         </div>
     {% endif %}
-</div>
-</div>
-<!--/.row -->
+</div><!-- ./card-block -->
+</div><!--/.card -->
 
 
     <div class="card mb-3">
