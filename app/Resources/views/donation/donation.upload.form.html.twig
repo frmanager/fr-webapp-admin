@@ -1,0 +1,46 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Upload Cash Donation Form</h1>
+      <hr/>
+    </div><!-- ./col -->
+  </div><!-- ./row -->
+  <br>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-block">
+          <form name="donation" enctype="multipart/form-data" method="post" class="">
+            <div class="form-group">
+              <label for="example-date-input" class="col-sm-2 col-form-label">Date</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="date" value="{{ "now"|date("Y-m-d") }}" id="donation_date" name="donation[date]">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="example-date-input" class="col-sm-2 col-form-label">File</label>
+              <div class="col-sm-6">
+                <input type="file" id="donation_file" name="donation[file]" class="form-control" accept=".csv" multiple>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col">
+                <button type="submit" id="submit" class="btn btn-primary">Validate Data</button>
+              </div>
+              <!-- ./col -->
+            </div>
+            <!-- ./row -->
+          </form>
+          <!-- ./form -->
+        </div>
+        <!-- ./card-block -->
+      </div>
+      <!-- ./card -->
+    </div>
+    <!-- ./col -->
+  </div>
+  <!-- ./row -->
+{% endblock %}

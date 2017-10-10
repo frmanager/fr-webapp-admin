@@ -10,6 +10,12 @@ use AppBundle\Utils\CampaignHelper;
 use AppBundle\Entity\Classroom;
 use AppBundle\Utils\QueryHelper;
 use AppBundle\Entity\Campaign;
+use AppBundle\Utils\DonationHelper;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 use DateTime;
 
@@ -24,7 +30,7 @@ class CampaignController extends Controller
   /**
    * @Route("/", name="campaign_index")
    */
-  public function dashboardAction($campaignUrl)
+  public function dashboardAction(Request $request, $campaignUrl)
   {
       $logger = $this->get('logger');
       $em = $this->getDoctrine()->getManager();
@@ -42,6 +48,57 @@ class CampaignController extends Controller
           $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
           return $this->redirectToRoute('homepage');
       }
+
+
+      if(null !== $request->query->get('action')){
+          $action = $request->query->get('action');
+
+          if($action === 'reload_donation_database'){
+
+            $logger->debug("Doing a Donation Database Refresh");
+            $donationHelper = new DonationHelper($em, $logger);
+            $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+            $this->get('session')->getFlashBag()->add('success', 'Reloaded Donation Database');
+
+          }else if($action === 'download_donation_ledger'){
+
+            $queryString = sprintf('SELECT s.id as student_id,
+                          c.id as classroom_id,
+                          concat(g.name, \' - \', c.name) as classroom,
+                          s.name as student_name,
+                          \'\' as donation_amount
+                     FROM AppBundle:Student s
+            LEFT OUTER JOIN AppBundle:Classroom c
+                     WITH c.id = s.classroom
+            LEFT OUTER JOIN AppBundle:Grade g
+                     WITH g.id = c.grade
+                    WHERE s.campaign = %s
+                 GROUP BY s.id
+                 ORDER BY concat(c.name, \'-\', g.name) ASC,  student_name ASC', $campaign->getId());
+
+
+            $results =  $em->createQuery($queryString)->getResult();
+
+            $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
+            $filename = $this->getParameter('protected_download_directory').'/'.$campaign->getId().'_donation_ledger.csv';
+
+            file_put_contents(
+                $filename,
+                $serializer->encode($results, 'csv')
+            );
+
+            $response = new BinaryFileResponse($filename);
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+
+            return $response;
+
+          }
+
+      }
+
+
+
+
 
       $queryHelper = new QueryHelper($em, $logger);
 

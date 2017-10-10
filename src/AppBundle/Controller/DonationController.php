@@ -401,7 +401,7 @@ class DonationController extends Controller
                   $donation->setClassroom($student->getClassroom());
                   $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
                   $donation->setStudentConfirmedFlag(true);
-                  
+
                   $em->persist($donation);
                   $em->flush();
 
@@ -535,7 +535,7 @@ class DonationController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute(strtolower($entity).'_index');
+        return $this->redirectToRoute('donation_index');
     }
 
     /**
@@ -550,7 +550,7 @@ class DonationController extends Controller
         $entity = 'Donation';
 
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl(strtolower($entity).'_delete', array('id' => $donation->getId())))
+            ->setAction($this->generateUrl('donation_delete', array('id' => $donation->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
@@ -627,146 +627,79 @@ class DonationController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
-     * Upload multiple Donation via CSV File.
+     * Upload and Validate Donation File.
      *
      * @Route("/upload", name="donation_upload")
      * @Method({"GET", "POST"})
      */
 
-    public function uploadForm(Request $request)
+    public function uploadForm(Request $request, $campaignUrl)
     {
         $logger = $this->get('logger');
-        $entity = 'Donation';
-        $mode = 'update';
+        $em = $this->getDoctrine()->getManager();
 
-        $fileType = $request->query->get('file_type');
-        $logger->debug('file_type: '.$fileType);
-        if (strcmp($fileType, 'Offlinedonation') !== 0 && strcmp($fileType, 'Causevoxdonation') !== 0) {
-            $this->addFlash(
-              'warning',
-              'File Type '.$fileType.' not found');
 
-            return $this->redirectToRoute(strtolower($entity).'_index');
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+          return $this->redirectToRoute('homepage');
         }
-        $form = $this->createForm('AppBundle\Form\UploadType', array('entity' => $entity, 'file_type' => $fileType, 'role' => $this->getUser()->getRoles()));
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            if (null != $form['upload_mode']->getData()) {
-                $mode = $form['upload_mode']->getData();
-            } else {
-                $logger->error('No mode was selected. defaulted to update');
-            }
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
 
-            $uploadFile = $form['attachment']->getData();
 
-            if (strpos($uploadFile->getClientOriginalName(), '.csv') !== false) {
-                $logger->info('File was a .csv, attempting to load');
-                $uploadFile->move('temp/', strtolower($entity).'.csv');
-                //the offline donation file starts at 1, while causevox, starts at 0.....
+        if ($request->isMethod('POST')) {
+            $fail = false;
+            $params = $request->request->all();
+            $logger->debug("Date Provided:".$params['donation']['date']);
+            $uploadDate = DateTime::createFromFormat('Y-m-d', $params['donation']['date']);
+            $uploadDateString = $params['donation']['date'];
+
+            //This transactionID is used so we can ensure we are loading the correct file "later"
+            //Seperator = '_' (Underscore)
+            //The File Name Scheme is transactionID_campaignID_UploadDate_validation-state.csv
+            $transactionID = strtoupper(md5(uniqid(rand(), true)));
+            $file = $request->files->get('donation');
+            $logger->debug("Uploaded File Name: ".$file['file']->getClientOriginalName());
+            $logger->debug("Uploaded File Extension: ".$file['file']->getClientOriginalExtension());
+
+            if ($file['file']->getClientOriginalExtension() == 'csv') {
+                $fileName = $transactionID.'_'.$campaign->getId().'_'.$uploadDateString.'_uploaded.csv';
+                $file['file']->move(
+                    $this->getParameter('protected_upload_directory'),
+                    $fileName
+                );
+
+                $logger->Debug('File was a .csv, attempting to load');
+
                 $fileIndexOffset = 0;
-
-                if (strcmp($fileType, 'Offlinedonation') == 0) {
-                    $templateFields = array('date', 'grade', 'classrooms_name', 'students_name', 'amount');
-                    $fileIndexOffset = 1;
-                } else {
-                    $templateFields = array('donation_page',
-                  'fundraiser_first_name',
-                  'fundraiser_last_name',
-                  'fundraiser_email',
-                  'fundraiser_location',
-                  'donor_first_name',
-                  'donor_last_name',
-                  'donor_email',
-                  'donor_comment',
-                  'anonymous',
-                  'line_1',
-                  'line_2',
-                  'city',
-                  'state',
-                  'zip_code',
-                  'country',
-                  'amount',
-                  'est_cc_fee',
-                  'causevox_fee',
-                  'tip',
-                  'type',
-                  'recurring',
-                  'subscribed',
-                  'giftaid',
-                  'transaction_id',
-                  'donated_at',
-                  'classrooms_name',
-                  'students_name', );
-                }
+                $templateFields = array('student_id', 'classroom_id', 'classroom', 'student_name', 'donation_amount');
 
                 $CSVHelper = new CSVHelper();
                 $CSVHelper->setHeaderRowIndex($fileIndexOffset);
-                $CSVHelper->processFile('temp/', strtolower($entity).'.csv');
 
-                if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                    $CSVHelper->getGradefromClassroomName();
-                    $CSVHelper->cleanClassroomNames();
-                    $CSVHelper->getFirstNameFromFullName();
-                }
+                $CSVHelper->processFile($this->getParameter('protected_upload_directory').'/', $fileName);
 
                 $CSVHelper->cleanAmounts();
 
+                $donationSummary = [];
+                $donationSummary['donation_amount'] = 0;
+                $donationSummary['donations'] = 0;
+                $fileFailed = false;
+
                 if ($CSVHelper->validateHeaders($templateFields)) {
-                    $em = $this->getDoctrine()->getManager();
-
-                    if (strcmp($mode, 'truncate') == 0) {
-                        $logger->info('User selected to [truncate] table');
-
-                        $qb = $em->createQueryBuilder();
-
-                        if (strcmp($fileType, 'Offlinedonation') == 0) {
-                            $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where("s.source = 'Offlinedonation'");
-                            $query = $qb->getQuery();
-                            $query->getResult();
-                            $em->flush();
-
-                            $this->addFlash(
-                              'info',
-                              'The Manual donations have been deleted'
-                          );
-                        } elseif (strcmp($fileType, 'Causevoxdonation') == 0) {
-                            $qb->delete('AppBundle:'.$entity, 's');
-                            $qb->where("s.source = 'Causevoxdonation'");
-                            $query = $qb->getQuery();
-                            $query->getResult();
-                            $em->flush();
-
-                            $this->addFlash(
-                              'info',
-                              'Existing Causevox donations were deleted'
-                          );
-                        }
-                    }
-
-                    $logger->info('Uploading Data');
-                    $em = $this->getDoctrine()->getManager();
                     $errorMessages = [];
                     $errorMessage;
 
                     foreach ($CSVHelper->getData() as $i => $item) {
-                        $failure = false;
+                        $rowFailure = false;
                         unset($studentID);
                         unset($errorMessage);
                         unset($student);
@@ -775,270 +708,42 @@ class DonationController extends Controller
                         unset($classroom);
                         $teamPageFlag = false;
 
-                        if (strcmp($fileType, 'Causevoxdonation') == 0 && isset($item['donation_page']) && !strcmp($item['donation_page'], 'none') == 0) {
-                            $urlString = substr($item['donation_page'], 0, 5);
-                            if (strcmp($urlString, '/team') == 0) {
-                                $teamPageFlag = true;
-                                $urlString = substr($item['donation_page'], 6, strlen($item['donation_page'])); // Chopping off the '/team'
-                            $queryString = sprintf("SELECT IDENTITY(u.classroom, 'id') as classroom_id FROM AppBundle:Causevoxteam u WHERE u.url = '%s'", $urlString);
-                                $logger->debug('QueryString: '.$queryString);
-                                $result = $em->createQuery($queryString)->getResult();
-                                if (!empty($result)) {
-                                    $classroomID = $result[0]['classroom_id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found classroom [#'.$classroomID.'] using associated Causevoxteam URL "'.$item['donation_page'].'"');
-                                } else {
-                                    $failure = true;
-                                    $errorMessage = new ValidationHelper(array(
-                                'entity' => $entity,
-                                'row_index' => ($i + 2 + $fileIndexOffset),
-                                'error_field' => 'donation_page',
-                                'error_field_value' => $item['donation_page'],
-                                'error_message' => 'Donation made to team page, but we could not find the associated team page',
-                                'error_level' => ValidationHelper::$level_error, ));
-                                }
-                            } else {
-                                //GETTING URL STRING TO FIND FROM TABLE
-                            $urlString = substr($item['donation_page'], 1, strlen($item['donation_page'])); // Chopping off the '/'
-                            //$lastinitial = substr($lastname,0,1).'.';
-                            $queryString = sprintf("SELECT IDENTITY(u.student, 'id') as student_id FROM AppBundle:Causevoxfundraiser u WHERE u.url = '%s'", $urlString);
-                                $logger->debug('QueryString: '.$queryString);
-                                $result = $em->createQuery($queryString)->getResult();
-                                if (!empty($result)) {
-                                    $studentID = $result[0]['student_id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentID.'] using associated Causevoxfundraiser URL "'.$item['donation_page'].'"');
-                                }
-                            }
+                        $student = $em->getRepository('AppBundle:Student')->find($item['student_id']);
+                        if (empty($student)) {
+                            $rowFailure = true;
+                            $fileFailed = true;
+                            $errorMessage = new ValidationHelper(array(
+                            'entity' => 'Donation',
+                            'row_index' => ($i + 2 + $fileIndexOffset),
+                            'error_field' => 'student_id',
+                            'error_field_value' => $item['student_id'],
+                            'error_message' => 'Could not find student',
+                            'error_level' => ValidationHelper::$level_error, ));
                         }
 
-                        if (!$failure) {
-                            if (strcmp($fileType, 'Causevoxdonation') == 0 && strcmp($item['type'], 'manual') == 0) {
-                                $failure = true;
-                              //We do not process "manual" causevox donations as they are offline donations we collect elsewhere
-                            } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
-                                $item['type'] = 'manual';
-                            }
+                        if (is_null($item['donation_amount']) || !isset($item['donation_amount']) || empty($item['donation_amount']) || strcmp($item['donation_amount'], '') == 0) {
+                          $rowFailure = true;
+                        }else{
+                          $donationSummary['donation_amount'] += intval($item['donation_amount']);
+                          $donationSummary['donations'] ++;
                         }
 
-                        if (!$failure) {
-                            if (is_null($item['amount']) || !isset($item['amount']) || empty($item['amount']) || strcmp($item['amount'], '') == 0) {
-                                $failure = true;
-                              //We do not notify if amount is empty.....we just ignore it.
-                            }
-                        }
+                        if (!$rowFailure) {
+                            $donation = $this->getDoctrine()->getRepository('AppBundle:Donation')->findOneBy(
+                            array('student' => $student, 'donatedAt' => $uploadDate, 'type' => 'student', 'paymentMethod'=>'cash'));
 
-                        if (!$failure) {
-                            if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                                if (!isset($item['donated_at']) || empty($item['donated_at']) || strcmp('none', $item['donated_at']) == 0) {
-                                    $failure = true;
-                                    $errorMessage = new ValidationHelper(array(
-                                  'entity' => $entity,
-                                  'row_index' => ($i + 2 + $fileIndexOffset),
-                                  'error_field' => 'date',
-                                  'error_field_value' => $item['date'],
-                                  'error_message' => 'Date cannot be null',
-                                  'error_level' => ValidationHelper::$level_error, ));
-                                }
-                            } else {
-                                if (!isset($item['date']) || empty($item['date']) || strcmp('none', $item['date']) == 0) {
-                                    $failure = true;
-                                    $errorMessage = new ValidationHelper(array(
-                                  'entity' => $entity,
-                                  'row_index' => ($i + 2 + $fileIndexOffset),
-                                  'error_field' => 'date',
-                                  'error_field_value' => $item['date'],
-                                  'error_message' => 'Date cannot be null',
-                                  'error_level' => ValidationHelper::$level_error, ));
-                                }
-                            }
-                        }
-
-                        //Here is our backup/Alt logic
-                        if (!$failure) {
-                            $grade = $this->getDoctrine()->getRepository('AppBundle:Grade')->findOneByName($item['grade']);
-
-                            if (empty($grade) && !isset($studentID) && !$teamPageFlag) {
-                                $failure = true;
+                            //Going to perform "Insert" vs "Update"
+                            if (!empty($donation)) {
+                                $rowFailure = true;
+                                $fileFailed = true;
                                 $errorMessage = new ValidationHelper(array(
-                                'entity' => $entity,
-                                'row_index' => ($i + 2 + $fileIndexOffset),
-                                'error_field' => 'grade',
-                                'error_field_value' => $item['grade'],
-                                'error_message' => 'Could not find grade',
-                                'error_level' => ValidationHelper::$level_error, ));
-                            }
-                        }
-
-                        if (!$failure && isset($grade)) {
-                            $classroom = $this->getDoctrine()->getRepository('AppBundle:Classroom')->findOneByClassroomName($item['classrooms_name']);
-                            $queryString = sprintf("SELECT u.id FROM AppBundle:Classroom u WHERE u.classroomName = '%s'", $item['classrooms_name']);
-                            $result = $em->createQuery($queryString)->getResult();
-                            if (!empty($result)) {
-                                $classroomID = $result[0]['id'];
-                                $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found classroom "'.$item['classrooms_name'].'" [#'.$classroomID.'] using name "'.$item['classrooms_name'].'"');
-                            } else if(empty($result) && !isset($studentID) && !isset($classroomID) && !$teamPageFlag) {
-                                $failure = true;
-                                $errorMessage = new ValidationHelper(array(
-                                'entity' => $entity,
-                                'row_index' => ($i + 2 + $fileIndexOffset),
-                                'error_field' => 'classrooms_name',
-                                'error_field_value' => $item['classrooms_name'],
-                                'error_message' => 'Could not find classroom',
-                                'error_level' => ValidationHelper::$level_error, ));
-                            }
-                        }
-
-                        //Here is our find student logic. We try a lot of different methods to try and find it....
-                        if (!$failure && isset($grade) && isset($classroom)) {
-                            if (!isset($studentIDAlt)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomID, $item['students_name']);
-                                $result = $em->createQuery($queryString)->getResult();
-
-                                if (!empty($result)) {
-                                    $studentIDAlt = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIDAlt.'] using provided name');
-                                }
-                            }
-
-                            if (!isset($studentIDAlt)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomID, $item['students_first_name']);
-                                $result = $em->createQuery($queryString)->getResult();
-                                if (!empty($result)) {
-                                    $studentIDAlt = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIDAlt.'] using first name fuzzy match "'.$item['students_first_name'].'"');
-                                }
-                            }
-
-                            if (!isset($studentIDAlt)) {
-                                $queryString = sprintf("SELECT u.id FROM AppBundle:Student u WHERE u.classroom = '%s' AND u.name = '%s'", $classroomID, $item['students_name_with_initial']);
-                                $result = $em->createQuery($queryString)->getResult();
-
-                                if (!empty($result)) {
-                                    $studentIDAlt = $result[0]['id'];
-                                    $logger->debug('Row ['.($i + 2 + $fileIndexOffset).'] - Found student "'.$item['students_name'].'" [#'.$studentIDAlt.'] using first name + last initial fuzzy match "'.$item['students_name_with_initial'].'"');
-                                }
-                            }
-
-                          if(isset($studentIDAlt)){
-                            $studentID = $studentIDAlt;
-                          }
-
-                          //If it is not a team page and we didn't find a student, it is a failure
-                          if (!isset($studentID) && !$teamPageFlag) {
-                              $failure = true;
-                              $errorMessage = new ValidationHelper(array(
-                                  'entity' => $entity,
+                                  'entity' => 'Donation',
                                   'row_index' => ($i + 2 + $fileIndexOffset),
-                                  'error_field' => 'students_name, classroom, grade',
-                                  'error_field_value' => $item['students_name'].', '.$item['classrooms_name'].', '.$item['grade'],
-                                  'error_message' => 'Could not find student',
+                                  'error_field' => 'N/A',
+                                  'error_field_value' => 'N/A',
+                                  'error_message' => 'A donation for this student and date already exists #'.$donation->getId(),
                                   'error_level' => ValidationHelper::$level_error, ));
-                          }
-                        } //END STUDENT FIND LOGIC
-
-                        if (!$failure) {
-                            if ($teamPageFlag) {
-                                $classroom = $em->find('AppBundle:Classroom', $classroomID);
-                                if(isset($studentID)){
-                                   $student = $em->find('AppBundle:Student', $studentID);
-                                }
-                            } else {
-                                $student = $em->find('AppBundle:Student', $studentID);
-                                $classroom = $em->find('AppBundle:Classroom', $student->getClassroom());
                             }
-
-                          //Example: 2016-08-25 16:35:54
-                          //Causevox donations are given to us as UTC...which we need to convert back to EST
-                          if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                              $tempDate = new DateTime($item['donated_at'],  new DateTimeZone('UTC'));
-                              $tempDate->setTimezone(new DateTimeZone('America/New_York'));
-                              $dateString = $tempDate->format('Y-m-d').' 00:00:00';
-                              $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString,  new DateTimeZone('America/New_York'));
-                          } else {
-                              $tempDate = new DateTime($item['date']);
-                              $dateString = $tempDate->format('Y-m-d').' 00:00:00';
-                              $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
-                          }
-
-                            if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                              if(!$teamPageFlag){
-                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                                array('student' => $student, 'donatedAt' => $date, 'transactionId' => $item['transaction_id'], 'source' => $fileType));
-                              }else{
-                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                                array('donationPage' => $item['donation_page'], 'donatedAt' => $date, 'transactionId' => $item['transaction_id'], 'source' => $fileType));
-                              }
-                            } elseif (strcmp($fileType, 'Offlinedonation') == 0) {
-                                $donation = $this->getDoctrine()->getRepository('AppBundle:'.$entity)->findOneBy(
-                                array('student' => $student, 'donatedAt' => $date, 'source' => $fileType));
-                            }
-
-                          //Going to perform "Insert" vs "Update"
-                          if (empty($donation)) {
-                              $logger->debug($entity.' not found....creating new record');
-                              $donation = new Donation();
-                          } else {
-                              $logger->debug($entity.' found....updating.');
-                              $failure = true;
-
-                              $errorMessage = new ValidationHelper(array(
-                                'entity' => $entity,
-                                'row_index' => ($i + 2 + $fileIndexOffset),
-                                'error_field' => 'N/A',
-                                'error_field_value' => 'N/A',
-                                'error_message' => 'A donation for this student and date already exists #'.$donation->getId(),
-                                'error_level' => ValidationHelper::$level_error, ));
-
-
-                          }
-                        }
-
-
-                        if (!$failure) {
-                            if (strcmp($fileType, 'Causevoxdonation') == 0) {
-                                //a lot more information is collected from causevox....
-                                $donation->setTip($item['tip']);
-                                $donation->setEstimatedCcFee($item['est_cc_fee']);
-                                $donation->setCausevoxFee($item['causevox_fee']);
-
-                                $donation->setDonorFirstName($item['donor_first_name']);
-                                $donation->setDonorLastName($item['donor_last_name']);
-                                $donation->setDonorEmail($item['donor_email']);
-                                $donation->setDonorComment($item['donor_comment']);
-                                $donation->setDonationPage($item['donation_page']);
-                                $donation->setTransactionId($item['transaction_id']);
-                            }
-
-                            $donation->setSource($fileType);
-                            $donation->setType($item['type']);
-                            $donation->setAmount($item['amount']);
-                            $donation->setDonatedAt($date);
-                            if(isset($student)){
-                              $donation->setStudent($student);
-                            }
-                            $donation->setClassroom($classroom);
-                            $validator = $this->get('validator');
-                            $errors = $validator->validate($donation);
-
-                            if (strcmp($mode, 'validate') !== 0) {
-                                if (count($errors) > 0) {
-                                    $errorsString = (string) $errors;
-                                    $logger->error('[ROW #'.($i + 2 + $fileIndexOffset).'] Could not add ['.$entity.']: '.$errorsString);
-                                    $this->addFlash(
-                                        'danger',
-                                        '[ROW #'.($i + 2 + $fileIndexOffset).'] Could not add ['.$entity.']: '.$errorsString
-                                    );
-                                } else {
-                                    $em->persist($donation);
-                                    $em->flush();
-                                    $em->clear();
-                                }
-                            } //Otherwise we do Nothing....
-                        }
-                        if (isset($errorMessage) && strcmp($mode, 'validate') !== 0) {
-                            $this->addFlash(
-                                  $errorMessage->getErrorLevel(),
-                                  $errorMessage->printFlashBagMessage()
-                              );
                         }
 
                         //Push Error Message
@@ -1047,24 +752,24 @@ class DonationController extends Controller
                         }
                     }
 
-                    if (strcmp($mode, 'validate') !== 0) {
-                        $em->flush();
-                        $em->clear();
-
-                        return $this->redirectToRoute(strtolower($entity).'_index');
-                    } else {
-                        return $this->render('crud/validate.html.twig', array(
-                          'error_messages' => $errorMessages,
-                          'entity' => $entity,
-                          'file_type' => $fileType,
-                      ));
+                    if(!$fileFailed){
+                      $newfileName = $transactionID.'_'.$campaign->getId().'_'.$uploadDateString.'_validated.csv';
+                      rename ($this->getParameter('protected_upload_directory').'/'.$fileName, $this->getParameter('protected_upload_directory').'/'.$newfileName);
+                      $fileName = $newfileName;
                     }
+
+                    return $this->render('donation/donation.validate.html.twig', array(
+                      'error_messages' => $errorMessages,
+                      'campaign' => $campaign,
+                      'transactionID' => $fileName,
+                      'donation_summary' => $donationSummary
+                    ));
+
                 } else {
                     $logger->info('file does not have mandatory fields. ['.implode(', ', $templateFields).']. Please validate it was downloaded from the "FUNRUN LEDGER"');
-                    $logger->info('File was not a .csv');
                     $this->addFlash(
                         'danger',
-                        'file does not have mandatory fields. ['.implode(', ', $templateFields).']. Please validate you are matching the '.$fileType.' file format'
+                        'file does not have mandatory fields. ['.implode(', ', $templateFields).']. Please validate you are matching the Cash Ledger file format'
                     );
                 }
             } else {
@@ -1076,10 +781,103 @@ class DonationController extends Controller
             }
         }
 
-        return $this->render('crud/upload.html.twig', array(
-          'form' => $form->createView(),
-          'entity' => $entity,
+        return $this->render('donation/donation.upload.form.html.twig', array(
+          'campaign' => $campaign,
       ));
     }
 
+
+    /**
+     * Actually Load Donation File
+     *
+     * @Route("/load", name="donation_load")
+     * @Method({"GET", "POST"})
+     */
+
+    public function fileLoadAction(Request $request, $campaignUrl)
+    {
+        $logger = $this->get('logger');
+        $em = $this->getDoctrine()->getManager();
+
+
+        //CODE TO CHECK TO SEE IF CAMPAIGN EXISTS
+        $campaign = $em->getRepository('AppBundle:Campaign')->findOneByUrl($campaignUrl);
+        if(is_null($campaign)){
+          $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
+          return $this->redirectToRoute('homepage');
+        }
+
+        //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
+        $campaignHelper = new CampaignHelper($em, $logger);
+        if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
+            $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
+            return $this->redirectToRoute('homepage');
+        }
+
+        if(null !== $request->query->get('transactionID')){
+          $failure = false;
+          $fileName = $request->query->get('transactionID');
+          $fileNameParts = explode('_', $fileName);
+          $uploadDateString = $fileNameParts[2];
+          $uploadDate = DateTime::createFromFormat('Y-m-d', $uploadDateString);
+
+          $fileCampaignID = $fileNameParts[1];
+          $fileValidationFlag = $fileNameParts[3];
+
+          if(intval($fileCampaignID) !== $campaign->getId()){
+            $logger->info("Campaign ID #".$fileCampaignID.' does not match this campaign #'.$campaign->getId());
+            $this->get('session')->getFlashBag()->add('danger', 'Donation file is not for this campaign');
+            return $this->redirectToRoute('donation_upload', array('campaignUrl'=>$campaign->getUrl()));
+          }
+
+          if($fileValidationFlag !== "validated.csv"){
+            $logger->info("User tried to validate an invalid file");
+            $this->get('session')->getFlashBag()->add('danger', 'Donation file was not validated');
+            return $this->redirectToRoute('donation_upload', array('campaignUrl'=>$campaign->getUrl()));
+          }
+
+          if(!file_exists($this->getParameter('protected_upload_directory').'/'.$fileName)){
+            $logger->info("Could not upload ".$fileName);
+            $this->get('session')->getFlashBag()->add('danger', 'Could not find file');
+            return $this->redirectToRoute('donation_upload', array('campaignUrl'=>$campaign->getUrl()));
+          }
+
+
+          $CSVHelper = new CSVHelper();
+          $fileIndexOffset = 0;
+          $CSVHelper->setHeaderRowIndex($fileIndexOffset);
+
+          $CSVHelper->processFile($this->getParameter('protected_upload_directory').'/', $fileName);
+
+          $CSVHelper->cleanAmounts();
+
+          foreach ($CSVHelper->getData() as $i => $item) {
+              if (is_null($item['donation_amount']) || !isset($item['donation_amount']) || empty($item['donation_amount']) || strcmp($item['donation_amount'], '') == 0) {
+                null;
+              }else{
+                $donation = new Donation();
+                $student = $em->getRepository('AppBundle:Student')->find($item['student_id']);
+
+                $donation->setStudent($student);
+                $donation->setClassroom($student->getClassroom());
+                $donation->setCampaign($campaign);
+                $donation->setAmount($item['donation_amount']);
+                $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
+                $donation->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
+                $donation->setStudentConfirmedFlag(true);
+                $donation->setType("student");
+                $donation->setDonatedAt($uploadDate);
+                $donation->setPaymentMethod("cash");
+                $donation->setDonationStatus("ACCEPTED");
+                $em->persist($donation);
+
+              }
+          }
+          $em->flush();
+          $CSVHelper->unlink();
+          $this->get('session')->getFlashBag()->add('success', 'Donation File has been uploaded');
+          return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
+
+        }
+  }
 }
