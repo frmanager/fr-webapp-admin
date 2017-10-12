@@ -312,9 +312,6 @@ class DonationController extends Controller
         $em->persist($donation);
         $em->flush();
 
-        $donationHelper = new DonationHelper($em, $logger);
-        $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
-
         $this->get('session')->getFlashBag()->add('success', 'Donation Reassigned Successfully');
         return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
       }
@@ -355,9 +352,6 @@ class DonationController extends Controller
                   $donation->setTeam($team);
                   $donation->setType("team");
 
-                  $donationHelper = new DonationHelper($em, $logger);
-                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
-
                   $em->persist($donation);
                   $em->flush();
 
@@ -378,9 +372,6 @@ class DonationController extends Controller
 
                   $em->persist($donation);
                   $em->flush();
-
-                  $donationHelper = new DonationHelper($em, $logger);
-                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
 
                   $this->get('session')->getFlashBag()->add('success', 'Donation Reassigned Successfully');
                   return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
@@ -404,9 +395,6 @@ class DonationController extends Controller
 
                   $em->persist($donation);
                   $em->flush();
-
-                  $donationHelper = new DonationHelper($em, $logger);
-                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
 
                   $this->get('session')->getFlashBag()->add('success', 'Donation Reassigned Successfully');
                   return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
