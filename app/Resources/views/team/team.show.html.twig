@@ -1,29 +1,59 @@
 {% extends 'template.html.twig' %}
 
+{% set campaignUrl = null %}
+{% set campaignUrl = app.request.attributes.get('_route_params')['campaignUrl'] %}
+{% if team.imageName is null %}
+{% set profileImageUrl = main_app_url ~ '/assets/img/team-' ~ team.teamType.value ~ '-image-2.png' %}
+{% else %}
+{% set profileImageUrl = main_app_url ~ '/uploads/team_profile_photos/' ~team.imageName %}
+{% endif %}
+
 {% block body %}
 <div class="card">
-<div class="card-block">
-    <div class="row">
-        <div class="col-sm-12">
-            <h4 class="card-title mb-0" style="text-align:center;">{{ team.name }}</h4>
+  <div class="card-block">
+  <div class="row">
+  <div class="col-sm-5">
+      <h4 class="card-title mb-0">{{ team.name }}</h4>
+      <div class="small text-muted">xxxxxxxx</div>
+  </div>
+  <!--/.col-->
+  <div class="col-sm-7">
+        <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
+          <div class="dropdown pull-right">
+            <button class="btn btn-outline-info btn-inline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-cog" aria-hidden="true"></i> Change Team Type
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              {% if team.teamType.value != 'family' %}<a  href="{{ path('team_reassign', {'campaignUrl':campaign.url, 'teamUrl': team.url, 'type':'family' }) }} "class="dropdown-item reassign_team" href="#"><i class="fa fa-users"></i> To Family</a>{% endif %}
+              {% if team.teamType.value != 'student' %}<a  href="{{ path('team_reassign', {'campaignUrl':campaign.url, 'teamUrl': team.url, 'type':'student' }) }} "class="dropdown-item reassign_team" href="#"><i class="fa fa-child"></i> To Student</a>{% endif %}
+              {% if team.teamType.value != 'teacher' %} <a  href="{{ path('team_reassign', {'campaignUrl':campaign.url, 'teamUrl': team.url, 'type':'teacher' }) }} "class="dropdown-item reassign_team" href="#"><i class="fa fa-apple"></i> To Teacher</a>{% endif %}
+            </div>
+          </div>
+          <a  href="{{ path('team_edit', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-outline-warning">
+              <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+              <span class="hidden-xs hidden-sm">
+                  Edit</span>
+          </a>
         </div>
-        <!--/.col-->
-    </div>
-</div>
-</div>
-<div class="card">
-<div class="card-block">
+  </div>
+  <!--/.col-->
+  </div><!-- ./row -->
+  <hr/>
+  <br>
 
     <div class="row">
-        <div class="col-sm-6">
-            <p class="">Team Owner: {{ team.user.firstName }} {{ team.user.lastName }}</p>
-            <p class="">Email Address: {{ team.user.email }}</p>
-            <p class="">Team Type: {{ team.teamType.name }}</p>
+      <div class="col-sm-4">
+        <div class="card card-inverse">
+          <img id="profile-image" src="{{ profileImageUrl }}" class="img-fluid rounded" alt="Responsive image">
         </div>
-        <!--/.col-->
-        <div class="col-sm-6">
-            <p class="">Funds Raised: ${{ team.fundsRaised|number_format(2, '.', ',') }}</p>
-            <p class="">Donations: {{ team.donations|length }}</p>
+      </div>
+        <div class="col-sm-8">
+            <p class=""><strong>Team Owner:</strong> {{ team.user.firstName }} {{ team.user.lastName }}</p>
+            <p class=""><strong>Email Address:</strong> {{ team.user.email }}</p>
+            <p class=""><strong>Call for Action:</strong> {{ team.description }}</p>
+            <p class=""><strong>Team Type:</strong> {{ team.teamType.name }}</p>
+            <p class=""><strong>Funds Raised:</strong> ${{ team.fundsRaised|number_format(2, '.', ',') }}</p>
+            <p class=""><strong>Donations:</strong> {{ team.donations|length }}</p>
         </div>
         <!--/.col-->
     </div>
@@ -43,8 +73,7 @@
                   <th>Name</th>
                   <th>Grade</th>
                   <th>Classroom</th>
-                  <th class="col-md-1">Verified?</th>
-                  <th>Actions</th>
+                  <th class="col-md-2">Verified?</th>
               </tr>
           </thead>
           <tbody>
@@ -58,23 +87,12 @@
                               <i style="color:green;" class="fa fa-check-circle" aria-hidden="true"></i>
                          {% else %}
                               <i style="color:red;" class="fa fa-times-circle" aria-hidden="true"></i>
+                              &nbsp;
+                              <a href="{{ path('teamStudent_verify', {'campaignUrl':campaign.url,  'teamUrl': team.url , 'teamStudentId': teamStudent.id}) }}" class="btn btn-sm btn-warning">
+                                  <i class="fa fa-link" aria-hidden="true"></i>
+                                  <span class="">Verify</span>
+                              </a>
                         {% endif %}
-                      </td>
-                      <td>
-                        {% if not teamStudent.confirmedFlag %}
-                             <a href="{{ path('teamStudent_verify', {'campaignUrl':campaign.url,  'teamUrl': team.url , 'teamStudentId': teamStudent.id}) }}" class="btn btn-sm btn-warning">
-                                 <i class="fa fa-link" aria-hidden="true"></i>
-                                 <span class="">Verify</span>
-                             </a>
-                       {% endif %}
-                          <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-info disabled" aria-disabled="true">
-                              <i class="fa fa-pencil" aria-hidden="true"></i>
-                              <span class="">Edit</span>
-                          </a>
-                          <a href="{{ path('team_show', {'campaignUrl':campaign.url,  'teamUrl': team.url }) }}" class="btn btn-sm btn-danger disabled" aria-disabled="true">
-                              <i class="fa fa-trash" aria-hidden="true"></i>
-                              <span class="">Delete</span>
-                          </a>
                       </td>
                   </tr>
               {% endfor %}
@@ -140,4 +158,25 @@
   </div><!-- ./card-block -->
 </div><!-- ./card -->
 
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+  <script type="text/javascript">
+
+    $(document).ready(function() {
+      $('.reassign_team').click(function() {
+        event.preventDefault();
+        var r = confirm("Are you sure you want to Change team?");
+        if (r == true) {
+          window.location = $(this).attr('href');
+        }
+      });
+
+    });
+
+
+  </script>
 {% endblock %}

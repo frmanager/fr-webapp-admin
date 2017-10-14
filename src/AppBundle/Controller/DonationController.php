@@ -287,7 +287,7 @@ class DonationController extends Controller
       $donation = $em->getRepository('AppBundle:Donation')->find($donationID);
       if(is_null($donation)){
         $this->get('session')->getFlashBag()->add('warning', 'We are sorry, we could not find this campaign.');
-        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
       }
 
 
@@ -296,12 +296,12 @@ class DonationController extends Controller
 
           if(!in_array($type, array('classroom','student','campaign','team'))){
             $this->get('session')->getFlashBag()->add('warning', $type.' is not a valid donation type');
-            return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+            return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
           }
 
       }else{
         $this->get('session')->getFlashBag()->add('warning', 'You need to select a donation type');
-        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign.url));
+        return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
       }
 
 
