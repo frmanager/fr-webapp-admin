@@ -9,6 +9,10 @@ use AppBundle\Entity\Campaign;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
+
+/**
+ * @coversDefaultClass \AppBundle\Controller\RegistrationController
+ */
 class RegisterControllerTest extends WebTestCase
 {
     private $client = null;
@@ -63,15 +67,13 @@ class RegisterControllerTest extends WebTestCase
               $this->em->flush();
 
             }
-
-
-
-
-
-
     }
 
 
+
+    /**
+    * @covers ::registerAction
+    */
     public function testRegisterPage()
     {
         //$this->logIn();
@@ -81,7 +83,9 @@ class RegisterControllerTest extends WebTestCase
         //$this->assertSame('Admin Dashboard', $crawler->filter('h1')->text());
     }
 
-
+    /**
+    * @covers ::registerAction
+    */
     public function testRegistration()
     {
 

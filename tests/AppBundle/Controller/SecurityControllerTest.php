@@ -8,6 +8,10 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
+
+/**
+ * @coversDefaultClass \AppBundle\Controller\SecurityController
+ */
 class SecurityControllerTest extends WebTestCase
 {
     private $client = null;
@@ -17,6 +21,12 @@ class SecurityControllerTest extends WebTestCase
         $this->client = static::createClient(array(),array('HTTPS' => true));
     }
 
+
+
+
+    /**
+    * @covers ::loginAction
+    */
     public function testLogin()
     {
         $this->logIn();
