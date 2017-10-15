@@ -28,12 +28,13 @@
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^3.0",
         "laravel/homestead": "^3.0",
-        "phpunit/phpunit": "5.5.*",
+        "phpunit/phpunit": "^6.2",
         "doctrine/data-fixtures": "^1.2",
         "doctrine/doctrine-fixtures-bundle": "^2.3",
         "hautelook/alice-bundle": "^2.0@beta",
         "nelmio/alice": "^3.0@beta",
-        "theofidry/alice-data-fixtures": "^1.0@beta"
+        "theofidry/alice-data-fixtures": "^1.0@beta",
+        "phpmd/phpmd": "^2.6"
     },
     "scripts": {
         "symfony-scripts": [

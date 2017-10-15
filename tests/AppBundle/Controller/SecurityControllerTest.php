@@ -8,15 +8,25 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
+
+/**
+ * @coversDefaultClass \AppBundle\Controller\SecurityController
+ */
 class SecurityControllerTest extends WebTestCase
 {
     private $client = null;
 
     public function setUp()
     {
-        $this->client = static::createClient();
+        $this->client = static::createClient(array(),array('HTTPS' => true));
     }
 
+
+
+
+    /**
+    * @covers ::loginAction
+    */
     public function testLogin()
     {
         $this->logIn();
@@ -30,7 +40,7 @@ class SecurityControllerTest extends WebTestCase
     private function logIn()
     {
 
-      $this->client = static::createClient();
+      $this->client = static::createClient(array(),array('HTTPS' => true));
       $container = static::$kernel->getContainer();
       $session = $container->get('session');
       $user = self::$kernel->getContainer()->get('doctrine')->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');
