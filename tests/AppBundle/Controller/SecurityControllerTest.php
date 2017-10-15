@@ -14,7 +14,7 @@ class SecurityControllerTest extends WebTestCase
 
     public function setUp()
     {
-        $this->client = static::createClient();
+        $this->client = static::createClient(array(),array('HTTPS' => true));
     }
 
     public function testLogin()
@@ -30,7 +30,7 @@ class SecurityControllerTest extends WebTestCase
     private function logIn()
     {
 
-      $this->client = static::createClient();
+      $this->client = static::createClient(array(),array('HTTPS' => true));
       $container = static::$kernel->getContainer();
       $session = $container->get('session');
       $user = self::$kernel->getContainer()->get('doctrine')->getRepository('AppBundle:User')->findOneByEmail('davidlarrimore@gmail.com');

@@ -9,7 +9,7 @@ class DefaultControllerTest extends WebTestCase
 {
     public function testIndex()
     {
-        $client = static::createClient();
+        $client = static::createClient(array(),array('HTTPS' => true));
 
         $crawler = $client->request('GET', '/');
 
@@ -18,7 +18,7 @@ class DefaultControllerTest extends WebTestCase
 
     public function testIndexRedirect()
     {
-        $client = static::createClient();
+        $client = static::createClient(array(),array('HTTPS' => true));
 
         $crawler = $client->request('GET', '/account/login');
 
