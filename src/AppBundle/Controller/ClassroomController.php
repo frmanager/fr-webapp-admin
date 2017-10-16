@@ -291,10 +291,6 @@ class ClassroomController extends Controller
               $logger->debug("Flushing");
               $em->flush();
 
-              $logger->debug("Doing a Donation Database Refresh");
-              $donationHelper = new DonationHelper($em, $logger);
-              $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
-
               $this->get('session')->getFlashBag()->add('info', 'Student has been removed');
               return $this->redirectToRoute('classroom_show', array('campaignUrl' => $campaign->getUrl(), 'classroomID' => $classroomID));
             }
