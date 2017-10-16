@@ -124,11 +124,13 @@ class DonationController extends Controller
                   $donation->setDonationStatus("ACCEPTED");
                   $donation->setTransactionId(strtoupper(md5(uniqid(rand(), true))));
 
-                  $donationHelper = new DonationHelper($em, $logger);
-                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
-
                   $em->persist($donation);
                   $em->flush();
+
+                  $donationHelper = new DonationHelper($em, $logger);
+                  $donationHelper->reloadDonationDatabase(array('donation'=>$donation));
+
+
                   $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
                   return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
                 }else{
@@ -153,7 +155,7 @@ class DonationController extends Controller
               $em->flush();
 
               $donationHelper = new DonationHelper($em, $logger);
-              $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+              $donationHelper->reloadDonationDatabase(array('donation'=>$donation));
 
               $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
               return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
@@ -182,7 +184,7 @@ class DonationController extends Controller
                   $em->flush();
 
                   $donationHelper = new DonationHelper($em, $logger);
-                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+                  $donationHelper->reloadDonationDatabase(array('donation'=>$donation));
 
                   $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
                   return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
@@ -218,7 +220,7 @@ class DonationController extends Controller
                   $em->flush();
 
                   $donationHelper = new DonationHelper($em, $logger);
-                  $donationHelper->reloadDonationDatabase(array('campaign'=>$campaign));
+                  $donationHelper->reloadDonationDatabase(array('donation'=>$donation));
 
                   $this->get('session')->getFlashBag()->add('success', 'Donation Created Successfully');
                   return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
