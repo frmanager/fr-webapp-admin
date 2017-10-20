@@ -23,8 +23,7 @@
                     </div>
                   </div>
                     {% if donation.paymentMethod == 'paypal' or donation.paymentMethod == 'cc' %}
-                      <button class="btn btn-outline-danger" data-placement="top" data-toggle="tooltip" title="You cannot delete PayPal or Credit Card Donations"><i class="fa fa-trash"></i></button>
-                      Delete</a>
+                      <button class="btn btn-outline-danger" data-placement="top" data-toggle="tooltip" title="You cannot delete PayPal or Credit Card Donations"><i class="fa fa-trash"></i> Delete</button>
                       {% else %}
                       <a href="{{ path('donation_show', {'campaignUrl': campaign.url, 'id': donation.id, 'action':'delete_donation'}) }}" class="btn btn-outline-danger delete_record" id="{{donation.id}}">
                         <i class="fa fa-trash" aria-hidden="true"></i> Delete
