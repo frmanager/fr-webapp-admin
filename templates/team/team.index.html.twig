@@ -1,0 +1,64 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+<div class="card">
+<div class="card-block">
+        <div class="row">
+            <div class="col-sm-5">
+                <h4 class="card-title mb-0">Teams</h4>
+                <div class="small text-muted">xxxxxxx</div>
+            </div>
+            <!--/.col-->
+        </div>
+        <!--/.row-->
+        <br/>
+        <table class="table table-bordered table-striped table-condensed" id="teamIndexTable">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                    <tr>
+                        <td>{{ team.teamType.name }}</td>
+                        <td>
+                            <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}">{{ team.name }}</a>
+                            {% if team.teamType.value == "student" or team.teamType.value == "family" %}
+                              {% set invalid = 0 %}
+                              {% for teamStudent in team.teamStudents %}
+                                {% if teamStudent.confirmedFlag == false %}
+                                  {% set invalid = invalid + 1 %}
+                                {% endif %}
+                              {% endfor %}
+                              {% if invalid > 0 %}
+                                <span class="badge badge-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                              {% endif %}
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ path('team_show', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-info">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                <span class="hidden-xs hidden-sm">
+                                    View</span>
+                            </a>
+                            <a href="{{ path('team_edit', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-warning">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                <span class="hidden-xs hidden-sm">
+                                    Edit</span>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+  {% endblock %}
+
+
+  {% block javascripts %}
+  {% endblock %}

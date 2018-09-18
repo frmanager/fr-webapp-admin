@@ -1,0 +1,45 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+<div class="card">
+<div class="card-block">
+        <div class="row">
+            <div class="col-sm-5">
+                <h4 class="card-title mb-0">Verify Student {{teamStudent.name}}</h4>
+                <div class="small text-muted">{{teamStudent.classroom.grade.name}} - {{teamStudent.classroom.teacherName}}</div>
+            </div>
+            <!--/.col-->
+        </div>
+        <!--/.row-->
+        <br/>
+          <table class="table table-responsive table-hover table-outline mb-0" id="teamVerifyTable">
+              <thead class="thead-default">
+                  <tr>
+                    <th>Teacher</th>
+                    <th>Student's Name</th>
+                    <th class="col-md-2 col-sm-1">Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for student in students %}
+                  <tr>
+                      <td>{{ student.grade.name }} - {{ student.classroom.teacherName }}</td>
+                      <td>{{ student.name }}</td>
+                      <td style="text-align:center;vertical-align: middle;">
+                          <a href="{{ path('teamStudent_verify', { 'campaignUrl': campaign.url, 'teamUrl': team.url, 'teamStudentId': teamStudent.id, 'action':'link', 'studentID': student.id}) }}" class="btn btn-sm btn-warning">
+                              <i class="fa fa-link" aria-hidden="true"></i>
+                              <span>Link</span>
+                          </a>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block javascripts %}
+{% endblock %}
