@@ -1,0 +1,182 @@
+{% extends 'template.html.twig' %}
+
+{% set campaignUrl = null %}
+{% set campaignUrl = app.request.attributes.get('_route_params')['campaignUrl'] %}
+{% if team.imageName is null %}
+{% set profileImageUrl = main_app_url ~ '/static/img/team-' ~ team.teamType.value ~ '-image-2.png' %}
+{% else %}
+{% set profileImageUrl = main_app_url ~ '/uploads/team_profile_photos/' ~team.imageName %}
+{% endif %}
+
+{% block body %}
+<div class="card">
+  <div class="card-block">
+  <div class="row">
+  <div class="col-sm-5">
+      <h4 class="card-title mb-0">{{ team.name }}</h4>
+      <div class="small text-muted">xxxxxxxx</div>
+  </div>
+  <!--/.col-->
+  <div class="col-sm-7">
+        <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
+          <div class="dropdown pull-right">
+            <button class="btn btn-outline-info btn-inline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-cog" aria-hidden="true"></i> Change Team Type
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              {% if team.teamType.value != 'family' %}<a  href="{{ path('team_reassign', {'campaignUrl':campaign.url, 'teamUrl': team.url, 'type':'family' }) }} "class="dropdown-item reassign_team" href="#"><i class="fa fa-users"></i> To Family</a>{% endif %}
+              {% if team.teamType.value != 'student' %}<a  href="{{ path('team_reassign', {'campaignUrl':campaign.url, 'teamUrl': team.url, 'type':'student' }) }} "class="dropdown-item reassign_team" href="#"><i class="fa fa-child"></i> To Student</a>{% endif %}
+              {% if team.teamType.value != 'teacher' %} <a  href="{{ path('team_reassign', {'campaignUrl':campaign.url, 'teamUrl': team.url, 'type':'teacher' }) }} "class="dropdown-item reassign_team" href="#"><i class="fa fa-apple"></i> To Teacher</a>{% endif %}
+            </div>
+          </div>
+          <a  href="{{ path('team_edit', {'campaignUrl':campaign.url, 'teamUrl': team.url }) }}" class="btn btn-sm btn-outline-warning">
+              <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+              <span class="hidden-xs hidden-sm">
+                  Edit</span>
+          </a>
+        </div>
+  </div>
+  <!--/.col-->
+  </div><!-- ./row -->
+  <hr/>
+  <br>
+
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="card card-inverse">
+          <img id="profile-image" src="{{ profileImageUrl }}" class="img-fluid rounded" alt="Responsive image">
+        </div>
+      </div>
+        <div class="col-sm-8">
+            <p class=""><strong>Team Owner:</strong> {{ team.user.firstName }} {{ team.user.lastName }}</p>
+            <p class=""><strong>Email Address:</strong> {{ team.user.email }}</p>
+            <p class=""><strong>Call for Action:</strong> {{ team.description }}</p>
+            <p class=""><strong>Team Type:</strong> {{ team.teamType.name }}</p>
+            <p class=""><strong>Funds Raised:</strong> ${{ team.fundsRaised|number_format(2, '.', ',') }}</p>
+            <p class=""><strong>Donations:</strong> {{ team.donations|length }}</p>
+        </div>
+        <!--/.col-->
+    </div>
+    <!--/.row-->
+    <hr>
+
+    {% if team.teamType.value == 'student' or team.teamType.value == 'family' %}
+    <div class="row">
+        <div class="col-sm-5">
+            <h3 class="">Children</h3>
+        </div>
+        <!--/.col-->
+    </div>
+      <table class="table table-bordered table-striped table-condensed">
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Grade</th>
+                  <th>Classroom</th>
+                  <th class="col-md-2">Verified?</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for teamStudent in teamStudents %}
+                  <tr>
+                      <td>{{ teamStudent.name }}</td>
+                      <td>{{ teamStudent.grade.name }}</td>
+                      <td>{{ teamStudent.classroom.name }}</td>
+                      <td>
+                         {% if teamStudent.confirmedFlag %}
+                              <i style="color:green;" class="fa fa-check-circle" aria-hidden="true"></i>
+                         {% else %}
+                              <i style="color:red;" class="fa fa-times-circle" aria-hidden="true"></i>
+                              &nbsp;
+                              <a href="{{ path('teamStudent_verify', {'campaignUrl':campaign.url,  'teamUrl': team.url , 'teamStudentId': teamStudent.id}) }}" class="btn btn-sm btn-warning">
+                                  <i class="fa fa-link" aria-hidden="true"></i>
+                                  <span class="">Verify</span>
+                              </a>
+                        {% endif %}
+                      </td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table><!-- ./table -->
+    {% endif %}
+
+    {% if team.donations is defined %}
+    <br>
+    <hr>
+    <div class="row">
+        <div class="col-sm-5">
+            <h3 class="">Donations</h3>
+        </div>
+        <!--/.col-->
+    </div><!-- ./row -->
+    <table class="table table-sm table-responsive table-hover table-outline mb-0">
+         <thead>
+             <tr>
+                 <th>Date</th>
+                 <th>Donor</th>
+                 <th>Method</th>
+                 <th>Amt</th>
+                 <th>Status</th>
+                 <th>Actions</th>
+             </tr>
+         </thead>
+         <tbody>
+             {% for donation in team.donations %}
+                 <tr>
+                     <td>{{ donation.donatedAt|date("m/d")  }}</td>
+                     <td>{% if donation.donorEmail is defined %}{{ donation.donorEmail }}{% endif %}
+                     <td class="text-center">
+                       {% if donation.paymentMethod is defined %}
+                         {% if donation.paymentMethod == 'cc' %}
+                          <i class="fa fa-credit-card" aria-hidden="true"></i>
+                         {% elseif donation.paymentMethod == 'paypal' %}
+                          <i class="fa fa-paypal" aria-hidden="true"></i>
+                         {% else %}
+                          <i class="fa fa-money" aria-hidden="true"></i>
+                         {% endif %}
+                       {% endif %}
+                     </td>
+                     <td style="text-align:right;">${{ donation.amount|number_format(2, '.', ',')  }}</td>
+                     <td class="text-center">
+                       {% if donation.donationStatus is defined %}
+                       <span class="badge badge-{{ donation.donationStatus == 'PENDING'? 'info' }}{{ donation.donationStatus == 'ACCEPTED'? 'success' }}{{ donation.donationStatus == 'AUTHORIZED'? 'primary' }}{{ donation.donationStatus == 'FAILED'? 'danger' }}">{{ donation.donationStatus }}</span>
+                       {% endif %}
+                     </td>
+                     <td style="text-align:center;">
+                         <a href="{{ path('donation_show', {'campaignUrl':campaign.url, 'id': donation.id }) }}" class="btn btn-sm btn-info">
+                             <i class="fa fa-eye" aria-hidden="true"></i><span class="hidden-xs hidden-sm"> View</span>
+                         </a>
+                         {% if donation.type == "manual" %}
+                          <a href="{{ path('donation_edit', {'campaignUrl':campaign.url, 'action': 'delete_donation', 'donationID': donation.id }) }}" class="btn btn-primary"><i class="fa fa-trash" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Delete</span></a>
+                         {% endif %}
+                     </td>
+                 </tr>
+             {% endfor %}
+         </tbody>
+     </table><!-- ./table -->
+    {% endif %}
+  </div><!-- ./card-block -->
+</div><!-- ./card -->
+
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+  <script type="text/javascript">
+
+    $(document).ready(function() {
+      $('.reassign_team').click(function() {
+        event.preventDefault();
+        var r = confirm("Are you sure you want to Change team?");
+        if (r == true) {
+          window.location = $(this).attr('href');
+        }
+      });
+
+    });
+
+
+  </script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+<div class="card">
+<div class="card-block">
+        <div class="row">
+            <div class="col-sm-5">
+                <h4 class="card-title mb-0">Grades</h4>
+                <div class="small text-muted">xxxxxxx</div>
+            </div>
+            <!--/.col-->
+            <div class="col-sm-7 hidden-sm-down">
+                <button type="button" disabled class="btn btn-primary float-right"><i class="icon-cloud-download"></i>
+                </button>
+                <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group mr-3" aria-label="First group">
+                        <a href="{{ path('grade_new', {'campaignUrl':campaign.url}) }}" class="btn btn-outline-secondary">
+                            <i class="fa fa-plus"></i>
+                            Add New</a>
+                    </div>
+                </div>
+            </div>
+            <!--/.col-->
+        </div>
+        <!--/.row-->
+        <br/>
+          <table class="table table-responsive table-hover table-outline mb-0" id="gradeIndexTable">
+              <thead class="thead-default">
+                  <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for grade in grades %}
+                  <tr>
+                      <td>
+                        {{ grade.id }}
+                      </td>
+                      <td>{{ grade.name }}</td>
+                      <td class="text-center">
+                         <a href="{{ path('grade_index', {'campaignUrl':campaign.url, 'gradeID': grade.id}) }}" class="btn btn-info disabled"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i> Edit</a>
+                         <a href="{{ path('grade_index', {'campaignUrl':campaign.url, 'action': 'delete_grade', 'gradeID':grade.id}) }}" class="btn btn-danger disabled"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+        </div>
+    </div>
+  {% endblock %}
+
+
+  {% block javascripts %}
+  {% endblock %}
