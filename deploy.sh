@@ -2,7 +2,6 @@
 
 export PATH=/usr/local/php71/bin:$PATH
 export PATH=/home/$USER/.php/composer:$PATH
-export APP_ENV=prod
 
 # Just in Case
 git stash
