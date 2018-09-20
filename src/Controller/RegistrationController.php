@@ -268,6 +268,9 @@ class RegistrationController extends Controller
       $campaign->setEmail($user->getEmail());
       $campaign->setFundingGoal(10000);
       $campaign->setCreatedBy($user);
+      $campaign->setOnlineFlag(false);
+
+
 
       $date = new DateTime();
       $date->modify('-1 month');

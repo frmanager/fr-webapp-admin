@@ -82,7 +82,7 @@ class StudentController extends Controller
         }
 
         //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
-        $campaignHelper = new CampaignHelper($em);
+        $campaignHelper = new CampaignHelper($em, $logger);
         if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
@@ -153,7 +153,7 @@ class StudentController extends Controller
         }
 
         //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
-        $campaignHelper = new CampaignHelper($em);
+        $campaignHelper = new CampaignHelper($em, $logger);
         if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
@@ -206,7 +206,7 @@ class StudentController extends Controller
         }
 
         //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
-        $campaignHelper = new CampaignHelper($em);
+        $campaignHelper = new CampaignHelper($em, $logger);
         if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
@@ -280,7 +280,7 @@ class StudentController extends Controller
         }
 
         //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
-        $campaignHelper = new CampaignHelper($em);
+        $campaignHelper = new CampaignHelper($em, $logger);
         if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
@@ -336,7 +336,7 @@ class StudentController extends Controller
         }
 
         //CODE TO CHECK TO SEE IF USER HAS PERMISSIONS TO CAMPAIGN
-        $campaignHelper = new CampaignHelper($em);
+        $campaignHelper = new CampaignHelper($em, $logger);
         if(!$campaignHelper->campaignPermissionsCheck($this->get('security.token_storage')->getToken()->getUser(), $campaign)){
             $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
             return $this->redirectToRoute('homepage');
