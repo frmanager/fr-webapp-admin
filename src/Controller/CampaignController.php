@@ -17,6 +17,15 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use DateTime;
 
@@ -161,7 +170,45 @@ class CampaignController extends Controller
 
 
       $deleteForm = $this->createDeleteForm($campaign);
-      $editForm = $this->createForm('App\Form\CampaignType', $campaign);
+      
+      $editForm = $this->createFormBuilder($campaign)
+      ->add('name', TextType::class, array('required' => true))
+      ->add('description', TextareaType::class, array( 'attr' => array('class' => 'tinymce')))
+      ->add('url')
+      ->add('onlineFlag', CheckboxType::class, array('label'    => 'Put campaign online', 'required' => false))
+      ->add('teamsFlag', CheckboxType::class, array('label'    => 'Enable Teams', 'required' => false))
+      ->add('email', TextType::class, array('required' => true))
+      ->add('theme', ChoiceType::class, array(
+            'choices'  => array(
+                'Default' => 'cerulean',
+                'Cerulean' => 'cerulean',
+                'Cosmo' => 'cosmo',
+                'Cyborg' => 'cyborg',
+                'Darkly' => 'darkly',
+                'Flatly' => 'flatly',
+                'Journal' => 'journal',
+                'Litera' => 'litera',
+                'Lumen' => 'lumen',
+                'Lux' => 'lux',
+                'Materia' => 'materia',
+                'Minty' => 'minty',
+                'Pulse' => 'pulse',
+                'Sandstone' => 'sandstone',
+                'Simplex' => 'simplex',
+                'Slate' => 'slate',
+                'Solar' => 'solar',
+                'Space Lab' => 'spacelab',
+                'Superhero' => 'superhero',
+                'United' => 'united',
+                'Yeti' => 'yeti',
+            )))
+      ->add('start_date', DateType::class, array('widget' => 'single_text' ))
+      ->add('endDate', DateType::class, array('widget' => 'single_text'))
+      ->add('fundingGoal', MoneyType::class, array('required' => true, 'currency' => 'USD'))
+      ->add('donationFlag', CheckboxType::class, array('label'    => 'Enable Donations', 'required' => false))
+      ->add('tippingFlag', CheckboxType::class, array('label'    => 'Enable Tipping', 'required' => false, 'disabled' => true))
+      ->add('paypalEmail', EmailType::class, array('required' => false))->getForm();
+  ;
       $editForm->handleRequest($request);
 
       if ($editForm->isSubmitted()) {
