@@ -157,7 +157,7 @@ class CampaignawardController extends Controller
 
             if (!$fail) {
                 $campaignAwardCheck = $this->getDoctrine()->getRepository('App:CampaignAward')->findOneBy(
-          array('campaignawardtype' => $campaignAwardType, 'campaignawardstyle' => $campaignAwardStyle, 'amount' => $params['campaignAward']['amount'], 'place' => $params['campaignAward']['place'])
+          array('campaign' => $campaign, 'campaignawardtype' => $campaignAwardType, 'campaignawardstyle' => $campaignAwardStyle, 'amount' => $params['campaignAward']['amount'], 'place' => $params['campaignAward']['place'])
           );
                 if (!empty($campaignAwardCheck) && $campaignAwardCheck->getId() !== $campaignAward->getId()) {
                     $fail = true;
