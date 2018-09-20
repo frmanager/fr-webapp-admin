@@ -1,29 +1,21 @@
 {% extends 'template.html.twig' %}
+{% form_theme edit_form 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
 <div class="card">
-<div class="card-block">
-    <div class="row">
-        <div class="col-md-12">
-            <h1>Edit
-                {{entity}}
-                Form</h1>
-            <hr/>
+ <div class="card-header">Create/Edit Campaign</div>
+<div class="card-body">
+    <div class="card-text">
+        {{ form_start(edit_form) }}
+        {{ form_widget(edit_form) }}
+        <hr/>
+        <div>
+            <a href="{{ path('homepage') }}" class="btn btn-info">Cancel</a>
+            <button type="reset" value="Reset" class="btn btn-primary">Reset</button>
+            <input type="submit" value="Submit" class="btn btn-warning"/>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            {{ form_start(edit_form) }}
-            {{ form_widget(edit_form) }}
-            <hr/>
-            <div>
-                <a href="{{ path('homepage') }}" class="btn btn-info">Cancel</a>
-                <button type="reset" value="Reset" class="btn btn-primary">Reset</button>
-                <input type="submit" value="Update" class="btn btn-warning"/>
-            </div>
 
-            {{ form_end(edit_form) }}
-        </div>
+        {{ form_end(edit_form) }}
     </div>
   </div>
 </div>
