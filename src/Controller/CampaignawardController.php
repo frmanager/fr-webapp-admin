@@ -122,7 +122,7 @@ class CampaignawardController extends Controller
                     $fail = true;
                     $this->addFlash(
                     'danger',
-                    'If '.$campaignAwardStyle->getDisplayName().' is selected, you must have an associated amount'
+                    'If "level" is selected, you must have an associated amount'
                 );
                 } else {
                     if ($params['campaignAward']['amount'] < 0.01) {
@@ -141,7 +141,7 @@ class CampaignawardController extends Controller
                     $fail = true;
                     $this->addFlash(
                     'danger',
-                    'If '.$campaignAwardStyle->getDisplayName().' is selected, you must have an associated place'
+                    'If "Place" is selected, you must have an associated place'
                 );
                 } else {
                     if ($params['campaignAward']['place'] < 1) {
