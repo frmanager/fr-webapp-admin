@@ -14,7 +14,7 @@ use App\Entity\Classroom;
 use App\Entity\Grade;
 use App\Entity\Student;
 use App\Entity\UserStatus;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
