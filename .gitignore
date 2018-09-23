@@ -140,4 +140,4 @@ typings/
 .serverless
 
 # Temporary block for Swiftmailer
-!config/packages/swiftmailer.yaml
+/config/packages/swiftmailer.yaml
