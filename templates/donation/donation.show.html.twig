@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="card">
-  <div class="card-block">
+  <div class="card-body">
     <div class="row">
         <div class="col-sm-5">
             <h4 class="card-title mb-0">Donation</h4>
@@ -38,7 +38,7 @@
         <div class="col-md-6">
             <p><strong>Donated At:</strong> {{ donation.donatedAt|date("m/d/Y") }}</p>
             <p><strong>Amount:</strong> ${{ donation.amount|number_format(2, '.', ',') }}</p>
-            <p><strong>Status:</strong> <span class="badge badge-{{ donation.donationStatus == 'PENDING'? 'info' }}{{ donation.donationStatus == 'ACCEPTED'? 'success' }}{{ donation.donationStatus == 'AUTHORIZED'? 'primary' }}{{ donation.donationStatus == 'FAILED'? 'danger' }}">{{ donation.donationStatus }}</span></p>
+            <p><strong>Status:</strong> <span class="badge badge-{{ donation.donationStatus == 'PENDING'? 'info' }}{{ donation.donationStatus == 'ACCEPTED'? 'success' }}{{ donation.donationStatus == 'REFUNDED'? 'warning' }}{{ donation.donationStatus == 'AUTHORIZED'? 'primary' }}{{ donation.donationStatus == 'FAILED'? 'danger' }}">{{ donation.donationStatus }}</span></p>
             <p><strong>Transaction ID:</strong> {{ donation.transactionId }}</p>
             <p><strong>Payment Method:</strong> {{ donation.paymentMethod|capitalize }}</p>
         </div><!-- ./col -->
@@ -82,7 +82,7 @@
       <div class="row">
           <div class="col-md-6">
             {% if donation.paymentMethod == 'paypal' %}
-              <p><strong>Payment Method:</strong> Paypal <i class="fa fa-paypal" aria-hidden="true"></i></p>
+              <p><strong>Payment Method:</strong> Paypal <i class="fab fa-paypal" aria-hidden="true"></i></p>
               <p><strong>PayPal Payer ID:</strong> {{ donation.paypalPayerId }}</p>
               <p><strong>PayPal Payment ID:</strong> {{ donation.paypalPaymentId }}</p>
               <p><strong>PayPal Payment Details:</strong><br>

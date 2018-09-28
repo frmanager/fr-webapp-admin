@@ -10,7 +10,7 @@
 
 {% block body %}
 <div class="card">
-  <div class="card-block">
+  <div class="card-body">
   <div class="row">
   <div class="col-sm-5">
       <h4 class="card-title mb-0">{{ team.name }}</h4>
@@ -130,7 +130,7 @@
                          {% if donation.paymentMethod == 'cc' %}
                           <i class="fa fa-credit-card" aria-hidden="true"></i>
                          {% elseif donation.paymentMethod == 'paypal' %}
-                          <i class="fa fa-paypal" aria-hidden="true"></i>
+                          <i class="fab fa-paypal" aria-hidden="true"></i>
                          {% else %}
                           <i class="fa fa-money" aria-hidden="true"></i>
                          {% endif %}

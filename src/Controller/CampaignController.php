@@ -90,7 +90,7 @@ class CampaignController extends Controller
             $results =  $em->createQuery($queryString)->getResult();
 
             $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
-            $filename = $this->getParameter('protected_download_directory').'/'.$campaign->getId().'_donation_ledger.csv';
+            $filename = $campaign->getId().'_donation_ledger.csv';
 
             file_put_contents(
                 $filename,
@@ -98,8 +98,10 @@ class CampaignController extends Controller
             );
 
             $response = new BinaryFileResponse($filename);
+            
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
-
+            $response->deleteFileAfterSend(true);
+            
             return $response;
 
           }

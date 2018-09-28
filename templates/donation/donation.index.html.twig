@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="card">
-  <div class="card-block">
+  <div class="card-body">
       <div class="row">
           <div class="col-sm-5">
               <h4 class="card-title mb-0">Donations</h4>
@@ -33,7 +33,7 @@
       </div>
       <!--/.row-->
       <br/>
-      <table class="table table-sm table-responsive table-hover table-outline mb-0" id="donationIndexTable">
+      <table class="table table-hover table-outline mb-0" id="donationIndexTable">
            <thead>
                <tr>
                    <th>Date</th>
@@ -64,7 +64,7 @@
                            {% if donation.paymentMethod == 'cc' %}
                             <i class="fa fa-credit-card" aria-hidden="true"></i>
                            {% elseif donation.paymentMethod == 'paypal' %}
-                            <i class="fa fa-paypal" aria-hidden="true"></i>
+                            <i class="fab fa-paypal" aria-hidden="true"></i>
                            {% else %}
                             <i class="fa fa-money" aria-hidden="true"></i>
                            {% endif %}
@@ -73,7 +73,7 @@
                        <td style="text-align:right;">${{ donation.amount|number_format(2, '.', ',')  }}</td>
                        <td class="text-center">
                          {% if donation.donationStatus is defined %}
-                         <span class="badge badge-{{ donation.donationStatus == 'PENDING'? 'info' }}{{ donation.donationStatus == 'ACCEPTED'? 'success' }}{{ donation.donationStatus == 'AUTHORIZED'? 'primary' }}{{ donation.donationStatus == 'FAILED'? 'danger' }}">{{ donation.donationStatus }}</span>
+                         <span class="badge badge-{{ donation.donationStatus == 'PENDING'? 'info' }}{{ donation.donationStatus == 'ACCEPTED'? 'success' }}{{ donation.donationStatus == 'REFUNDED'? 'warning' }}{{ donation.donationStatus == 'AUTHORIZED'? 'primary' }}{{ donation.donationStatus == 'FAILED'? 'danger' }}">{{ donation.donationStatus }}</span>
                          {% endif %}
                        </td>
                        <td style="text-align:center;">

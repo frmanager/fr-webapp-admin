@@ -90,7 +90,7 @@
       <div class="row">
         <div class="col-sm-12">
           <div class="card card-default">
-            <div class="card-block">
+            <div class="card-body">
               <div class="row">
                   <div class="col-sm-5">
                       <h3 class="">Students</h3>
@@ -142,7 +142,7 @@
     <div class="row">
         <div class="col-sm-12">
           <div class="card card-default">
-            <div class="card-block">
+            <div class="card-body">
               <div class="row">
                   <div class="col-sm-5">
                       <h3 class="">Donations</h3>
@@ -153,7 +153,7 @@
                   <!--/.col-->
               </div><!-- ./row -->
               <br>
-              <table class="table table-sm table-responsive table-hover table-outline mb-0">
+              <table class="table table-sm table-hover table-outline mb-0">
                    <thead>
                        <tr>
                            <th>Date</th>
@@ -174,7 +174,7 @@
                                    {% if donation.paymentMethod == 'cc' %}
                                     <i class="fa fa-credit-card" aria-hidden="true"></i>
                                    {% elseif donation.paymentMethod == 'paypal' %}
-                                    <i class="fa fa-paypal" aria-hidden="true"></i>
+                                    <i class="fab fa-paypal" aria-hidden="true"></i>
                                    {% else %}
                                     <i class="fa fa-money" aria-hidden="true"></i>
                                    {% endif %}
