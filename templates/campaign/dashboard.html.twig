@@ -28,8 +28,8 @@
 {%  endif %}
 
 
-<div class="card card-outline-primary mb-3 text-center">
-   <div class="card-block">
+<div class="card border-primary mb-3 text-center">
+   <div class="card-body">
        <div class="row">
          <div class="col-sm-12" style="text-align:center;">
            <h4><div id="track"  data-countdown="{{ campaign.endDate|date('Y/m/d') }}"></div><h4>
@@ -40,8 +40,8 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <div class="card card-inverse card-primary">
-            <div class="card-block pb-0">
+        <div class="card bg-primary">
+            <div class="card-body pb-0">
               <div class="btn-group float-right">
                   <button type="button" class="btn btn-transparent active dropdown-toggle p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="icon-settings"></i>
@@ -53,9 +53,6 @@
                 <h4 class="mb-0"><u>${{ totals.donation_amount|number_format(0, '.', ',') }}</u> in donations</h4>
                 <p>{{ (totals.donation_amount / campaign.fundingGoal * 100)|number_format(2, '.', ',')}}% of ${{ campaign.fundingGoal|number_format(0, '.', ',') }} goal received</p>
             </div>
-            <div class="chart-wrapper px-3" style="height:70px;">
-                <canvas id="card-chart1" class="chart" x height="70"></canvas>
-            </div>
         </div>
     </div><!--/.col-->
 </div><!-- ./row -->
@@ -63,7 +60,7 @@
 
 
 <div class="card mb-3">
-  <div class="card-block">
+  <div class="card-body">
          <a href="{{ path('campaign_index', {'campaignUrl':campaign.url, "action":"reload_donation_database"}) }}" class="btn btn-success"><i class="fas fa-download" aria-hidden="true"></i> Reload Donation Database</a>
          <a href="{{ path('campaign_index', {'campaignUrl':campaign.url, "action":"download_donation_ledger"}) }}" target="_blank" class="btn btn-success"><i class="fa fa-refresh" aria-hidden="true"></i> Download Donation Ledger</a>
 </div><!-- ./card-block -->
@@ -76,7 +73,7 @@
 
 
 <div class="card mb-3">
-  <div class="card-block">
+  <div class="card-body">
   <div class="row">
      <div class="col-sm-5">
          <h4 class="card-title mb-0">New Class Awards</h4>
@@ -84,20 +81,11 @@
      </div>
      <!--/.col-->
      <div class="col-sm-7 hidden-sm-down">
-         <button type="button" disabled class="btn btn-primary float-right"><i class="icon-cloud-download"></i>
-         </button>
-         <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-             <div class="btn-group mr-3" data-toggle="buttons" aria-label="First group">
-                 <label class="btn btn-outline-secondary">
-                     <input type="radio" name="options" id="option1">View All
-                 </label>
-             </div>
-         </div>
      </div><!--/.col-->
  </div><!-- ./row -->
  <br/>
    {% if new_classroom_awards is defined and new_classroom_awards | length > 0 %}
-       <table class="table table-responsive table-hover table-outline mb-0 no-footer">
+       <table class="table table-hover table-outline mb-0 no-footer">
            <thead class="thead-default">
                <tr>
                    <th>Classroom</th>
@@ -141,7 +129,7 @@
 
 
     <div class="card mb-3">
-      <div class="card-block">
+      <div class="card-body">
       <div class="row">
          <div class="col-sm-5">
              <h4 class="card-title mb-0">Top 10 Class Rankings</h4>
@@ -149,21 +137,15 @@
          </div>
          <!--/.col-->
          <div class="col-sm-7 hidden-sm-down">
-             <button type="button" disabled class="btn btn-primary float-right"><i class="icon-cloud-download"></i>
-             </button>
-             <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-                 <div class="btn-group mr-3" data-toggle="buttons" aria-label="First group">
-                     <label class="btn btn-outline-secondary">
-                         <input type="radio" name="options" id="option1">View All
-                     </label>
-                 </div>
-             </div>
+            <div class="btn-group float-right" role="group" aria-label="Basic example">
+            <a href="{{ path('classroom_index', {'campaignUrl':campaign.url, 'type':'campaign' }) }} " class="btn btn-primary">View All</a>
+            </div>             
          </div>
          <!--/.col-->
      </div>
      <br/>
        {% if new_classroom_awards | length > 0 %}
-           <table class="table table-responsive table-hover table-outline mb-0 no-footer">
+           <table class="table table-hover table-outline mb-0 no-footer">
                <thead class="thead-default">
                    <tr>
                      <th>Rank</th>
@@ -201,7 +183,7 @@
     </div>
 
   <div class="card mb-3">
-   <div class="card-block">
+   <div class="card-body">
    <div class="row">
       <div class="col-sm-5">
           <h4 class="card-title mb-0">Top 10 Student Rankings</h4>
@@ -209,21 +191,15 @@
       </div>
       <!--/.col-->
       <div class="col-sm-7 hidden-sm-down">
-          <button type="button" disabled class="btn btn-primary float-right"><i class="icon-cloud-download"></i>
-          </button>
-          <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-              <div class="btn-group mr-3" data-toggle="buttons" aria-label="First group">
-                  <label class="btn btn-outline-secondary">
-                      <input type="radio" name="options" id="option1">View All
-                  </label>
-              </div>
-          </div>
+        <div class="btn-group float-right" role="group" aria-label="Basic example">
+         <a href="{{ path('student_index', {'campaignUrl':campaign.url, 'type':'campaign' }) }} " class="btn btn-primary">View All</a>
+        </div>      
       </div>
       <!--/.col-->
   </div>
   <br/>
     {% if new_classroom_awards is defined and new_classroom_awards | length > 0 %}
-        <table class="table table-responsive table-hover table-outline mb-0 no-footer">
+        <table class="table table-hover table-outline mb-0 no-footer">
             <thead class="thead-default">
                 <tr>
                   <th>Rank</th>
@@ -264,74 +240,5 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script>
-        $('[data-countdown]').each(function() {
-            var $this = $(this),
-                finalDate = $(this).data('countdown');
-            $this.countdown(finalDate, function(event) {
-                $this.html(event.strftime('<span class="label label-info">%D</span> day%!D &nbsp;&nbsp;<span class="label label-info">%H</span> hours &nbsp;&nbsp;<span class="label label-info">%M</span> minutes &nbsp;&nbsp;<span class="label label-info">%S</span> seconds &nbsp;&nbsp;remaining'));
-            });
-        });
-
-
-        //convert Hex to RGBA
-        function convertHex(hex,opacity){
-          hex = hex.replace('#','');
-          var r = parseInt(hex.substring(0,2), 16);
-          var g = parseInt(hex.substring(2,4), 16);
-          var b = parseInt(hex.substring(4,6), 16);
-
-          var result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
-          return result;
-        }
-
-        //Random Numbers
-        function random(min,max) {
-          return Math.floor(Math.random()*(max-min+1)+min);
-        }
-
-        var elements = 16;
-        var labels = [];
-        var data = [];
-
-        for (var i = 2000; i <= 2000 + elements; i++) {
-          labels.push(i);
-          data.push(random(40,100));
-        }
-
-        var options = {
-          maintainAspectRatio: false,
-          legend: {
-            display: false
-          },
-          scales: {
-            xAxes: [{
-              display: false,
-              barPercentage: 0.6,
-            }],
-            yAxes: [{
-              display: false,
-            }]
-          },
-
-        };
-        var data = {
-          labels: labels,
-          datasets: [
-            {
-              backgroundColor: 'rgba(255,255,255,.3)',
-              borderColor: 'transparent',
-              data: data
-            },
-          ]
-        };
-        var ctx = $('#card-chart1');
-        var cardChart1 = new Chart(ctx, {
-          type: 'bar',
-          data: data,
-          options: options
-        });
-
-
-    </script>
+  <script src="{{ asset('build/dashboard.js') }}"></script>
 {% endblock %}
