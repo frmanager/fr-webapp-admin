@@ -173,7 +173,7 @@ class StudentController extends Controller
         $campaign = $em->getRepository('App:Campaign')->findOneByUrl($campaignUrl);
         $campaignAwards = $qb->getQuery()->getResult();
 
-        $queryHelper = new QueryHelper($em);
+        $queryHelper = new QueryHelper($em, $logger);
 
         return $this->render('student/student.show.html.twig', array(
             'student' => $student,
