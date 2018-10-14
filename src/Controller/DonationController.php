@@ -436,7 +436,7 @@ class DonationController extends Controller
      * @Route("/show/{id}", name="donation_show")
      * @Method("GET")
      */
-    public function showAction(Donation $donation, $campaignUrl, LoggerInterface $logger)
+    public function showAction(Request $request, Donation $donation, $campaignUrl, LoggerInterface $logger)
     {
       
       $em = $this->getDoctrine()->getManager();
@@ -454,6 +454,36 @@ class DonationController extends Controller
           $this->get('session')->getFlashBag()->add('warning', 'You do not have permissions to this campaign.');
           return $this->redirectToRoute('homepage');
       }
+
+
+
+
+      if(null !== $request->query->get('action')){
+        $action = $request->query->get('action');
+
+        if($action === 'send_receipt'){
+
+          //Send Email to Donor
+          $message = (new \Swift_Message("[FRManager] Thank you for your Donation to ".$campaign->getName()))
+          ->setFrom($this->getParameter('mailer_user'))
+          ->setTo($donation->getDonorEmail())
+          ->setContentType("text/html")
+          ->setBody(
+              $this->renderView('email/donation.success.email.twig', array('donation' => $donation,'campaign' => $campaign))
+          );
+
+          $this->get('mailer')->send($message);
+          $logger->debug("Done Mailer to Donor");
+
+
+          $this->get('session')->getFlashBag()->add('success', 'Donation receipt resent successfully');
+        }
+
+    }
+
+
+
+
 
 
         return $this->render('donation/donation.show.html.twig', array(
