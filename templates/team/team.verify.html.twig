@@ -9,6 +9,24 @@
                 <h4 class="card-title mb-0">Verify Student {{teamStudent.name}}</h4>
                 <div class="small text-muted">{{teamStudent.classroom.grade.name}} - {{teamStudent.classroom.teacherName}}</div>
             </div>
+
+            <div class="col-sm-7">
+                <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="dropdown pull-right">
+                        <button class="btn btn-outline-info btn-inline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-cog" aria-hidden="true"></i> Can't Find Student?
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a  href="{{ path('teamStudent_verify', {'campaignUrl':campaign.url, 'teamUrl': team.url , 'teamStudentId': teamStudent.id, 'action':'teamStudent_verify_email_owner'}) }} " class="dropdown-item" href="#"><i class="fa fa-envelope" aria-hidden="true"></i> Email Owner</a>
+                        <a  href="{{ path('teamStudent_verify', {'campaignUrl':campaign.url, 'teamUrl': team.url , 'teamStudentId': teamStudent.id, 'action':'teamStudent_verify_email_coordinator'}) }} " class="dropdown-item" href="#"><i class="fa fa-envelope" aria-hidden="true"></i> Email School Coordinator</a>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/.col-->
+
+
             <!--/.col-->
         </div>
         <!--/.row-->
