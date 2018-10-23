@@ -179,6 +179,7 @@ class CampaignController extends Controller
       ->add('url')
       ->add('onlineFlag', CheckboxType::class, array('label'    => 'Put campaign online', 'required' => false))
       ->add('teamsFlag', CheckboxType::class, array('label'    => 'Enable Teams', 'required' => false))
+      ->add('schoolCoordinatorEmail', TextType::class, array('required' => true))      
       ->add('email', TextType::class, array('required' => true))
       ->add('theme', ChoiceType::class, array(
             'choices'  => array(
