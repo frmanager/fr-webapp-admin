@@ -55,33 +55,16 @@
 -->
 
 <body class="app header-fixed sidebar-fixed {% if campaign is not defined %}sidebar-hidden{% endif %} aside-menu-fixed aside-menu-hidden">
-
   <div class="app-body">
-
     <!-- Main content -->
     <main class="main">
-      <!-- Breadcrumb -->
-      <!--
-        <ol class="breadcrumb">
-        </ol>
-      -->
-      <br/>
-
       <!-- End Alert -->
       <div class="container-fluid">
         <div class="animated fadeIn">
-          <br/>
           {% block body %}{% endblock %}
-          <br/>
         </div>
       </div>
     </main>
-
-<!--
-    <aside class="aside-menu">
-      ...
-    </aside>
--->
   </div>
 
   <!-- WebPack JS -->

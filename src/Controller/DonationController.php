@@ -616,7 +616,83 @@ class DonationController extends Controller
           return $this->redirectToRoute('donation_index', array('campaignUrl'=>$campaign->getUrl()));
         }
 
+        if(null !== $request->query->get('action')){
+          $action = $request->query->get('action');
+  
+          if($action === 'donation_student_verify_email_donor'){
+            //Send Email to Donor
+            $message = (new \Swift_Message("[FRManager] We need help verifying a ".$campaign->getName()." donation"))
+            ->setFrom($this->getParameter('mailer_user'))
+            ->setTo($donation->getDonorEmail())
+            ->setContentType("text/html")
+            ->setBody(
+                $this->renderView('email/donation.verify.student.donor.twig', array('donation' => $donation,'campaign' => $campaign))
+            );
 
+            $this->get('mailer')->send($message);
+            $logger->debug("Sent email to donor to verify student's name");
+
+            $this->get('session')->getFlashBag()->add('success', 'Verification request successfully sent to donor');
+
+            return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+
+          }
+
+          if($action === 'donation_student_verify_email_coordinator'){
+
+            if(null !== $campaign->getSchoolCoordinatorEmail()){
+             //Send Email to Donor
+             $message = (new \Swift_Message("[FRManager] We need help verifying a ".$campaign->getName()." donation"))
+             ->setFrom($this->getParameter('mailer_user'))
+             ->setTo($campaign->getSchoolCoordinatorEmail())
+             ->setContentType("text/html")
+             ->setBody(
+                 $this->renderView('email/donation.verify.student.coordinator.twig', array('donation' => $donation,'campaign' => $campaign))
+             );
+ 
+             $this->get('mailer')->send($message);
+             $logger->debug("Sent email to donor to verify student's name");
+ 
+             $this->get('session')->getFlashBag()->add('success', 'Verification request successfully sent to School Coordinator at '.$campaign->getSchoolCoordinatorEmail());
+ 
+             return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+              
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Campaign does not have a contact email');
+            }
+
+          }  
+          
+          
+          if($action === 'donation_student_verify_email_teacher'){
+
+            if(null !== $donation->getClassroom()->getEmail()){
+            //Send Email to Donor
+            $message = (new \Swift_Message("[FRManager] We need help verifying a ".$campaign->getName()." donation"))
+            ->setFrom($this->getParameter('mailer_user'))
+            ->setTo($donation->getClassroom()->getEmail())
+            ->setContentType("text/html")
+            ->setBody(
+                $this->renderView('email/donation.verify.student.teacher.twig', array('donation' => $donation,'campaign' => $campaign))
+            );
+
+            $this->get('mailer')->send($message);
+            $logger->debug("Sent email to donor to verify student's name");
+
+            $this->get('session')->getFlashBag()->add('success', 'Verification request successfully sent to '.$donation->getClassroom()->getEmail());
+
+            return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+
+
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Classroom does not have a contact email');
+            }
+
+          }  
+
+        }
+
+        
         if(null !== $request->query->get('action') && null !== $request->query->get('studentID')){
             $failure = false;
             $studentID = $request->query->get('studentID');
