@@ -22,9 +22,26 @@
                       <a  href="{{ path('donation_reassign', {'campaignUrl':campaign.url, 'donationID': donation.id, 'type':'team' }) }} "class="dropdown-item" href="#"><i class="fa fa-users"></i> To Team</a>
                     </div>
                   </div>
-                  <a href="{{ path('donation_show', {'campaignUrl': campaign.url, 'id': donation.id, 'action':'send_receipt'}) }}" class="btn btn-outline-warning" id="{{donation.id}}">
-                        <i class="fa fa-envelope" aria-hidden="true"></i> Resend Receipt
-                  </a>
+                  {% if donation.donorEmail %}
+                  <div class="dropdown pull-right">
+                    <button class="btn btn-outline-info btn-inline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa fa-envelope" aria-hidden="true"></i> Email
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {% if donation.donationStatus != 'ACCEPTED' %}
+                      <button class="dropdown-item disabled" id="{{donation.id}}" aria-disabled="true" disabled>
+                        <i class="fas fa-receipt" aria-hidden="true"></i> <s>Resend Receipt</s>
+                      </button>   
+                    {% else %}                 
+                      <a href="{{ path('donation_show', {'campaignUrl': campaign.url, 'id': donation.id, 'action':'send_receipt'}) }}" class="dropdown-item {{ donation.donationStatus != 'ACCEPTED' ? 'disabled' }}" id="{{donation.id}}" {{ donation.donationStatus != 'ACCEPTED' ? 'aria-disabled="true"' }}>
+                        <i class="fas fa-receipt" aria-hidden="true"></i> Resend Receipt
+                      </a>
+                    {% endif %}
+                    </div>
+                  </div>
+                  {% endif %}
+
+
                     {% if donation.paymentMethod == 'paypal' or donation.paymentMethod == 'cc' %}
                       <button class="btn btn-outline-danger" data-placement="top" data-toggle="tooltip" title="You cannot delete PayPal or Credit Card Donations"><i class="fa fa-trash"></i> Delete</button>
                       {% else %}

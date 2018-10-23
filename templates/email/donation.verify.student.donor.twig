@@ -1,0 +1,41 @@
+{% extends 'template.email.html.twig' %}
+
+{% block body %}
+    <div class="row">
+      <div class="col">
+           <p>Hello <strong>{{ donation.donorFirstName }} {{ donation.donorLastName }}</strong>,</p>
+           <p>Thank you again for your donation to the {{campaign.name}} campaign. We are having a little trouble validating your recent donation for the student "<strong>{{donation.studentName}}</strong>" in {{donation.classroom.name}}'s classroom.</p>
+           <p>Common reasons why this may happen:</br>
+              <ul>
+                <li>A nickname or middle name was used instead of their first name.</li>
+                <li>The student is no longer in that classroom.</li>
+                <li>A student with the same name exists in the classroom and we are unable to verify the last name.</li>
+              <ul>
+           </p>
+           <p>Please help us get the donation to the right place by responding to this email with any additional information</p>
+      </div>
+    </div><!-- ./row -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+        <div class="card">
+          <div class="card-header">
+            Donation Info
+          </div>
+          <div class="card-body">
+            <hr>
+            {% if donation.type == 'teacher' %}
+              <p class="card-text"><strong>Donation to:</strong> {{campaign.name}}</p>
+            {% elseif donation.type == 'student' %}
+              <p class="card-text"><strong>Donation to:</strong> {{donation.classroom.name}} - {{donation.studentName}}</p>
+            {% elseif donation.type == 'team' %}
+              <p class="card-text"><strong>Donation to:</strong> {{donation.team.name}}</p>
+            {% else %}
+            {% endif %}
+            <p class="card-text"><strong>Donor Name:</strong> {{ donation.donorFirstName }} {{ donation.donorLastName }}</p>
+            <p class="card-text"><strong>Donor Email:</strong> {{ donation.donorEmail }}</p>
+            <p class="card-text"><strong>Donation Date:</strong> {{donation.donatedAt|date('Y/m/d')}}</p>
+          </div>
+        </div><!-- ./card -->
+    </div><!-- ./column -->
+</div><!-- ./row -->
+{% endblock %}

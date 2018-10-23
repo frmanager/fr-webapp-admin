@@ -17,8 +17,6 @@ import '../css/style.min.css';
 import '../css/template.css';
 
 
-import '../css/template.css';
-
 // CORE UI
 import '../js/libs/coreui.min.js';
 

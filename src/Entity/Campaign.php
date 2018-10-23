@@ -127,6 +127,13 @@ Class Campaign
   private $paypalEmail;
 
   /**
+   * @var string
+   *
+   * @ORM\Column(type="string", length=100, nullable=true)
+   */
+  private $schoolCoordinatorEmail;
+
+  /**
    *  @var boolean
    *
    * @ORM\Column(type="boolean", length=100)
@@ -737,6 +744,34 @@ Class Campaign
         return $this->onlineFlag;
     }
 
+
+    /**
+     * Set schoolCoordinatorEmail
+     *
+     * @param string $schoolCoordinatorEmail
+     *
+     * @return Campaign
+     */
+    public function setSchoolCoordinatorEmail($schoolCoordinatorEmail)
+    {
+        $this->schoolCoordinatorEmail = $schoolCoordinatorEmail;
+
+        return $this;
+    }
+
+
+    /**
+     * Get schoolCoordinatorEmail
+     *
+     * @return string
+     */
+    public function getSchoolCoordinatorEmail()
+    {
+        return $this->schoolCoordinatorEmail;
+    }   
+
+
+
     /**
      * Set paypalEmail
      *
@@ -751,6 +786,7 @@ Class Campaign
         return $this;
     }
 
+    
     /**
      * Get paypalEmail
      *
