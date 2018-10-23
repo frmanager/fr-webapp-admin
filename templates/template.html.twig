@@ -53,9 +53,8 @@
 
 -->
 
-<body class="app header-fixed sidebar-fixed {% if campaign is defined %}sidebar-lg-show{% endif %} aside-menu-fixed aside-menu-hidden" data-spy="scroll">
-  <header class="app-header navbar">
-      <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button">☰</button>
+<body class="app header-fixed sidebar-fixed {% if campaign is defined %}sidebar-show{% endif %} aside-menu-fixed aside-menu-hidden" data-spy="scroll">
+  <nav class="app-header navbar">
       <a class="navbar-brand" href="{{ path('homepage') }}">
         <img class="navbar-brand-full" src="{{ asset('static/img/logo.png') }}" width="89" height="25" alt="FR Manager Logo">
         <img class="navbar-brand-minimized" src="{{ asset('static/img/logo.png') }}" width="30" height="30" alt="FR Manager Logo">
@@ -63,7 +62,7 @@
 
       {% if is_granted('ROLE_USER') %}
       {% if campaign is defined %}     
-      <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
+      <button class="navbar-toggler sidebar-toggler" type="button" data-toggle="sidebar-show">
         <span class="navbar-toggler-icon"></span>
       </button>  
       {% endif %}    
@@ -88,7 +87,7 @@
           </li>
       </ul>
       {% endif %}
-  </header>
+  </nav>
   <div class="app-body">
     {% if is_granted('ROLE_USER') and campaign is defined %}
     <div class="sidebar">
@@ -126,7 +125,6 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ path('student_index', { 'campaignUrl': campaign.url }) }}"><i class="fa fa-child" aria-hidden="true"></i> Students</a>
-          </li>
           </li>
         </ul>
       </nav>

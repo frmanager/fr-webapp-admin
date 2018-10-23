@@ -33,10 +33,11 @@
       </div>
       <!--/.row-->
       <br/>
-      <table class="table table-hover table-outline mb-0" id="donationIndexTable">
+      <table class="table table-sm table-hover table-outline mb-0" id="donationIndexTable" style="font-size: 11px;">
            <thead>
                <tr>
                    <th>Date</th>
+                   <th>Donor Email</th>
                    <th>To</th>
                    <th>Method</th>
                    <th>Amt</th>
@@ -46,8 +47,14 @@
            </thead>
            <tbody>
                {% for donation in donations %}
-                   <tr>
-                       <td>{{ donation.donatedAt|date("m/d")  }}</td>
+                   <tr {% if donation.type == 'student' and not donation.studentConfirmedFlag %}class="bg-warning"{% endif %}>
+                       <td>{{ donation.donatedAt|date("m/d H:m")  }}</td>
+                       <td>
+                       {% if donation.donorEmail is none %}
+                       N/A
+                       {% else %}
+                       {{ donation.donorEmail }}&nbsp;<span class="d-none">{{ donation.donorFirstName }}{{ donation.donorLastName }}{{ donation.donorComment }}</span></td>
+                       {% endif %}
                        <td>
                          {% if donation.type == 'campaign' %}
                           {{campaign.name}}
@@ -57,6 +64,9 @@
                           <a href="{{ path('classroom_show', {'campaignUrl':campaign.url, 'classroomID':donation.classroom.id }) }}"><i class="fab fa-apple"></i>  {{donation.classroom.name}}</a>
                          {% elseif donation.type == 'student' %}
                           <a href="{{ path('student_show', {'campaignUrl':campaign.url, 'id':donation.student.id }) }}"><i class="fa fa-child"></i>  {{donation.student.classroom.name}} - {{donation.student.name}}</a>
+                                {% if not donation.studentConfirmedFlag %}
+                                    <i style="color:red;" class="fa fa-times-circle" aria-hidden="true"></i>
+                                {% endif %}
                          {% endif %}
                        </td>
                        <td class="text-center">
@@ -66,7 +76,7 @@
                            {% elseif donation.paymentMethod == 'paypal' %}
                             <i class="fab fa-paypal" aria-hidden="true"></i>
                            {% else %}
-                            <i class="fa fa-money" aria-hidden="true"></i>
+                            <i class="far fa-money-bill-alt" aria-hidden="true"></i>
                            {% endif %}
                          {% endif %}
                        </td>
