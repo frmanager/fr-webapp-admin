@@ -403,6 +403,66 @@ class TeamController extends Controller
         }
 
 
+        if(null !== $request->query->get('action')){
+          $action = $request->query->get('action');
+  
+          if($action === 'teamStudent_verify_email_owner'){
+            //Send Email to Donor
+            $message = (new \Swift_Message("[FRManager] We need help verifying your student"))
+            ->setFrom($this->getParameter('mailer_user'))
+            ->setTo($team->getUser()->getEmail())
+            ->setContentType("text/html")
+            ->setBody(
+                $this->renderView('email/team.verify.student.owner.twig', array('campaign' => $campaign,'team'=>$team, 'teamStudent' => $teamStudent,'classroom' => $teamStudent->getClassroom()))
+            );
+
+            $this->get('mailer')->send($message);
+            $logger->debug("Sent email to team owner to verify student's name");
+
+            $this->get('session')->getFlashBag()->add('success', 'Verification request successfully sent to team owner');
+
+            return $this->redirectToRoute('team_show', array('campaignUrl'=>$campaign->getUrl(), 'teamUrl'=>$team->getUrl()));
+
+          }
+
+
+
+          if($action === 'teamStudent_verify_email_coordinator'){
+
+            if(null !== $campaign->getSchoolCoordinatorEmail()){
+             //Send Email to Donor
+             $message = (new \Swift_Message("[FRManager] We need help verifying a ".$campaign->getName()." student"))
+             ->setFrom($this->getParameter('mailer_user'))
+             ->setTo($campaign->getSchoolCoordinatorEmail())
+             ->setContentType("text/html")
+             ->setBody(
+              $this->renderView('email/team.verify.student.coordinator.twig', array('campaign' => $campaign,'team'=>$team, 'teamStudent' => $teamStudent,'classroom' => $teamStudent->getClassroom()))
+            );
+ 
+             $this->get('mailer')->send($message);
+             $logger->debug("Sent email to school coordinator to verify student's name");
+
+             $this->get('session')->getFlashBag()->add('success', 'Verification request successfully sent to school coordinator');
+ 
+             return $this->redirectToRoute('team_show', array('campaignUrl'=>$campaign->getUrl(), 'teamUrl'=>$team->getUrl()));
+
+            }else{
+              $this->get('session')->getFlashBag()->add('warning', 'Campaign does not have a contact email');
+            }
+
+          }  
+
+
+
+
+
+        }
+
+
+
+     
+
+
         if(null !== $request->query->get('action') && null !== $request->query->get('studentID')){
             $failure = false;
             $studentID = $request->query->get('studentID');

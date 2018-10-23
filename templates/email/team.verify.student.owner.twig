@@ -1,0 +1,18 @@
+{% extends 'template.email.html.twig' %}
+
+{% block body %}
+    <div class="row">
+      <div class="col">
+           <p>Hello <strong>{{ team.name }}</strong> team owner,</p>
+           <p>Thank you again for contributing to the {{campaign.name}} campaign. We are having a little trouble validating your student "<strong>{{teamStudent.name}}</strong>" in {{classroom.name}}'s classroom.</p>
+           <p>Common reasons why this may happen:</br>
+              <ul>
+                <li>A nickname or middle name was used instead of their legal first name.</li>
+                <li>The student is no longer in that classroom.</li>
+                <li>A student with the same name exists in the classroom and we are unable to verify the last name.</li>
+              <ul>
+           </p>
+           <p>Please help us validate your team by responding to this email with any additional information.</p>
+      </div>
+    </div><!-- ./row -->
+{% endblock %}
