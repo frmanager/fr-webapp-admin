@@ -33,7 +33,7 @@ elseif ($environment -eq "prod") {
     Write-Host "Environment set to prod"
 
     Write-Host "Setting PHP Paths to support Dreamhost Shared"
-    $Env:PATH=/usr/local/php71/bin:$PATH
+    $Env:PATH=/usr/local/php72/bin:$PATH
     $Env:PATH=/home/$USER/.php/composer:$PATH
 
     Write-Host "Grabbing latest from Repo and stashing changes"    
