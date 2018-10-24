@@ -3,8 +3,8 @@
 {% block body %}
     <div class="row">
       <div class="col">
-           <p>Hello <strong>{{ team.name }}</strong> team owner,</p>
-           <p>Thank you again for contributing to the {{campaign.name}} campaign. We are having a little trouble validating your student "<strong>{{teamStudent.name}}</strong>" in {{classroom.name}}'s classroom.</p>
+           <p>Hello <strong><a target="_blank" href="{{ main_app_url }}/{{campaign.url}}/team/{{team.url}}">{{team.name}}</a></strong> team owner,</p>
+           <p>Thank you again for contributing to the <a target="_blank" href="{{ main_app_url }}/{{campaign.url}}/">{{campaign.name}}</a> campaign. We are having a little trouble validating the student "<strong>{{teamStudent.name}}</strong>" in {{classroom.name}}'s classroom.</p>
            <p>Common reasons why this may happen:</br>
               <ul>
                 <li>A nickname or middle name was used instead of their legal first name.</li>

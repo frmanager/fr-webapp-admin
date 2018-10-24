@@ -1,0 +1,32 @@
+{% extends 'template.email.html.twig' %}
+
+{% block body %}
+    <div class="row">
+      <div class="col">
+           <p>Hello <strong>{{ donation.donorFirstName }} {{ donation.donorLastName }}</strong>,</p>
+           <p>Thank you again for your donation to the <a target="_blank" href="{{ main_app_url }}/{{campaign.url}}/">{{campaign.name}}</a> campaign.</p>
+           {% if donation.type == "campaign" %}
+            <p>We noticed you made a donation the general campaign. Was there a specific team, classroom, or student that you wanted to give credit for the donation? There are a lot of prized up for grabs and every donation counts!</p>
+           {% elseif donation.type == "classroom" %}
+            <p>We noticed you made a donation to a Classroom. Was there a specific team, or student in that classroom that you wanted to give credit for the donation? There are a lot of prized up for grabs and every donation counts!</p>
+           {% endif %}
+           <p>If you need to change the donation, just respond to this email with any additional information</p>
+      </div>
+    </div><!-- ./row -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+        <div class="card">
+          <div class="card-header">
+            Donation Info
+          </div>
+          <div class="card-body">
+            <hr>
+            <p class="card-text"><strong>Donor Name:</strong> {{ donation.donorFirstName }} {{ donation.donorLastName }}</p>
+            <p class="card-text"><strong>Donor Email:</strong> {{ donation.donorEmail }}</p>
+            <p class="card-text"><strong>Donation Date:</strong> {{donation.donatedAt|date('Y/m/d')}}</p>
+            <p class="card-text"><strong>Donor Message:</strong> {{ donation.donorComment}}</p>
+          </div>
+        </div><!-- ./card -->
+    </div><!-- ./column -->
+</div><!-- ./row -->
+{% endblock %}
