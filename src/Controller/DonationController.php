@@ -479,11 +479,29 @@ class DonationController extends Controller
           $this->get('session')->getFlashBag()->add('success', 'Donation receipt resent successfully');
         }
 
+        if($action === 'send_verify_donation_type_email'){
+
+            //Send Email to Donor
+            $message = (new \Swift_Message("[FRManager] Getting credit for your donation"))
+            ->setFrom($this->getParameter('mailer_user'))
+            ->setTo($donation->getDonorEmail())
+            ->setContentType("text/html")
+            ->setBody(
+                $this->renderView('email/donation.verify.type.donor.twig', array('donation' => $donation,'campaign' => $campaign))
+            );
+
+            $this->get('mailer')->send($message);
+            $logger->debug("Sent email to donor to verify donation type");
+
+            $this->get('session')->getFlashBag()->add('success', 'Donation Type verification request successfully sent to donor');
+
+            return $this->redirectToRoute('donation_show', array('campaignUrl'=>$campaign->getUrl(), 'id'=>$donation->getId()));
+
+        }
+
+
+
     }
-
-
-
-
 
 
         return $this->render('donation/donation.show.html.twig', array(

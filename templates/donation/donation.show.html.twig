@@ -30,13 +30,18 @@
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% if donation.donationStatus != 'ACCEPTED' %}
                       <button class="dropdown-item disabled" id="{{donation.id}}" aria-disabled="true" disabled>
-                        <i class="fas fa-receipt" aria-hidden="true"></i> <s>Resend Receipt</s>
+                        <i class="fas fa-receipt" aria-hidden="true"></i> <s>resend receipt</s>
                       </button>   
                     {% else %}                 
                       <a href="{{ path('donation_show', {'campaignUrl': campaign.url, 'id': donation.id, 'action':'send_receipt'}) }}" class="dropdown-item {{ donation.donationStatus != 'ACCEPTED' ? 'disabled' }}" id="{{donation.id}}" {{ donation.donationStatus != 'ACCEPTED' ? 'aria-disabled="true"' }}>
-                        <i class="fas fa-receipt" aria-hidden="true"></i> Resend Receipt
+                        <i class="fas fa-receipt" aria-hidden="true"></i> resend receipt
                       </a>
                     {% endif %}
+                    {% if donation.type == 'campaign' or donation.type == 'classroom' %}
+                      <a href="{{ path('donation_show', {'campaignUrl': campaign.url, 'id': donation.id, 'action':'send_verify_donation_type_email'}) }}" class="dropdown-item {{ donation.donationStatus != 'ACCEPTED' ? 'disabled' }}" id="{{donation.id}}" {{ donation.donationStatus != 'ACCEPTED' ? 'aria-disabled="true"' }}>
+                       <i class="fas fa-check" aria-hidden="true"></i> verify type with donor
+                      </a>   
+                    {% endif %}                                                    
                     </div>
                   </div>
                   {% endif %}

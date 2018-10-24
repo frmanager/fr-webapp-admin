@@ -3,8 +3,8 @@
 {% block body %}
     <div class="row">
       <div class="col">
-           <p>Hello <strong>{{ campaign.name }}</strong> school coordinator,</p>
-           <p>A contributor created a team page ({{ team.name }}) for a student named "<strong>{{teamStudent.name}}</strong>" in {{classroom.name}}'s classroom that is not currently in the system. Can you please confirm that this student is in that classroom?</p>
+           <p>Hello <strong><a target="_blank" href="{{ main_app_url }}/{{campaign.url}}/">{{campaign.name}}</a></strong> school coordinator,</p>
+           <p>A contributor created a team page (<a target="_blank" href="{{ main_app_url }}/{{campaign.url}}/team/{{team.url}}">{{team.name}}</a>) for a student named "<strong>{{teamStudent.name}}</strong>" in {{classroom.name}}'s classroom that is not currently in the system. Can you please confirm that this student is in that classroom?</p>
            <p>Common reasons why this may happen:</br>
               <ul>
                 <li>A nickname or middle name was used instead of their legal first name.</li>

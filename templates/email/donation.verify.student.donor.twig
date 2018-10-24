@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col">
            <p>Hello <strong>{{ donation.donorFirstName }} {{ donation.donorLastName }}</strong>,</p>
-           <p>Thank you again for your donation to the {{campaign.name}} campaign. We are having a little trouble validating your recent donation for the student "<strong>{{donation.studentName}}</strong>" in {{donation.classroom.name}}'s classroom.</p>
+           <p>Thank you again for your donation to the <a target="_blank" href="{{ main_app_url }}/{{campaign.url}}/">{{campaign.name}}</a> campaign. We are having a little trouble validating your recent donation for the student "<strong>{{donation.studentName}}</strong>" in {{donation.classroom.name}}'s classroom.</p>
            <p>Common reasons why this may happen:</br>
               <ul>
                 <li>A nickname or middle name was used instead of their first name.</li>
