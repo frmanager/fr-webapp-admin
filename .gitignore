@@ -141,3 +141,5 @@ typings/
 
 # Temporary block for Swiftmailer
 /config/packages/swiftmailer.yaml
+dev.env
+frmanager.sql
