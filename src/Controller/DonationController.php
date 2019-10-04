@@ -839,7 +839,7 @@ class DonationController extends Controller
                         if (is_null($item['donation_amount']) || !isset($item['donation_amount']) || empty($item['donation_amount']) || strcmp($item['donation_amount'], '') == 0) {
                           $rowFailure = true;
                         }else{
-                          $donationSummary['donation_amount'] += intval($item['donation_amount']);
+                          $donationSummary['donation_amount'] += floatval($item['donation_amount']);
                           $donationSummary['donations'] ++;
                         }
 

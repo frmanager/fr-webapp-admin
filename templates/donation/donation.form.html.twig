@@ -80,8 +80,7 @@
                   <span class="input-group-addon" id="basic-addon1">
                     <i class="fa fa-usd" aria-hidden="true"></i>
                   </span>
-                  <input type="number" class="form-control" style="text-align:right;" min="0" id="donation_amount" value="{% if null != donation.amount %}5{% else %}{{ donation.amount }}{% endif %}" name="donation[amount]" required>
-                  <span class="input-group-addon" id="basic-addon1">.00</span>
+                  <input type="number" class="form-control" style="text-align:right;" min="0" step=".01" id="donation_amount" value="{% if null != donation.amount %}5{% else %}{{ donation.amount }}{% endif %}" name="donation[amount]" required>
                 </div>
               </div>
             </div><!-- ./form-group -->
